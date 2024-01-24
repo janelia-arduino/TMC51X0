@@ -13,12 +13,8 @@ class Driver
 {
 public:
   Driver();
-  // unidirectional methods
 
-  // driver must be enabled before use it is disabled by default
-  void setHardwareEnablePin(uint8_t hardware_enable_pin);
-  void enable();
-  void disable();
+  // unidirectional methods
 
   // valid values = 1,2,4,8,...128,256, other values get rounded down
   void setMicrostepsPerStep(uint16_t microsteps_per_step);
@@ -108,22 +104,6 @@ public:
   void useInternalSenseResistors();
 
   // bidirectional methods
-  uint8_t getVersion();
-
-  // if driver is not communicating, check power and communication connections
-  bool isCommunicating();
-
-  // check to make sure Driver is properly setup and communicating
-  bool isSetupAndCommunicating();
-
-  // driver may be communicating but not setup if driver power is lost then
-  // restored after setup so that defaults are loaded instead of setup options
-  bool isCommunicatingButNotSetup();
-
-  // driver may also be disabled by the hardware enable input pin
-  // this pin must be grounded or disconnected before driver may be enabled
-  bool hardwareDisabled();
-
   uint16_t getMicrostepsPerStep();
 
   struct Settings
@@ -262,7 +242,8 @@ private:
     {
       uint32_t i_scale_analog : 1;
       uint32_t internal_rsense : 1;
-      uint32_t enable_spread_cycle : 1;
+      uint32_t enable_pwm_mode : 1;
+      uint32_t enc_commutation : 1;
       uint32_t shaft : 1;
       uint32_t index_otpw : 1;
       uint32_t index_step : 1;

@@ -9,91 +9,10 @@
 
 Driver::Driver()
 {
-  hardware_serial_ptr_ = nullptr;
-#if SOFTWARE_SERIAL_IMPLEMENTED
-  software_serial_ptr_ = nullptr;
-#endif
-  serial_baud_rate_ = 115200;
-  serial_address_ = SERIAL_ADDRESS_0;
-  hardware_enable_pin_ = -1;
   cool_step_enabled_ = false;
 }
 
-#ifdef ESP32
-void Driver::setup(HardwareSerial & serial,
-  long serial_baud_rate,
-  SerialAddress serial_address,
-  int16_t alternate_rx_pin,
-  int16_t alternate_tx_pin)
-{
-  hardware_serial_ptr_ = &serial;
-  if ((alternate_rx_pin < 0) || (alternate_tx_pin < 0))
-  {
-    hardware_serial_ptr_->end(false);
-    hardware_serial_ptr_->begin(serial_baud_rate);
-  }
-  else
-  {
-    hardware_serial_ptr_->end();
-    hardware_serial_ptr_->begin(serial_baud_rate, SERIAL_8N1, alternate_rx_pin, alternate_tx_pin);
-  }
-
-  initialize(serial_baud_rate, serial_address);
-}
-#else
-void Driver::setup(HardwareSerial & serial,
-  long serial_baud_rate,
-  SerialAddress serial_address)
-{
-  hardware_serial_ptr_ = &serial;
-  hardware_serial_ptr_->end();
-  hardware_serial_ptr_->begin(serial_baud_rate);
-
-  initialize(serial_baud_rate, serial_address);
-}
-#endif
-
-#if SOFTWARE_SERIAL_IMPLEMENTED
-void Driver::setup(SoftwareSerial & serial,
-  long serial_baud_rate,
-  SerialAddress serial_address)
-{
-  software_serial_ptr_ = &serial;
-  software_serial_ptr_->end();
-  software_serial_ptr_->begin(serial_baud_rate);
-
-  initialize(serial_baud_rate, serial_address);
-}
-#endif
-
 // unidirectional methods
-
-void Driver::setHardwareEnablePin(uint8_t hardware_enable_pin)
-{
-  hardware_enable_pin_ = hardware_enable_pin;
-  pinMode(hardware_enable_pin_, OUTPUT);
-  digitalWrite(hardware_enable_pin_, HIGH);
-}
-
-void Driver::enable()
-{
-  if (hardware_enable_pin_ >= 0)
-  {
-    digitalWrite(hardware_enable_pin_, LOW);
-  }
-  chopper_config_.toff = toff_;
-  writeStoredChopperConfig();
-}
-
-void Driver::disable()
-{
-  if (hardware_enable_pin_ >= 0)
-  {
-    digitalWrite(hardware_enable_pin_, HIGH);
-  }
-  chopper_config_.toff = TOFF_DISABLE;
-  writeStoredChopperConfig();
-}
 
 void Driver::setMicrostepsPerStep(uint16_t microsteps_per_step)
 {
@@ -364,37 +283,6 @@ void Driver::useInternalSenseResistors()
 }
 
 // bidirectional methods
-
-uint8_t Driver::getVersion()
-{
-  Input input;
-  input.bytes = read(ADDRESS_IOIN);
-
-  return input.version;
-}
-
-bool Driver::isCommunicating()
-{
-  return (getVersion() == VERSION);
-}
-
-bool Driver::isSetupAndCommunicating()
-{
-  return serialOperationMode();
-}
-
-bool Driver::isCommunicatingButNotSetup()
-{
-  return (isCommunicating() && (not isSetupAndCommunicating()));
-}
-
-bool Driver::hardwareDisabled()
-{
-  Input input;
-  input.bytes = read(ADDRESS_IOIN);
-
-  return input.enn;
-}
 
 uint16_t Driver::getMicrostepsPerStep()
 {
