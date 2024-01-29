@@ -1,13 +1,21 @@
 // ----------------------------------------------------------------------------
-// TMC5130.cpp
+// TMC51X0.h
 //
 // Authors:
 // Peter Polidoro peter@polidoro.io
 // ----------------------------------------------------------------------------
-#include "TMC5130.h"
+
+#ifndef TMC51X0_H
+#define TMC51X0_H
+#include <Arduino.h>
 
 
-TMC5130::TMC5130()
+class TMC51X0
 {
-}
+public:
+  TMC51X0();
+  uint8_t getVersion();
+private:
+};
 
+#endif
