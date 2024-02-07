@@ -1,15 +1,15 @@
-- [Library Information](#org3e5e3c7)
-- [Stepper Motors](#org98a3e76)
-- [Stepper Motor Controllers and Drivers](#orgfb036b0)
-- [Examples](#org79c28fc)
-- [Hardware Documentation](#org8e683ae)
-- [Host Computer Setup](#org4da25f6)
+- [Library Information](#org0ec17f1)
+- [Stepper Motors](#org310839a)
+- [Stepper Motor Controllers and Drivers](#org564cc65)
+- [Examples](#org3c63dfc)
+- [Hardware Documentation](#org35a72d7)
+- [Host Computer Setup](#orgb0fa576)
 
     <!-- This file is generated automatically from metadata -->
     <!-- File edits may be overwritten! -->
 
 
-<a id="org3e5e3c7"></a>
+<a id="org0ec17f1"></a>
 
 # Library Information
 
@@ -36,7 +36,7 @@ The TMC5160 uses external MOSFETs to drive higher current motors from 1A to seve
 <img src="./images/trinamic_wiring-TMC51X0-description.svg" width="1200px">
 
 
-<a id="org98a3e76"></a>
+<a id="org310839a"></a>
 
 # Stepper Motors
 
@@ -47,7 +47,7 @@ A stepper motor, also known as step motor or stepping motor, is a brushless DC e
 [Wikipedia - Stepper Motor](https://en.wikipedia.org/wiki/Stepper_motor)
 
 
-<a id="orgfb036b0"></a>
+<a id="org564cc65"></a>
 
 # Stepper Motor Controllers and Drivers
 
@@ -64,7 +64,7 @@ A stepper motor controller is responsible for the commanding either the motor ki
 A stepper motor driver is responsible for commanding the electrical current through the motor coils as it changes with time to meet the requirements of the stepper motor controller.
 
 
-<a id="org79c28fc"></a>
+<a id="org3c63dfc"></a>
 
 # Examples
 
@@ -84,7 +84,7 @@ A stepper motor driver is responsible for commanding the electrical current thro
 <https://github.com/janelia-kicad/trinamic_wiring>
 
 
-<a id="org8e683ae"></a>
+<a id="org35a72d7"></a>
 
 # Hardware Documentation
 
@@ -94,27 +94,44 @@ A stepper motor driver is responsible for commanding the electrical current thro
 [Datasheets](./datasheet)
 
 
-<a id="org4da25f6"></a>
+<a id="orgb0fa576"></a>
 
 # Host Computer Setup
 
 
-## GNU/Linux
+## Download this repository
+
+<https://github.com/janelia-arduino/TMC51X0.git>
+
+```sh
+git clone https://github.com/janelia-arduino/TMC51X0.git
+```
 
 
-### Drivers
+## PlatformIO
 
-GNU/Linux computers usually have all of the necessary drivers already installed, but users need the appropriate permissions to open the device and communicate with it.
 
-Udev is the GNU/Linux subsystem that detects when things are plugged into your computer.
+### Install PlatformIO Core
 
-1.  Download rules into the correct directory
+<https://docs.platformio.org/en/latest/core/installation/index.html>
 
-    1.  Teensy
-    
-        ```sh
-        curl -fsSL https://www.pjrc.com/teensy/00-teensy.rules | sudo tee /etc/udev/rules.d/00-teensy.rules
-        ```
+```sh
+python3 -m venv .venv
+source .venv/bin/activate
+pip install platformio
+pio --version
+```
+
+
+### 99-platformio-udev.rules
+
+Linux users have to install udev rules for PlatformIO supported boards/devices.
+
+1.  Download udev rules file to /etc/udev/rules.d
+
+    ```sh
+    curl -fsSL https://raw.githubusercontent.com/platformio/platformio-core/develop/platformio/assets/system/99-platformio-udev.rules | sudo tee /etc/udev/rules.d/99-platformio-udev.rules
+    ```
 
 2.  Restart udev management tool
 
@@ -122,14 +139,65 @@ Udev is the GNU/Linux subsystem that detects when things are plugged into your c
     sudo service udev restart
     ```
 
-3.  Ubuntu/Debian users may need to add own “username” to the “dialout” group
+3.  Add user to groups
 
     ```sh
     sudo usermod -a -G dialout $USER && sudo usermod -a -G plugdev $USER
     ```
 
-4.  After setting up rules and groups
+4.  Remove modemmanager
+
+    ```sh
+    sudo apt-get purge --auto-remove modemmanager
+    ```
+
+5.  After setting up rules and groups
 
     You will need to log out and log back in again (or reboot) for the user group changes to take effect.
     
     After this file is installed, physically unplug and reconnect your board.
+
+
+### Compile the firmware
+
+1.  Gnu/Linux
+
+    ```sh
+    make firmware
+    ```
+
+2.  Other
+
+    ```sh
+    pio run -e teensy40
+    ```
+
+
+### Upload the firmware
+
+1.  Gnu/Linux
+
+    ```sh
+    make upload
+    ```
+
+2.  Other
+
+    ```sh
+    pio run -e teensy40 -t upload
+    ```
+
+
+### Serial Terminal Monitor
+
+1.  Gnu/Linux
+
+    ```sh
+    make monitor
+    ```
+
+2.  Other
+
+    ```sh
+    pio device monitor --echo --eol=LF
+    ```

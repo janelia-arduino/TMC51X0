@@ -1,11 +1,5 @@
 #include <TMC51X0.h>
 
-// This example will not work on Arduino boards without HardwareSerial ports,
-// such as the Uno, Nano, and Mini.
-//
-// See this reference for more details:
-// https://www.arduino.cc/reference/en/language/functions/communication/serial/
-
 const uint8_t CHIP_SELECT_PIN = 10;
 const uint8_t HARDWARE_ENABLE_PIN = 4;
 
