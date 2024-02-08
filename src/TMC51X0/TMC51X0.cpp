@@ -17,7 +17,7 @@ void TMC51X0::setup(size_t chip_select_pin)
   chip_select_pin_ = chip_select_pin;
 
   pinMode(chip_select_pin_,OUTPUT);
-  digitalWrite(chip_select_pin_,HIGH);
+  disableChipSelect();
 
   spiBegin();
 }
@@ -26,25 +26,19 @@ void TMC51X0::setHardwareEnablePin(uint8_t hardware_enable_pin)
 {
   hardware_enable_pin_ = hardware_enable_pin;
   pinMode(hardware_enable_pin_, OUTPUT);
-  digitalWrite(hardware_enable_pin_, HIGH);
+  hardwareDisable();
 }
 
 void TMC51X0::enable()
 {
-  if (hardware_enable_pin_ >= 0)
-  {
-    digitalWrite(hardware_enable_pin_, LOW);
-  }
+  hardwareEnable();
   // chopper_config_.toff = toff_;
   // writeStoredChopperConfig();
 }
 
 void TMC51X0::disable()
 {
-  if (hardware_enable_pin_ >= 0)
-  {
-    digitalWrite(hardware_enable_pin_, HIGH);
-  }
+  hardwareDisable();
   // chopper_config_.toff = TOFF_DISABLE;
   // writeStoredChopperConfig();
 }
@@ -52,76 +46,65 @@ void TMC51X0::disable()
 uint8_t TMC51X0::getVersion()
 {
   Input input;
-  input.bytes = read(ADDRESS_IOIN);
+  input.bytes = readRegister(REGISTER_ADDRESS_IOIN);
 
   return input.version;
 }
 
 // private
-write(uint8_t register_address,
+
+void TMC51X0::hardwareEnable()
+{
+  if (hardware_enable_pin_ >= 0)
+  {
+    digitalWrite(hardware_enable_pin_, LOW);
+  }
+}
+
+void TMC51X0::hardwareDisable()
+{
+  if (hardware_enable_pin_ >= 0)
+  {
+    digitalWrite(hardware_enable_pin_, HIGH);
+  }
+}
+
+void TMC51X0::writeRegister(uint8_t register_address,
   uint32_t data)
 {
-  WriteReadReplyDatagram write_datagram;
-  write_datagram.bytes = 0;
-  write_datagram.sync = SYNC;
-  write_datagram.serial_address = serial_address_;
-  write_datagram.register_address = register_address;
-  write_datagram.rw = RW_WRITE;
-  write_datagram.data = reverseData(data);
-  write_datagram.crc = calculateCrc(write_datagram, WRITE_READ_REPLY_DATAGRAM_SIZE);
-
-  sendDatagramUnidirectional(write_datagram, WRITE_READ_REPLY_DATAGRAM_SIZE);
+  MosiDatagram mosi_datagram;
+  mosi_datagram.register_address = register_address;
+  mosi_datagram.rw = SPI_RW_WRITE;
+  mosi_datagram.data = data;
+  writeRead(mosi_datagram);
 }
 
-uint32_t TMC2209::read(uint8_t register_address)
-{
-  ReadRequestDatagram read_request_datagram;
-  read_request_datagram.bytes = 0;
-  read_request_datagram.sync = SYNC;
-  read_request_datagram.serial_address = serial_address_;
-  read_request_datagram.register_address = register_address;
-  read_request_datagram.rw = RW_READ;
-  read_request_datagram.crc = calculateCrc(read_request_datagram, READ_REQUEST_DATAGRAM_SIZE);
-
-  sendDatagramBidirectional(read_request_datagram, READ_REQUEST_DATAGRAM_SIZE);
-
-  uint32_t reply_delay = 0;
-  while ((serialAvailable() < WRITE_READ_REPLY_DATAGRAM_SIZE) and
-    (reply_delay < REPLY_DELAY_MAX_MICROSECONDS))
-  {
-    delayMicroseconds(REPLY_DELAY_INC_MICROSECONDS);
-    reply_delay += REPLY_DELAY_INC_MICROSECONDS;
-  }
-
-  if (reply_delay >= REPLY_DELAY_MAX_MICROSECONDS)
-  {
-    return 0;
-  }
-
-  uint64_t byte;
-  uint8_t byte_count = 0;
-  WriteReadReplyDatagram read_reply_datagram;
-  read_reply_datagram.bytes = 0;
-  for (uint8_t i=0; i<WRITE_READ_REPLY_DATAGRAM_SIZE; ++i)
-  {
-    byte = serialRead();
-    read_reply_datagram.bytes |= (byte << (byte_count++ * BITS_PER_BYTE));
-  }
-
-  return reverseData(read_reply_datagram.data);
-}
-
-uint32_t TMC51X0::readRegister(uint8_t smda,
-  uint8_t address)
+uint32_t TMC51X0::readRegister(uint8_t register_address)
 {
   MosiDatagram mosi_datagram;
-  mosi_datagram.rrs = RRS_REGISTER;
-  mosi_datagram.address = address;
-  mosi_datagram.smda = smda;
-  mosi_datagram.rw = RW_READ;
+  mosi_datagram.register_address = register_address;
+  mosi_datagram.rw = SPI_RW_READ;
   mosi_datagram.data = 0;
   MisoDatagram miso_datagram = writeRead(mosi_datagram);
   return miso_datagram.data;
+}
+
+TMC51X0::MisoDatagram TMC51X0::writeRead(MosiDatagram mosi_datagram)
+{
+  MisoDatagram miso_datagram;
+  miso_datagram.bytes = 0x0;
+  beginTransaction();
+  for (int i=(SPI_DATAGRAM_SIZE - 1); i>=0; --i)
+  {
+    uint8_t byte_write = (mosi_datagram.bytes >> (8*i)) & 0xff;
+    uint8_t byte_read = spiTransfer(byte_write);
+    miso_datagram.bytes |= ((uint32_t)byte_read) << (8*i);
+  }
+  endTransaction();
+  noInterrupts();
+  spi_status_ = miso_datagram.spi_status;
+  interrupts();
+  return miso_datagram;
 }
 
 void TMC51X0::enableChipSelect()
