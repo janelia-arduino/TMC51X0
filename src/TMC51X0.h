@@ -19,7 +19,7 @@ public:
   void setup(size_t chip_select_pin);
 
   // driver must be enabled before use it is disabled by default
-  void setHardwareEnablePin(uint8_t hardware_enable_pin);
+  void setHardwareEnablePin(size_t hardware_enable_pin);
   void enable();
   void disable();
 
@@ -73,7 +73,8 @@ private:
   };
   SpiStatus spi_status_;
 
-  const static uint8_t SPI_DATAGRAM_SIZE = 5;
+  constexpr static uint8_t SPI_DATAGRAM_SIZE = 5;
+  constexpr static uint8_t SPI_BUFFER_INDEX_MAX = SPI_DATAGRAM_SIZE - 1;
 
   // MOSI Datagrams
   union MosiDatagram
@@ -102,6 +103,8 @@ private:
     uint64_t bytes;
   };
 
+  uint8_t spi_buffer_[SPI_DATAGRAM_SIZE];
+
   void writeRegister(uint8_t register_address,
     uint32_t data);
   uint32_t readRegister(uint8_t register_address);
@@ -117,6 +120,7 @@ protected:
   virtual void spiBeginTransaction(SPISettings);
   virtual void spiEndTransaction();
   virtual uint8_t spiTransfer(uint8_t);
+  virtual void spiTransfer(void *buffer, size_t count);
 
 };
 

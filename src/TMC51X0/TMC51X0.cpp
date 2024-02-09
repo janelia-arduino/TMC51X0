@@ -22,7 +22,7 @@ void TMC51X0::setup(size_t chip_select_pin)
   spiBegin();
 }
 
-void TMC51X0::setHardwareEnablePin(uint8_t hardware_enable_pin)
+void TMC51X0::setHardwareEnablePin(size_t hardware_enable_pin)
 {
   hardware_enable_pin_ = hardware_enable_pin;
   pinMode(hardware_enable_pin_, OUTPUT);
@@ -86,22 +86,49 @@ uint32_t TMC51X0::readRegister(uint8_t register_address)
   mosi_datagram.rw = SPI_RW_READ;
   mosi_datagram.data = 0;
   MisoDatagram miso_datagram = writeRead(mosi_datagram);
+  // miso data is returned on second read
+  miso_datagram = writeRead(mosi_datagram);
   return miso_datagram.data;
 }
 
+// TMC51X0::MisoDatagram TMC51X0::writeRead(MosiDatagram mosi_datagram)
+// {
+//   Serial.println("Writing: ");
+//   Serial.println(mosi_datagram.bytes, HEX);
+//   MisoDatagram miso_datagram;
+//   miso_datagram.bytes = 0x0;
+//   beginTransaction();
+//   for (int i=(SPI_DATAGRAM_SIZE - 1); i>=0; --i)
+//   {
+//     uint8_t byte_write = (mosi_datagram.bytes >> (8*i)) & 0xff;
+//     uint8_t byte_read = spiTransfer(byte_write);
+//     miso_datagram.bytes |= ((uint32_t)byte_read) << (8*i);
+//   }
+//   endTransaction();
+//   noInterrupts();
+//   spi_status_ = miso_datagram.spi_status;
+//   interrupts();
+//   return miso_datagram;
+// }
+
 TMC51X0::MisoDatagram TMC51X0::writeRead(MosiDatagram mosi_datagram)
 {
+  for (int i=SPI_BUFFER_INDEX_MAX; i>=0; --i)
+  {
+    spi_buffer_[SPI_BUFFER_INDEX_MAX - i] = (mosi_datagram.bytes >> (8*i)) & 0xff;
+  }
+  Serial.println("Writing: ");
+  Serial.println(mosi_datagram.bytes, HEX);
   MisoDatagram miso_datagram;
   miso_datagram.bytes = 0x0;
   beginTransaction();
-  for (int i=(SPI_DATAGRAM_SIZE - 1); i>=0; --i)
-  {
-    uint8_t byte_write = (mosi_datagram.bytes >> (8*i)) & 0xff;
-    uint8_t byte_read = spiTransfer(byte_write);
-    miso_datagram.bytes |= ((uint32_t)byte_read) << (8*i);
-  }
+  spiTransfer(spi_buffer_, SPI_DATAGRAM_SIZE);
   endTransaction();
   noInterrupts();
+  for (int i=SPI_BUFFER_INDEX_MAX; i>=0; --i)
+  {
+    miso_datagram.bytes |= ((uint32_t)spi_buffer_[SPI_BUFFER_INDEX_MAX - i]) << (8*i);
+  }
   spi_status_ = miso_datagram.spi_status;
   interrupts();
   return miso_datagram;
@@ -137,11 +164,6 @@ void TMC51X0::spiBegin()
   SPI.begin();
 }
 
-uint8_t TMC51X0::spiTransfer(uint8_t byte)
-{
-  return SPI.transfer(byte);
-}
-
 void TMC51X0::spiBeginTransaction(SPISettings settings)
 {
   SPI.beginTransaction(settings);
@@ -150,4 +172,14 @@ void TMC51X0::spiBeginTransaction(SPISettings settings)
 void TMC51X0::spiEndTransaction()
 {
   SPI.endTransaction();
+}
+
+uint8_t TMC51X0::spiTransfer(uint8_t byte)
+{
+  return SPI.transfer(byte);
+}
+
+void TMC51X0::spiTransfer(void *buffer, size_t count)
+{
+  return SPI.transfer(buffer, count);
 }
