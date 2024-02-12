@@ -1,4 +1,4 @@
-#include <TMC51X0.h>
+#include <TMC51X0.hpp>
 
 const uint8_t CHIP_SELECT_PIN = 10;
 const uint8_t HARDWARE_ENABLE_PIN = 4;

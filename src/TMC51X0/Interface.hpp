@@ -1,56 +1,29 @@
 // ----------------------------------------------------------------------------
-// TMC51X0.h
+// Interface.hpp
 //
 // Authors:
 // Peter Polidoro peter@polidoro.io
 // ----------------------------------------------------------------------------
 
-#ifndef TMC51X0_H
-#define TMC51X0_H
+#ifndef TMC51X0_INTERFACE_HPP
+#define TMC51X0_INTERFACE_HPP
 #include <Arduino.h>
 #include <SPI.h>
 
 
-class TMC51X0
+class Interface
 {
 public:
-  TMC51X0();
+  Interface();
 
   void setup(size_t chip_select_pin);
 
-  // driver must be enabled before use it is disabled by default
-  void setHardwareEnablePin(size_t hardware_enable_pin);
-  void enable();
-  void disable();
+  void writeRegister(uint8_t register_address,
+    uint32_t data);
+  uint32_t readRegister(uint8_t register_address);
 
-  uint8_t getVersion();
 private:
-  size_t chip_select_pin_;
-  int16_t hardware_enable_pin_;
-
-  void hardwareEnable();
-  void hardwareDisable();
-
-  const static uint8_t REGISTER_ADDRESS_IOIN = 0x04;
-  union Input
-  {
-    struct
-    {
-      uint32_t refl_step : 1;
-      uint32_t refr_dir : 1;
-      uint32_t encb_dcen_cfg4 : 1;
-      uint32_t enca_dcin_cfg5 : 1;
-      uint32_t drv_enn : 1;
-      uint32_t enc_n_dco_cfg6 : 1;
-      uint32_t sd_mode : 1;
-      uint32_t swcomp_in : 1;
-      uint32_t reserved : 16;
-      uint32_t version : 8;
-    };
-    uint32_t bytes;
-  };
-  const static uint8_t VERSION_TMC5130 = 0x11;
-  const static uint8_t VERSION_TMC5160 = 0x30;
+  int8_t chip_select_pin_;
 
   // SPI
   const static uint32_t SPI_CLOCK = 2500000;
@@ -104,9 +77,6 @@ private:
 
   uint8_t spi_buffer_[SPI_DATAGRAM_SIZE];
 
-  void writeRegister(uint8_t register_address,
-    uint32_t data);
-  uint32_t readRegister(uint8_t register_address);
   MisoDatagram writeRead(MosiDatagram mosi_datagram);
 
   void enableChipSelect();
