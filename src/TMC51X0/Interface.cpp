@@ -7,7 +7,10 @@
 #include "Interface.hpp"
 
 
-Interface::Interface()
+using namespace tmc51x0;
+
+Interface::Interface() :
+spi_settings_(SPISettings(constants::spi_clock, constants::spi_bit_order, constants::spi_data_mode))
 {
   chip_select_pin_ = -1;
 }
@@ -76,7 +79,7 @@ void Interface::disableChipSelect()
 
 void Interface::beginTransaction()
 {
-  spiBeginTransaction(SPISettings(SPI_CLOCK, SPI_BIT_ORDER, SPI_MODE));
+  spiBeginTransaction(spi_settings_);
   enableChipSelect();
 }
 

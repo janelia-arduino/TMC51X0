@@ -10,6 +10,8 @@
 #include <Arduino.h>
 #include <SPI.h>
 
+#include "Constants.hpp"
+
 
 class Interface
 {
@@ -26,13 +28,8 @@ private:
   int8_t chip_select_pin_;
 
   // SPI
-  const static uint32_t SPI_CLOCK = 2500000;
-#if defined(ARDUINO_ARCH_SAMD)
-  const static BitOrder SPI_BIT_ORDER = MSBFIRST;
-#else
-  const static uint8_t SPI_BIT_ORDER = MSBFIRST;
-#endif
-  const static uint8_t SPI_MODE = SPI_MODE3;
+  const SPISettings spi_settings_;
+
   struct SpiStatus
   {
     uint8_t reset_flag : 1;
