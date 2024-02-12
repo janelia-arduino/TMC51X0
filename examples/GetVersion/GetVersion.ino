@@ -4,7 +4,7 @@ const uint8_t CHIP_SELECT_PIN = 10;
 const uint8_t HARDWARE_ENABLE_PIN = 4;
 
 const long SERIAL_BAUD_RATE = 115200;
-const int DELAY = 3000;
+const int DELAY = 250;
 
 // Instantiate TMC51X0
 TMC51X0 stepper_controller_driver;

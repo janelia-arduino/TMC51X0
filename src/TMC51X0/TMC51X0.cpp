@@ -91,44 +91,19 @@ uint32_t TMC51X0::readRegister(uint8_t register_address)
   return miso_datagram.data;
 }
 
-// TMC51X0::MisoDatagram TMC51X0::writeRead(MosiDatagram mosi_datagram)
-// {
-//   Serial.println("Writing: ");
-//   Serial.println(mosi_datagram.bytes, HEX);
-//   MisoDatagram miso_datagram;
-//   miso_datagram.bytes = 0x0;
-//   beginTransaction();
-//   for (int i=(SPI_DATAGRAM_SIZE - 1); i>=0; --i)
-//   {
-//     uint8_t byte_write = (mosi_datagram.bytes >> (8*i)) & 0xff;
-//     uint8_t byte_read = spiTransfer(byte_write);
-//     miso_datagram.bytes |= ((uint32_t)byte_read) << (8*i);
-//   }
-//   endTransaction();
-//   noInterrupts();
-//   spi_status_ = miso_datagram.spi_status;
-//   interrupts();
-//   return miso_datagram;
-// }
-
 TMC51X0::MisoDatagram TMC51X0::writeRead(MosiDatagram mosi_datagram)
 {
-  for (int i=SPI_BUFFER_INDEX_MAX; i>=0; --i)
-  {
-    spi_buffer_[SPI_BUFFER_INDEX_MAX - i] = (mosi_datagram.bytes >> (8*i)) & 0xff;
-  }
-  Serial.println("Writing: ");
-  Serial.println(mosi_datagram.bytes, HEX);
   MisoDatagram miso_datagram;
   miso_datagram.bytes = 0x0;
   beginTransaction();
-  spiTransfer(spi_buffer_, SPI_DATAGRAM_SIZE);
+  for (int i=(SPI_DATAGRAM_SIZE - 1); i>=0; --i)
+  {
+    uint8_t byte_write = (mosi_datagram.bytes >> (8*i)) & 0xff;
+    uint8_t byte_read = spiTransfer(byte_write);
+    miso_datagram.bytes |= ((uint32_t)byte_read) << (8*i);
+  }
   endTransaction();
   noInterrupts();
-  for (int i=SPI_BUFFER_INDEX_MAX; i>=0; --i)
-  {
-    miso_datagram.bytes |= ((uint32_t)spi_buffer_[SPI_BUFFER_INDEX_MAX - i]) << (8*i);
-  }
   spi_status_ = miso_datagram.spi_status;
   interrupts();
   return miso_datagram;
@@ -146,16 +121,14 @@ void TMC51X0::disableChipSelect()
 
 void TMC51X0::beginTransaction()
 {
-  enableChipSelect();
-  delayMicroseconds(1);
   spiBeginTransaction(SPISettings(SPI_CLOCK, SPI_BIT_ORDER, SPI_MODE));
+  enableChipSelect();
 }
 
 void TMC51X0::endTransaction()
 {
-  spiEndTransaction();
-  delayMicroseconds(1);
   disableChipSelect();
+  spiEndTransaction();
 }
 
 // protected

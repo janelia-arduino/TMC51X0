@@ -44,8 +44,8 @@ private:
       uint32_t enc_n_dco_cfg6 : 1;
       uint32_t sd_mode : 1;
       uint32_t swcomp_in : 1;
-      uint32_t version : 8;
       uint32_t reserved : 16;
+      uint32_t version : 8;
     };
     uint32_t bytes;
   };
@@ -53,7 +53,7 @@ private:
   const static uint8_t VERSION_TMC5160 = 0x30;
 
   // SPI
-  const static uint32_t SPI_CLOCK = 1000000;
+  const static uint32_t SPI_CLOCK = 2500000;
 #if defined(ARDUINO_ARCH_SAMD)
   const static BitOrder SPI_BIT_ORDER = MSBFIRST;
 #else
@@ -73,8 +73,7 @@ private:
   };
   SpiStatus spi_status_;
 
-  constexpr static uint8_t SPI_DATAGRAM_SIZE = 5;
-  constexpr static uint8_t SPI_BUFFER_INDEX_MAX = SPI_DATAGRAM_SIZE - 1;
+  const static uint8_t SPI_DATAGRAM_SIZE = 5;
 
   // MOSI Datagrams
   union MosiDatagram
