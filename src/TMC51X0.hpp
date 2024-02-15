@@ -13,7 +13,7 @@
 #include "TMC51X0/Driver.hpp"
 #include "TMC51X0/Controller.hpp"
 #include "TMC51X0/Interface.hpp"
-#include "TMC51X0/Register.hpp"
+#include "TMC51X0/Registers.hpp"
 
 
 class TMC51X0
@@ -29,7 +29,6 @@ public:
 
 private:
   Interface interface_;
-  Register register_;
 };
 
 #endif

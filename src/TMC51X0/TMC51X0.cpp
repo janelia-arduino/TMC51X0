@@ -7,6 +7,8 @@
 #include "TMC51X0.hpp"
 
 
+using namespace tmc51x0;
+
 void TMC51X0::setup(SPIClass & spi,
   size_t chip_select_pin)
 {
@@ -15,8 +17,8 @@ void TMC51X0::setup(SPIClass & spi,
 
 uint8_t TMC51X0::getVersion()
 {
-  Register::Input input;
-  input.bytes = interface_.readRegister(register_.ADDRESS_IOIN);
+  registers::Input input;
+  input.bytes = interface_.readRegister(registers::ADDRESS_IOIN);
 
   return input.version;
 }
