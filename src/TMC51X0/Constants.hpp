@@ -7,6 +7,8 @@
 // ----------------------------------------------------------------------------
 #ifndef TMC51X0_CONSTANTS_HPP
 #define TMC51X0_CONSTANTS_HPP
+#include <Arduino.h>
+#include <SPI.h>
 
 
 namespace tmc51x0

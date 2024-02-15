@@ -8,7 +8,7 @@ const long SERIAL_BAUD_RATE = 115200;
 const int DELAY = 250;
 
 // Instantiate TMC51X0
-TMC51X0 stepper_controller_driver;
+TMC51X0 stepper_commander;
 uint8_t version;
 
 
@@ -16,14 +16,14 @@ void setup()
 {
   Serial.begin(SERIAL_BAUD_RATE);
 
-  stepper_controller_driver.setup(spi, CHIP_SELECT_PIN);
+  stepper_commander.setup(spi, CHIP_SELECT_PIN);
 
-  stepper_controller_driver.setHardwareEnablePin(HARDWARE_ENABLE_PIN);
+  stepper_commander.driver.setHardwareEnablePin(HARDWARE_ENABLE_PIN);
 }
 
 void loop()
 {
-  version = stepper_controller_driver.getVersion();
+  version = stepper_commander.getVersion();
   Serial.print("Stepper controller driver version: ");
   Serial.print(version, HEX);
   Serial.println();
