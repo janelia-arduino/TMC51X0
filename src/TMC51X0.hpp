@@ -19,7 +19,8 @@ class TMC51X0
 public:
   TMC51X0();
 
-  void setup(size_t chip_select_pin);
+  void setup(SPIClass & spi,
+    size_t chip_select_pin);
 
   // driver must be enabled before use it is disabled by default
   void setHardwareEnablePin(size_t hardware_enable_pin);

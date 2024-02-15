@@ -15,14 +15,16 @@ spi_settings_(SPISettings(constants::spi_clock, constants::spi_bit_order, consta
   chip_select_pin_ = -1;
 }
 
-void Interface::setup(size_t chip_select_pin)
+void Interface::setup(SPIClass & spi,
+  size_t chip_select_pin)
 {
+  spi_ptr_ = &spi;
   chip_select_pin_ = chip_select_pin;
 
   pinMode(chip_select_pin_,OUTPUT);
   disableChipSelect();
 
-  spiBegin();
+  spi_ptr_->begin();
 }
 
 void Interface::writeRegister(uint8_t register_address,
@@ -51,13 +53,14 @@ uint32_t Interface::readRegister(uint8_t register_address)
 
 Interface::MisoDatagram Interface::writeRead(MosiDatagram mosi_datagram)
 {
+  uint8_t byte_write, byte_read;
   MisoDatagram miso_datagram;
   miso_datagram.bytes = 0x0;
   beginTransaction();
   for (int i=(SPI_DATAGRAM_SIZE - 1); i>=0; --i)
   {
-    uint8_t byte_write = (mosi_datagram.bytes >> (8*i)) & 0xff;
-    uint8_t byte_read = spiTransfer(byte_write);
+    byte_write = (mosi_datagram.bytes >> (8*i)) & 0xff;
+    byte_read = spi_ptr_->transfer(byte_write);
     miso_datagram.bytes |= ((uint32_t)byte_read) << (8*i);
   }
   endTransaction();
@@ -79,38 +82,12 @@ void Interface::disableChipSelect()
 
 void Interface::beginTransaction()
 {
-  spiBeginTransaction(spi_settings_);
+  spi_ptr_->beginTransaction(spi_settings_);
   enableChipSelect();
 }
 
 void Interface::endTransaction()
 {
   disableChipSelect();
-  spiEndTransaction();
-}
-
-// protected
-void Interface::spiBegin()
-{
-  SPI.begin();
-}
-
-void Interface::spiBeginTransaction(SPISettings settings)
-{
-  SPI.beginTransaction(settings);
-}
-
-void Interface::spiEndTransaction()
-{
-  SPI.endTransaction();
-}
-
-uint8_t Interface::spiTransfer(uint8_t byte)
-{
-  return SPI.transfer(byte);
-}
-
-void Interface::spiTransfer(void *buffer, size_t count)
-{
-  return SPI.transfer(buffer, count);
+  spi_ptr_->endTransaction();
 }

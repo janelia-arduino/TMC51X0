@@ -12,9 +12,10 @@ TMC51X0::TMC51X0()
   hardware_enable_pin_ = -1;
 }
 
-void TMC51X0::setup(size_t chip_select_pin)
+void TMC51X0::setup(SPIClass & spi,
+  size_t chip_select_pin)
 {
-  interface_.setup(chip_select_pin);
+  interface_.setup(spi, chip_select_pin);
 }
 
 void TMC51X0::setHardwareEnablePin(size_t hardware_enable_pin)

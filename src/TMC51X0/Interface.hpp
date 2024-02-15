@@ -18,13 +18,15 @@ class Interface
 public:
   Interface();
 
-  void setup(size_t chip_select_pin);
+  void setup(SPIClass & spi,
+    size_t chip_select_pin);
 
   void writeRegister(uint8_t register_address,
     uint32_t data);
   uint32_t readRegister(uint8_t register_address);
 
 private:
+  SPIClass * spi_ptr_;
   int8_t chip_select_pin_;
 
   // SPI
@@ -80,14 +82,6 @@ private:
   void disableChipSelect();
   void beginTransaction();
   void endTransaction();
-
-protected:
-  virtual void spiBegin();
-  virtual void spiBeginTransaction(SPISettings);
-  virtual void spiEndTransaction();
-  virtual uint8_t spiTransfer(uint8_t);
-  virtual void spiTransfer(void *buffer, size_t count);
-
 };
 
 #endif

@@ -1,5 +1,6 @@
 #include <TMC51X0.hpp>
 
+SPIClass & spi = SPI;
 const uint8_t CHIP_SELECT_PIN = 10;
 const uint8_t HARDWARE_ENABLE_PIN = 4;
 
@@ -15,7 +16,7 @@ void setup()
 {
   Serial.begin(SERIAL_BAUD_RATE);
 
-  stepper_controller_driver.setup(CHIP_SELECT_PIN);
+  stepper_controller_driver.setup(spi, CHIP_SELECT_PIN);
 
   stepper_controller_driver.setHardwareEnablePin(HARDWARE_ENABLE_PIN);
 }
