@@ -1,23 +1,24 @@
 // ----------------------------------------------------------------------------
-// TMC51X0.cpp
+// Registers.cpp
 //
 // Authors:
 // Peter Polidoro peter@polidoro.io
 // ----------------------------------------------------------------------------
-#include "TMC51X0.hpp"
+#include "Registers.hpp"
 
 
 using namespace tmc51x0;
 
-void TMC51X0::setup(SPIClass & spi,
+void Registers::setup(SPIClass & spi,
   size_t chip_select_pin)
 {
-  registers_.setup(spi, chip_select_pin);
+  interface_.setup(spi, chip_select_pin);
 }
 
-uint8_t TMC51X0::getVersion()
+Registers::Input Registers::readInput()
 {
-  auto input = registers_.readInput();
+  Input input;
+  input.bytes = interface_.readRegister(ADDRESS_INPUT);
 
-  return input.version;
+  return input;
 }

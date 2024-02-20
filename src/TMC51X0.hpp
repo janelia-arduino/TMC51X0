@@ -12,7 +12,6 @@
 
 #include "TMC51X0/Driver.hpp"
 #include "TMC51X0/Controller.hpp"
-#include "TMC51X0/Interface.hpp"
 #include "TMC51X0/Registers.hpp"
 
 
@@ -28,7 +27,7 @@ public:
   Controller controller;
 
 private:
-  Interface interface_;
+  Registers registers_;
 };
 
 #endif
