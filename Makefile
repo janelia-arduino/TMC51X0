@@ -18,9 +18,17 @@ pico-firmware: clean
 pico-upload: clean
 	pio run -e pico --target upload
 
+.PHONY: feather-firmware
+feather-firmware: clean
+	pio run -e feather
+
+.PHONY: feather-upload
+feather-upload: clean
+	pio run -e feather --target upload
+
 .PHONY: monitor
 monitor:
-	pio device monitor --echo --eol=LF
+	pio device monitor
 
 .PHONY: udev-rules
 udev-rules:
