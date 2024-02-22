@@ -32,6 +32,7 @@ public:
 
   // uint16_t getMicrostepsPerStep();
 private:
+  // Registers * registers_ptr_;
   int16_t hardware_enable_pin_;
 
   void hardwareEnable();

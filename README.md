@@ -1,15 +1,15 @@
-- [Library Information](#org57eb8e3)
-- [Stepper Motors](#org65098fe)
-- [Stepper Motor Controllers and Drivers](#orgfec586f)
-- [Examples](#orgd641c72)
-- [Hardware Documentation](#org1a85810)
-- [Host Computer Setup](#orgeb92bee)
+- [Library Information](#org254cb30)
+- [Stepper Motors](#org9d6438d)
+- [Stepper Motor Controllers and Drivers](#org29fa6cd)
+- [Examples](#org6f2f085)
+- [Hardware Documentation](#orgcda6636)
+- [Host Computer Setup](#org25687bb)
 
     <!-- This file is generated automatically from metadata -->
     <!-- File edits may be overwritten! -->
 
 
-<a id="org57eb8e3"></a>
+<a id="org254cb30"></a>
 
 # Library Information
 
@@ -36,7 +36,7 @@ The TMC5160 uses external MOSFETs to drive higher current motors from 1A to seve
 <img src="./images/trinamic_wiring-TMC51X0-description.svg" width="1920px">
 
 
-<a id="org65098fe"></a>
+<a id="org9d6438d"></a>
 
 # Stepper Motors
 
@@ -47,7 +47,7 @@ A stepper motor, also known as step motor or stepping motor, is a brushless DC e
 [Wikipedia - Stepper Motor](https://en.wikipedia.org/wiki/Stepper_motor)
 
 
-<a id="orgfec586f"></a>
+<a id="org29fa6cd"></a>
 
 # Stepper Motor Controllers and Drivers
 
@@ -64,7 +64,7 @@ A stepper motor controller is responsible for the commanding either the motor ki
 A stepper motor driver is responsible for commanding the electrical current through the motor coils as it changes with time to meet the requirements of the stepper motor controller.
 
 
-<a id="orgd641c72"></a>
+<a id="org6f2f085"></a>
 
 # Examples
 
@@ -84,7 +84,7 @@ A stepper motor driver is responsible for commanding the electrical current thro
 <https://github.com/janelia-kicad/trinamic_wiring>
 
 
-<a id="org1a85810"></a>
+<a id="orgcda6636"></a>
 
 # Hardware Documentation
 
@@ -94,7 +94,7 @@ A stepper motor driver is responsible for commanding the electrical current thro
 [Datasheets](./datasheet)
 
 
-<a id="orgeb92bee"></a>
+<a id="org25687bb"></a>
 
 # Host Computer Setup
 
@@ -201,3 +201,25 @@ Linux users have to install udev rules for PlatformIO supported boards/devices.
     ```sh
     pio device monitor --echo --eol=LF
     ```
+
+
+## Arduino Ide
+
+
+### Download
+
+<https://www.arduino.cc/en/software>
+
+
+### Additional Boards Manager URLs
+
+File > Preferences
+
+    https://www.pjrc.com/teensy/package_teensy_index.json
+    https://github.com/earlephilhower/arduino-pico/releases/download/global/package_rp2040_index.json
+
+
+### Add Board Support Packages
+
+-   Teensy by Paul Stroffregen
+-   Raspberry Pi Pico/RP2040 by Earle F Philhower, III

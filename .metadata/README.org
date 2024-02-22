@@ -188,3 +188,24 @@ make monitor
 #+BEGIN_SRC sh
 pio device monitor --echo --eol=LF
 #+END_SRC
+
+** Arduino Ide
+
+*** Download
+
+[[https://www.arduino.cc/en/software]]
+
+*** Additional Boards Manager URLs
+
+File > Preferences
+
+#+BEGIN_EXAMPLE
+https://www.pjrc.com/teensy/package_teensy_index.json
+https://github.com/earlephilhower/arduino-pico/releases/download/global/package_rp2040_index.json
+#+END_EXAMPLE
+
+*** Add Board Support Packages
+
+- Teensy by Paul Stroffregen
+- Raspberry Pi Pico/RP2040 by Earle F Philhower, III
+
