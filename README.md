@@ -1,15 +1,15 @@
-- [Library Information](#org254cb30)
-- [Stepper Motors](#org9d6438d)
-- [Stepper Motor Controllers and Drivers](#org29fa6cd)
-- [Examples](#org6f2f085)
-- [Hardware Documentation](#orgcda6636)
-- [Host Computer Setup](#org25687bb)
+- [Library Information](#orgd5c1002)
+- [Stepper Motors](#org6c6f8c9)
+- [Stepper Motor Controllers and Drivers](#org3a5c2cf)
+- [Examples](#orgaf40bca)
+- [Hardware Documentation](#orgf0164d2)
+- [Host Computer Setup](#org8bcaa95)
 
     <!-- This file is generated automatically from metadata -->
     <!-- File edits may be overwritten! -->
 
 
-<a id="org254cb30"></a>
+<a id="orgd5c1002"></a>
 
 # Library Information
 
@@ -36,7 +36,7 @@ The TMC5160 uses external MOSFETs to drive higher current motors from 1A to seve
 <img src="./images/trinamic_wiring-TMC51X0-description.svg" width="1920px">
 
 
-<a id="org9d6438d"></a>
+<a id="org6c6f8c9"></a>
 
 # Stepper Motors
 
@@ -47,7 +47,7 @@ A stepper motor, also known as step motor or stepping motor, is a brushless DC e
 [Wikipedia - Stepper Motor](https://en.wikipedia.org/wiki/Stepper_motor)
 
 
-<a id="org29fa6cd"></a>
+<a id="org3a5c2cf"></a>
 
 # Stepper Motor Controllers and Drivers
 
@@ -64,7 +64,7 @@ A stepper motor controller is responsible for the commanding either the motor ki
 A stepper motor driver is responsible for commanding the electrical current through the motor coils as it changes with time to meet the requirements of the stepper motor controller.
 
 
-<a id="org6f2f085"></a>
+<a id="orgaf40bca"></a>
 
 # Examples
 
@@ -78,13 +78,17 @@ A stepper motor driver is responsible for commanding the electrical current thro
 
     <img src="./images/trinamic_wiring-TMC51X0-tmc51x0_bob-teensy40.svg" width="1920px">
 
+2.  Pico
+
+    <img src="./images/trinamic_wiring-TMC51X0-tmc51x0_bob-pico.svg" width="1920px">
+
 
 ### Wiring Documentation Source
 
 <https://github.com/janelia-kicad/trinamic_wiring>
 
 
-<a id="orgcda6636"></a>
+<a id="orgf0164d2"></a>
 
 # Hardware Documentation
 
@@ -94,7 +98,7 @@ A stepper motor driver is responsible for commanding the electrical current thro
 [Datasheets](./datasheet)
 
 
-<a id="org25687bb"></a>
+<a id="org8bcaa95"></a>
 
 # Host Computer Setup
 
