@@ -14,6 +14,33 @@
 
 struct Registers
 {
+  union GlobalConfig
+  {
+    struct
+    {
+      uint32_t recalibrate : 1;
+      uint32_t faststandstill : 1;
+      uint32_t enable_pwm_mode : 1;
+      uint32_t multistep_filt : 1;
+      uint32_t shaft : 1;
+      uint32_t diag0_error : 1;
+      uint32_t diag0_otpw : 1;
+      uint32_t diag0_stall_int_step : 1;
+      uint32_t diag1_stall_poscomp_dir : 1;
+      uint32_t diag1_index : 1;
+      uint32_t diag1_onstate : 1;
+      uint32_t diag1_steps_skipped : 1;
+      uint32_t diag0_int_pushpull : 1;
+      uint32_t diag1_poscomp_pushpull : 1;
+      uint32_t small_hysteresis : 1;
+      uint32_t stop_enable : 1;
+      uint32_t direct_mode : 1;
+      uint32_t test_mode : 1;
+      uint32_t reserved : 14;
+    };
+    uint32_t bytes;
+  };
+
   union Input
   {
     struct
@@ -40,24 +67,6 @@ private:
 
   // General Configuration Registers
   const static uint8_t ADDRESS_GCONF = 0x00;
-  union GlobalConfig
-  {
-    struct
-    {
-      uint32_t i_scale_analog : 1;
-      uint32_t internal_rsense : 1;
-      uint32_t enable_spread_cycle : 1;
-      uint32_t shaft : 1;
-      uint32_t index_otpw : 1;
-      uint32_t index_step : 1;
-      uint32_t pdn_disable : 1;
-      uint32_t mstep_reg_select : 1;
-      uint32_t multistep_filt : 1;
-      uint32_t test_mode : 1;
-      uint32_t reserved : 22;
-    };
-    uint32_t bytes;
-  };
   GlobalConfig global_config_;
 
   const static uint8_t ADDRESS_INPUT = 0x04;
