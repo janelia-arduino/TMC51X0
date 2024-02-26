@@ -32,13 +32,17 @@ public:
 
   // uint16_t getMicrostepsPerStep();
 private:
-  // Registers * registers_ptr_;
+  Registers * registers_ptr_;
   int16_t hardware_enable_pin_;
+
+  void setup(Registers & registers);
 
   void hardwareEnable();
   void hardwareDisable();
 
   uint32_t constrain_(uint32_t value, uint32_t low, uint32_t high);
+
+  friend class TMC51X0;
 };
 
 #endif

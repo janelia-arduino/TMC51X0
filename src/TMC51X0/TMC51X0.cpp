@@ -13,6 +13,8 @@ void TMC51X0::setup(SPIClass & spi,
   size_t chip_select_pin)
 {
   registers_.setup(spi, chip_select_pin);
+  driver.setup(registers_);
+  controller.setup(registers_);
 }
 
 uint8_t TMC51X0::getVersion()

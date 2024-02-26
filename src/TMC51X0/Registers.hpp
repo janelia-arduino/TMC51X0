@@ -12,12 +12,8 @@
 #include "Interface.hpp"
 
 
-class Registers
+struct Registers
 {
-public:
-  void setup(SPIClass & spi,
-    size_t chip_select_pin);
-
   union Input
   {
     struct
@@ -38,6 +34,9 @@ public:
   Input readInput();
 private:
   Interface interface_;
+
+  void setup(SPIClass & spi,
+    size_t chip_select_pin);
 
   // General Configuration Registers
   const static uint8_t ADDRESS_GCONF = 0x00;
@@ -65,6 +64,8 @@ private:
 
   const static uint8_t VERSION_TMC5130 = 0x11;
   const static uint8_t VERSION_TMC5160 = 0x30;
+
+  friend class TMC51X0;
 };
 
 #endif

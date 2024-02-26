@@ -106,6 +106,11 @@ void Driver::disable()
 
 // private
 
+void Driver::setup(Registers & registers)
+{
+  registers_ptr_ = &registers;
+}
+
 void Driver::hardwareEnable()
 {
   if (hardware_enable_pin_ >= 0)
