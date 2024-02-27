@@ -17,9 +17,9 @@ void TMC51X0::setup(SPIClass & spi,
   controller.setup(registers_);
 }
 
-uint8_t TMC51X0::getVersion()
+uint8_t TMC51X0::readVersion()
 {
-  auto input = registers_.readInput();
+  auto inputs = registers_.readInputs();
 
-  return input.version;
+  return inputs.version;
 }

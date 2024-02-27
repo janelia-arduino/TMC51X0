@@ -36,7 +36,7 @@ void setup()
 
 void loop()
 {
-  version = stepper_commander.getVersion();
+  version = stepper_commander.readVersion();
   Serial.print("Stepper controller driver version: ");
   Serial.print(version, HEX);
   Serial.println();

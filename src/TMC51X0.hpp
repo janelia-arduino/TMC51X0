@@ -21,7 +21,7 @@ public:
   void setup(SPIClass & spi,
     size_t chip_select_pin);
 
-  uint8_t getVersion();
+  uint8_t readVersion();
 
   Driver driver;
   Controller controller;
