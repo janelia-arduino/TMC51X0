@@ -23,3 +23,10 @@ uint8_t TMC51X0::readVersion()
 
   return inputs.version;
 }
+
+Registers::ChopperConfig TMC51X0::readChopperConfig()
+{
+  auto chopper_config = registers_.readChopperConfig();
+
+  return chopper_config;
+}

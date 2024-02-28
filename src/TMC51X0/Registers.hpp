@@ -12,6 +12,10 @@
 #include "Interface.hpp"
 
 
+class TMC51X0;
+
+namespace tmc51x0
+{
 struct Registers
 {
   union GlobalConfig
@@ -103,10 +107,12 @@ private:
   const static uint8_t ADDRESS_INPUTS = 0x04;
   const static uint8_t ADDRESS_CHOPPER_CONFIG = 0x6C;
 
+  const static uint32_t DEFAULT_CHOPPER_CONFIG = 0x10410150;
+
   const static uint8_t VERSION_TMC5130 = 0x11;
   const static uint8_t VERSION_TMC5160 = 0x30;
 
-  friend class TMC51X0;
+  friend class ::TMC51X0;
 };
-
+}
 #endif

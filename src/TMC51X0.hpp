@@ -22,12 +22,13 @@ public:
     size_t chip_select_pin);
 
   uint8_t readVersion();
+  tmc51x0::Registers::ChopperConfig readChopperConfig();
 
-  Driver driver;
-  Controller controller;
+  tmc51x0::Driver driver;
+  tmc51x0::Controller controller;
 
 private:
-  Registers registers_;
+  tmc51x0::Registers registers_;
 };
 
 #endif

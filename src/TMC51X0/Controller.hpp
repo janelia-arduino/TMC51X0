@@ -12,6 +12,10 @@
 #include "Registers.hpp"
 
 
+class TMC51X0;
+
+namespace tmc51x0
+{
 class Controller
 {
 public:
@@ -20,7 +24,7 @@ private:
 
   void setup(Registers & registers);
 
-  friend class TMC51X0;
+  friend class ::TMC51X0;
 };
-
+}
 #endif

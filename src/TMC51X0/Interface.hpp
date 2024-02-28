@@ -13,6 +13,8 @@
 #include "Constants.hpp"
 
 
+namespace tmc51x0
+{
 class Interface
 {
 public:
@@ -83,5 +85,5 @@ private:
   void beginTransaction();
   void endTransaction();
 };
-
+}
 #endif

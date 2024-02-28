@@ -13,6 +13,10 @@
 #include "Registers.hpp"
 
 
+class TMC51X0;
+
+namespace tmc51x0
+{
 class Driver
 {
 public:
@@ -42,7 +46,7 @@ private:
 
   uint32_t constrain_(uint32_t value, uint32_t low, uint32_t high);
 
-  friend class TMC51X0;
+  friend class ::TMC51X0;
 };
-
+}
 #endif
