@@ -21,7 +21,8 @@ public:
   void setup(SPIClass & spi,
     size_t chip_select_pin);
 
-  uint8_t readVersion();
+  tmc51x0::Registers::GlobalConfig readGlobalConfig();
+  tmc51x0::Registers::Inputs readInputs();
   tmc51x0::Registers::ChopperConfig readChopperConfig();
 
   tmc51x0::Driver driver;

@@ -97,17 +97,44 @@ struct Registers
 private:
   Interface interface_;
 
-  GlobalConfig global_config_;
-  ChopperConfig chopper_config_;
 
   void setup(SPIClass & spi,
     size_t chip_select_pin);
 
   const static uint8_t ADDRESS_GLOBAL_CONFIG = 0x00;
-  const static uint8_t ADDRESS_INPUTS = 0x04;
-  const static uint8_t ADDRESS_CHOPPER_CONFIG = 0x6C;
+  const static uint32_t DEFAULT_GLOBAL_CONFIG = 0x9;
+  GlobalConfig global_config_;
 
+  const static uint8_t ADDRESS_INPUTS = 0x04;
+
+  const static uint8_t ADDRESS_CHOPPER_CONFIG = 0x6C;
+  ChopperConfig chopper_config_;
   const static uint32_t DEFAULT_CHOPPER_CONFIG = 0x10410150;
+  const static uint8_t DISABLE_TOFF = 0b0;
+  const static uint8_t DEFAULT_TOFF = 0b0;
+  const static uint8_t DEFAULT_HSTART = 0b101;
+  const static uint8_t DEFAULT_HEND = 0b10;
+  const static uint8_t DEFAULT_FD3 = 0b0;
+  const static uint8_t DEFAULT_DISFDCC = 0b0;
+  const static uint8_t DEFAULT_CHOPPER_MODE = 0b0;
+  const static uint8_t DEFAULT_TBL = 0b10;
+  const static uint8_t DEFAULT_VHIGHFS = 0b0;
+  const static uint8_t DEFAULT_VHIGHCHM = 0b0;
+  const static uint8_t DEFAULT_TPFD = 0b100;
+  const static uint8_t DEFAULT_MRES = 0b0;
+  const static uint8_t MRES_256 = 0b0000;
+  const static uint8_t MRES_128 = 0b0001;
+  const static uint8_t MRES_064 = 0b0010;
+  const static uint8_t MRES_032 = 0b0011;
+  const static uint8_t MRES_016 = 0b0100;
+  const static uint8_t MRES_008 = 0b0101;
+  const static uint8_t MRES_004 = 0b0110;
+  const static uint8_t MRES_002 = 0b0111;
+  const static uint8_t MRES_001 = 0b1000;
+  const static uint8_t DEFAULT_INTERPOLATION = 0b1;
+  const static uint8_t DEFAULT_DOUBLE_EDGE = 0b0;
+  const static uint8_t DEFAULT_DISS2G = 0b0;
+  const static uint8_t DEFAULT_DISS2VS = 0b0;
 
   const static uint8_t VERSION_TMC5130 = 0x11;
   const static uint8_t VERSION_TMC5160 = 0x30;

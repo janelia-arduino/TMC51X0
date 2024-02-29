@@ -17,11 +17,18 @@ void TMC51X0::setup(SPIClass & spi,
   controller.setup(registers_);
 }
 
-uint8_t TMC51X0::readVersion()
+Registers::GlobalConfig TMC51X0::readGlobalConfig()
+{
+  auto global_config = registers_.readGlobalConfig();
+
+  return global_config;
+}
+
+Registers::Inputs TMC51X0::readInputs()
 {
   auto inputs = registers_.readInputs();
 
-  return inputs.version;
+  return inputs;
 }
 
 Registers::ChopperConfig TMC51X0::readChopperConfig()

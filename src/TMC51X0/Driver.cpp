@@ -24,15 +24,13 @@ void Driver::setHardwareEnablePin(size_t hardware_enable_pin)
 void Driver::enable()
 {
   hardwareEnable();
-  // chopper_config_.toff = toff_;
-  // writeStoredChopperConfig();
+  softwareEnable();
 }
 
 void Driver::disable()
 {
   hardwareDisable();
-  // chopper_config_.toff = TOFF_DISABLE;
-  // writeStoredChopperConfig();
+  softwareDisable();
 }
 
 // void Driver::setMicrostepsPerStep(uint16_t microsteps_per_step)
@@ -125,6 +123,18 @@ void Driver::hardwareDisable()
   {
     digitalWrite(hardware_enable_pin_, HIGH);
   }
+}
+
+void Driver::softwareEnable()
+{
+  // chopper_config_.toff = toff_;
+  // writeStoredChopperConfig();
+}
+
+void Driver::softwareDisable()
+{
+  // chopper_config_.toff = TOFF_DISABLE;
+  // writeStoredChopperConfig();
 }
 
 uint32_t Driver::constrain_(uint32_t value, uint32_t low, uint32_t high)

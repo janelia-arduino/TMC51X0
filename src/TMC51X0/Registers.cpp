@@ -61,5 +61,6 @@ void Registers::setup(SPIClass & spi,
 {
   interface_.setup(spi, chip_select_pin);
 
+  global_config_.bytes = DEFAULT_GLOBAL_CONFIG;
   chopper_config_.bytes = DEFAULT_CHOPPER_CONFIG;
 }

@@ -43,6 +43,8 @@ private:
 
   void hardwareEnable();
   void hardwareDisable();
+  void softwareEnable();
+  void softwareDisable();
 
   uint32_t constrain_(uint32_t value, uint32_t low, uint32_t high);
 
