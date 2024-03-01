@@ -38,6 +38,7 @@ public:
 private:
   Registers * registers_ptr_;
   int16_t hardware_enable_pin_;
+  uint8_t toff_;
 
   void setup(Registers & registers);
 

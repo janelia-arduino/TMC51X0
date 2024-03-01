@@ -107,6 +107,7 @@ void Driver::disable()
 void Driver::setup(Registers & registers)
 {
   registers_ptr_ = &registers;
+  toff_ = Registers::DEFAULT_TOFF_ENABLE;
 }
 
 void Driver::hardwareEnable()
@@ -127,14 +128,16 @@ void Driver::hardwareDisable()
 
 void Driver::softwareEnable()
 {
-  // chopper_config_.toff = toff_;
-  // writeStoredChopperConfig();
+  auto chopper_config = registers_ptr_->getStoredChopperConfig();
+  chopper_config.toff = toff_;
+  registers_ptr_->writeChopperConfig(chopper_config);
 }
 
 void Driver::softwareDisable()
 {
-  // chopper_config_.toff = TOFF_DISABLE;
-  // writeStoredChopperConfig();
+  auto chopper_config = registers_ptr_->getStoredChopperConfig();
+  chopper_config.toff = Registers::DISABLE_TOFF;
+  registers_ptr_->writeChopperConfig(chopper_config);
 }
 
 uint32_t Driver::constrain_(uint32_t value, uint32_t low, uint32_t high)
