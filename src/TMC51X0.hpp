@@ -10,8 +10,8 @@
 #include <Arduino.h>
 #include <SPI.h>
 
-#include "TMC51X0/Driver.hpp"
-#include "TMC51X0/Controller.hpp"
+#include "Driver.hpp"
+#include "Controller.hpp"
 #include "TMC51X0/Registers.hpp"
 
 

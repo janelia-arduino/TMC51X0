@@ -9,8 +9,8 @@
 #define TMC51X0_DRIVER_HPP
 #include <Arduino.h>
 
-#include "Constants.hpp"
-#include "Registers.hpp"
+#include "TMC51X0/Constants.hpp"
+#include "TMC51X0/Registers.hpp"
 
 
 class TMC51X0;

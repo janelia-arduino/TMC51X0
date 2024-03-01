@@ -8,8 +8,8 @@
 #ifndef TMC51X0_CONTROLLER_HPP
 #define TMC51X0_CONTROLLER_HPP
 
-#include "Constants.hpp"
-#include "Registers.hpp"
+#include "TMC51X0/Constants.hpp"
+#include "TMC51X0/Registers.hpp"
 
 
 class TMC51X0;
