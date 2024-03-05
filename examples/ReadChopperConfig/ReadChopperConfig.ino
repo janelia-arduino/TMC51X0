@@ -11,12 +11,14 @@ SPIClass & spi = SPI;
 #endif
 
 const uint8_t CHIP_SELECT_PIN = 10;
+const uint8_t HARDWARE_ENABLE_PIN = 4;
 
 const long SERIAL_BAUD_RATE = 115200;
 const int DELAY = 1000;
 
 // Instantiate TMC51X0
-TMC51X0 stepper_commander;
+TMC51X0 stepper;
+bool enabled;
 
 void printRegisterPortion(const char * str, uint32_t value, bool hex=false)
 {
@@ -34,8 +36,10 @@ void printRegisterPortion(const char * str, uint32_t value, bool hex=false)
   Serial.println();
 }
 
-void printRegister(tmc51x0::Registers::ChopperConfig chopper_config)
+void printRegister(uint32_t register_data)
 {
+  tmc51x0::Registers::ChopperConfig chopper_config;
+  chopper_config.bytes = register_data;
   printRegisterPortion("chopper config", chopper_config.bytes, true);
   printRegisterPortion("toff", chopper_config.toff);
   printRegisterPortion("hstart", chopper_config.hstart);
@@ -64,11 +68,22 @@ void setup()
   spi.setTX(TX_PIN);
   spi.setRX(RX_PIN);
 #endif
-  stepper_commander.setup(spi, CHIP_SELECT_PIN);
+  stepper.setup(spi, CHIP_SELECT_PIN);
+  stepper.driver.setHardwareEnablePin(HARDWARE_ENABLE_PIN);
+  enabled = false;
 }
 
 void loop()
 {
-  printRegister(stepper_commander.readChopperConfig());
+  if (enabled)
+  {
+    stepper.driver.softwareDisable();
+  }
+  else
+  {
+    stepper.driver.softwareEnable();
+  }
+  enabled = not enabled;
+  printRegister(stepper.registers.read(tmc51x0::Registers::CHOPPER_CONFIG));
   delay(DELAY);
 }

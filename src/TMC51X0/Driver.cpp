@@ -21,6 +21,38 @@ void Driver::setHardwareEnablePin(size_t hardware_enable_pin)
   hardwareDisable();
 }
 
+void Driver::hardwareEnable()
+{
+  if (hardware_enable_pin_ >= 0)
+  {
+    digitalWrite(hardware_enable_pin_, LOW);
+  }
+}
+
+void Driver::hardwareDisable()
+{
+  if (hardware_enable_pin_ >= 0)
+  {
+    digitalWrite(hardware_enable_pin_, HIGH);
+  }
+}
+
+void Driver::softwareEnable()
+{
+  Registers::ChopperConfig chopper_config;
+  chopper_config.bytes = registers_ptr_->getStored(Registers::CHOPPER_CONFIG);
+  chopper_config.toff = toff_;
+  registers_ptr_->write(Registers::CHOPPER_CONFIG, chopper_config.bytes);
+}
+
+void Driver::softwareDisable()
+{
+  Registers::ChopperConfig chopper_config;
+  chopper_config.bytes = registers_ptr_->getStored(Registers::CHOPPER_CONFIG);
+  chopper_config.toff = Registers::DISABLE_TOFF;
+  registers_ptr_->write(Registers::CHOPPER_CONFIG, chopper_config.bytes);
+}
+
 void Driver::enable()
 {
   hardwareEnable();
@@ -108,36 +140,6 @@ void Driver::setup(Registers & registers)
 {
   registers_ptr_ = &registers;
   toff_ = Registers::DEFAULT_TOFF_ENABLE;
-}
-
-void Driver::hardwareEnable()
-{
-  if (hardware_enable_pin_ >= 0)
-  {
-    digitalWrite(hardware_enable_pin_, LOW);
-  }
-}
-
-void Driver::hardwareDisable()
-{
-  if (hardware_enable_pin_ >= 0)
-  {
-    digitalWrite(hardware_enable_pin_, HIGH);
-  }
-}
-
-void Driver::softwareEnable()
-{
-  auto chopper_config = registers_ptr_->getStoredChopperConfig();
-  chopper_config.toff = toff_;
-  registers_ptr_->writeChopperConfig(chopper_config);
-}
-
-void Driver::softwareDisable()
-{
-  auto chopper_config = registers_ptr_->getStoredChopperConfig();
-  chopper_config.toff = Registers::DISABLE_TOFF;
-  registers_ptr_->writeChopperConfig(chopper_config);
 }
 
 uint32_t Driver::constrain_(uint32_t value, uint32_t low, uint32_t high)

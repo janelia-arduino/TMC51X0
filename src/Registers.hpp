@@ -18,6 +18,19 @@ namespace tmc51x0
 {
 struct Registers
 {
+  enum RegisterAddress
+  {
+    GLOBAL_CONFIG = 0,
+    INPUTS = 0x04,
+    CHOPPER_CONFIG = 0x6C,
+    ADDRESS_COUNT = 0x6D,
+  };
+
+  void write(RegisterAddress register_address,
+    uint32_t data);
+  uint32_t read(RegisterAddress register_address);
+  uint32_t getStored(RegisterAddress register_address);
+
   union GlobalConfig
   {
     struct
@@ -43,9 +56,6 @@ struct Registers
     };
     uint32_t bytes;
   };
-  GlobalConfig readGlobalConfig();
-  void writeGlobalConfig(GlobalConfig global_config);
-  GlobalConfig getStoredGlobalConfig();
 
   union Inputs
   {
@@ -64,7 +74,6 @@ struct Registers
     };
     uint32_t bytes;
   };
-  Inputs readInputs();
 
   union ChopperConfig
   {
@@ -90,9 +99,6 @@ struct Registers
     };
     uint32_t bytes;
   };
-  ChopperConfig readChopperConfig();
-  void writeChopperConfig(ChopperConfig chopper_config);
-  ChopperConfig getStoredChopperConfig();
   const static uint8_t DISABLE_TOFF = 0b0;
   const static uint8_t DEFAULT_TOFF_ENABLE = 3;
   const static uint8_t DEFAULT_HSTART = 0b101;
@@ -103,20 +109,15 @@ struct Registers
 
 private:
   Interface interface_;
-
+  uint32_t stored_[ADDRESS_COUNT];
 
   void setup(SPIClass & spi,
     size_t chip_select_pin);
 
-  const static uint8_t ADDRESS_GLOBAL_CONFIG = 0x00;
   const static uint32_t DEFAULT_GLOBAL_CONFIG = 0x9;
-  GlobalConfig global_config_;
-
-  const static uint8_t ADDRESS_INPUTS = 0x04;
-
-  const static uint8_t ADDRESS_CHOPPER_CONFIG = 0x6C;
-  ChopperConfig chopper_config_;
+  const static uint32_t DEFAULT_INPUTS = 0;
   const static uint32_t DEFAULT_CHOPPER_CONFIG = 0x10410150;
+
   const static uint8_t MRES_256 = 0b0000;
   const static uint8_t MRES_128 = 0b0001;
   const static uint8_t MRES_064 = 0b0010;

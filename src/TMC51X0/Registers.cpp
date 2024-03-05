@@ -9,58 +9,32 @@
 
 using namespace tmc51x0;
 
-Registers::GlobalConfig Registers::readGlobalConfig()
+void Registers::write(RegisterAddress register_address,
+  uint32_t data)
 {
-  global_config_.bytes = interface_.readRegister(ADDRESS_GLOBAL_CONFIG);
-
-  return global_config_;
+  interface_.writeRegister(register_address, data);
+  stored_[register_address] = data;
 }
 
-void Registers::writeGlobalConfig(GlobalConfig global_config)
+uint32_t Registers::read(RegisterAddress register_address)
 {
-  global_config_ = global_config;
-
-  interface_.writeRegister(ADDRESS_GLOBAL_CONFIG, global_config_.bytes);
+  uint32_t data = interface_.readRegister(register_address);
+  stored_[register_address] = data;
+  return data;
 }
 
-Registers::GlobalConfig Registers::getStoredGlobalConfig()
+uint32_t Registers::getStored(RegisterAddress register_address)
 {
-  return global_config_;
-}
-
-Registers::Inputs Registers::readInputs()
-{
-  Inputs inputs;
-  inputs.bytes = interface_.readRegister(ADDRESS_INPUTS);
-
-  return inputs;
-}
-
-Registers::ChopperConfig Registers::readChopperConfig()
-{
-  chopper_config_.bytes = interface_.readRegister(ADDRESS_CHOPPER_CONFIG);
-
-  return chopper_config_;
-}
-
-void Registers::writeChopperConfig(ChopperConfig chopper_config)
-{
-  chopper_config_ = chopper_config;
-
-  interface_.writeRegister(ADDRESS_CHOPPER_CONFIG, chopper_config_.bytes);
-}
-
-Registers::ChopperConfig Registers::getStoredChopperConfig()
-{
-  return chopper_config_;
+  return 0;
 }
 
 // private
 void Registers::setup(SPIClass & spi,
   size_t chip_select_pin)
 {
-  interface_.setup(spi, chip_select_pin);
+  stored_[GLOBAL_CONFIG] = DEFAULT_GLOBAL_CONFIG;
+  stored_[INPUTS] = DEFAULT_INPUTS;
+  stored_[CHOPPER_CONFIG] = DEFAULT_CHOPPER_CONFIG;
 
-  global_config_.bytes = DEFAULT_GLOBAL_CONFIG;
-  chopper_config_.bytes = DEFAULT_CHOPPER_CONFIG;
+  interface_.setup(spi, chip_select_pin);
 }

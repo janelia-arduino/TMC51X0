@@ -10,7 +10,7 @@
 #include <Arduino.h>
 
 #include "TMC51X0/Constants.hpp"
-#include "TMC51X0/Registers.hpp"
+#include "Registers.hpp"
 
 
 class TMC51X0;
@@ -24,6 +24,10 @@ public:
 
   // driver must be enabled before use it is disabled by default
   void setHardwareEnablePin(size_t hardware_enable_pin);
+  void hardwareEnable();
+  void hardwareDisable();
+  void softwareEnable();
+  void softwareDisable();
   void enable();
   void disable();
 
@@ -41,11 +45,6 @@ private:
   uint8_t toff_;
 
   void setup(Registers & registers);
-
-  void hardwareEnable();
-  void hardwareDisable();
-  void softwareEnable();
-  void softwareDisable();
 
   uint32_t constrain_(uint32_t value, uint32_t low, uint32_t high);
 

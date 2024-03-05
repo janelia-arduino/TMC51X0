@@ -9,7 +9,7 @@
 #define TMC51X0_CONTROLLER_HPP
 
 #include "TMC51X0/Constants.hpp"
-#include "TMC51X0/Registers.hpp"
+#include "Registers.hpp"
 
 
 class TMC51X0;

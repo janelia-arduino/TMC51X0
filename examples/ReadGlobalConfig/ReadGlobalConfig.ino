@@ -34,8 +34,10 @@ void printRegisterPortion(const char * str, uint32_t value, bool hex=false)
   Serial.println();
 }
 
-void printRegister(tmc51x0::Registers::GlobalConfig global_config)
+void printRegister(uint32_t register_data)
 {
+  tmc51x0::Registers::GlobalConfig global_config;
+  global_config.bytes = register_data;
   printRegisterPortion("global config", global_config.bytes, true);
   printRegisterPortion("recalibrate", global_config.recalibrate);
   printRegisterPortion("faststandstill", global_config.faststandstill);
@@ -71,6 +73,6 @@ void setup()
 
 void loop()
 {
-  printRegister(stepper_commander.readGlobalConfig());
+  printRegister(stepper_commander.registers.read(tmc51x0::Registers::GLOBAL_CONFIG));
   delay(DELAY);
 }
