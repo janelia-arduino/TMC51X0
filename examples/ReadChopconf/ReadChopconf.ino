@@ -38,24 +38,24 @@ void printRegisterPortion(const char * str, uint32_t value, bool hex=false)
 
 void printRegister(uint32_t register_data)
 {
-  tmc51x0::Registers::ChopperConfig chopper_config;
-  chopper_config.bytes = register_data;
-  printRegisterPortion("chopper config", chopper_config.bytes, true);
-  printRegisterPortion("toff", chopper_config.toff);
-  printRegisterPortion("hstart", chopper_config.hstart);
-  printRegisterPortion("hend", chopper_config.hend);
-  printRegisterPortion("fd3", chopper_config.fd3);
-  printRegisterPortion("disfdcc", chopper_config.disfdcc);
-  printRegisterPortion("chopper mode", chopper_config.chopper_mode);
-  printRegisterPortion("tbl", chopper_config.tbl);
-  printRegisterPortion("vhighfs", chopper_config.vhighfs);
-  printRegisterPortion("vhighchm", chopper_config.vhighchm);
-  printRegisterPortion("tpfd", chopper_config.tpfd);
-  printRegisterPortion("mres", chopper_config.mres);
-  printRegisterPortion("interpolation", chopper_config.interpolation);
-  printRegisterPortion("double edge", chopper_config.double_edge);
-  printRegisterPortion("diss2g", chopper_config.diss2g);
-  printRegisterPortion("diss2vs", chopper_config.diss2vs);
+  tmc51x0::Registers::Chopconf chopconf;
+  chopconf.bytes = register_data;
+  printRegisterPortion("chopconf", chopconf.bytes, true);
+  printRegisterPortion("toff", chopconf.toff);
+  printRegisterPortion("hstart", chopconf.hstart);
+  printRegisterPortion("hend", chopconf.hend);
+  printRegisterPortion("fd3", chopconf.fd3);
+  printRegisterPortion("disfdcc", chopconf.disfdcc);
+  printRegisterPortion("chopper mode", chopconf.chopper_mode);
+  printRegisterPortion("tbl", chopconf.tbl);
+  printRegisterPortion("vhighfs", chopconf.vhighfs);
+  printRegisterPortion("vhighchm", chopconf.vhighchm);
+  printRegisterPortion("tpfd", chopconf.tpfd);
+  printRegisterPortion("mres", chopconf.mres);
+  printRegisterPortion("interpolation", chopconf.interpolation);
+  printRegisterPortion("double edge", chopconf.double_edge);
+  printRegisterPortion("diss2g", chopconf.diss2g);
+  printRegisterPortion("diss2vs", chopconf.diss2vs);
 
   Serial.println("--------------------------");
 }
@@ -84,6 +84,6 @@ void loop()
     stepper.driver.softwareEnable();
   }
   enabled = not enabled;
-  printRegister(stepper.registers.read(tmc51x0::Registers::CHOPPER_CONFIG));
+  printRegister(stepper.registers.read(tmc51x0::Registers::CHOPCONF));
   delay(DELAY);
 }

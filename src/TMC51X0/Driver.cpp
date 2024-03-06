@@ -39,18 +39,18 @@ void Driver::hardwareDisable()
 
 void Driver::softwareEnable()
 {
-  Registers::ChopperConfig chopper_config;
-  chopper_config.bytes = registers_ptr_->getStored(Registers::CHOPPER_CONFIG);
-  chopper_config.toff = toff_;
-  registers_ptr_->write(Registers::CHOPPER_CONFIG, chopper_config.bytes);
+  Registers::Chopconf chopconf;
+  chopconf.bytes = registers_ptr_->getStored(Registers::CHOPCONF);
+  chopconf.toff = toff_;
+  registers_ptr_->write(Registers::CHOPCONF, chopconf.bytes);
 }
 
 void Driver::softwareDisable()
 {
-  Registers::ChopperConfig chopper_config;
-  chopper_config.bytes = registers_ptr_->getStored(Registers::CHOPPER_CONFIG);
-  chopper_config.toff = Registers::DISABLE_TOFF;
-  registers_ptr_->write(Registers::CHOPPER_CONFIG, chopper_config.bytes);
+  Registers::Chopconf chopconf;
+  chopconf.bytes = registers_ptr_->getStored(Registers::CHOPCONF);
+  chopconf.toff = Registers::DISABLE_TOFF;
+  registers_ptr_->write(Registers::CHOPCONF, chopconf.bytes);
 }
 
 void Driver::enable()
@@ -86,52 +86,52 @@ void Driver::disable()
 //   {
 //     case 0:
 //     {
-//       chopper_config_.mres = MRES_001;
+//       chopconf_.mres = MRES_001;
 //       break;
 //     }
 //     case 1:
 //     {
-//       chopper_config_.mres = MRES_002;
+//       chopconf_.mres = MRES_002;
 //       break;
 //     }
 //     case 2:
 //     {
-//       chopper_config_.mres = MRES_004;
+//       chopconf_.mres = MRES_004;
 //       break;
 //     }
 //     case 3:
 //     {
-//       chopper_config_.mres = MRES_008;
+//       chopconf_.mres = MRES_008;
 //       break;
 //     }
 //     case 4:
 //     {
-//       chopper_config_.mres = MRES_016;
+//       chopconf_.mres = MRES_016;
 //       break;
 //     }
 //     case 5:
 //     {
-//       chopper_config_.mres = MRES_032;
+//       chopconf_.mres = MRES_032;
 //       break;
 //     }
 //     case 6:
 //     {
-//       chopper_config_.mres = MRES_064;
+//       chopconf_.mres = MRES_064;
 //       break;
 //     }
 //     case 7:
 //     {
-//       chopper_config_.mres = MRES_128;
+//       chopconf_.mres = MRES_128;
 //       break;
 //     }
 //     case 8:
 //     default:
 //     {
-//       chopper_config_.mres = MRES_256;
+//       chopconf_.mres = MRES_256;
 //       break;
 //     }
 //   }
-//   writeStoredChopperConfig();
+//   writeStoredChopconf();
 // }
 
 // private

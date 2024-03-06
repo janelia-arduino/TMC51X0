@@ -73,9 +73,9 @@ bool Registers::readable(RegisterAddress register_address)
 void Registers::setup(SPIClass & spi,
   size_t chip_select_pin)
 {
-  stored_[GLOBAL_CONFIG] = 0x9;
-  writeable_[GLOBAL_CONFIG] = true;
-  readable_[GLOBAL_CONFIG] = true;
+  stored_[GCONF] = 0x9;
+  writeable_[GCONF] = true;
+  readable_[GCONF] = true;
 
   stored_[GSTAT] = 0x5;
   writeable_[GSTAT] = true;
@@ -87,9 +87,94 @@ void Registers::setup(SPIClass & spi,
 
   readable_[IOIN] = true;
 
-  stored_[CHOPPER_CONFIG] = 0x10410150;
-  writeable_[CHOPPER_CONFIG] = true;
-  readable_[CHOPPER_CONFIG] = true;
+  writeable_[X_COMPARE] = true;
+
+  writeable_[OTP_PROG] = true;
+
+  readable_[OTP_READ] = true;
+
+  stored_[FACTORY_CONF] = 0xE;
+  writeable_[FACTORY_CONF] = true;
+  readable_[FACTORY_CONF] = true;
+
+  writeable_[SHORT_CONF] = true;
+
+  writeable_[DRV_CONF] = true;
+
+  writeable_[GLOBAL_SCALER] = true;
+
+  readable_[OFFSET_READ] = true;
+
+  writeable_[IHOLD_IRUN] = true;
+
+  writeable_[TPOWER_DOWN] = true;
+
+  readable_[TSTEP] = true;
+
+  writeable_[TPWMTHRS] = true;
+
+  writeable_[TCOOLTHRS] = true;
+
+  writeable_[THIGH] = true;
+
+  writeable_[RAMPMODE] = true;
+  readable_[RAMPMODE] = true;
+
+  writeable_[XACTUAL] = true;
+  readable_[XACTUAL] = true;
+
+  readable_[VACTUAL] = true;
+
+  writeable_[VSTART] = true;
+
+  writeable_[A1] = true;
+
+  writeable_[V1] = true;
+
+  writeable_[AMAX] = true;
+
+  writeable_[VMAX] = true;
+
+  writeable_[DMAX] = true;
+
+  writeable_[D1] = true;
+
+  writeable_[VSTOP] = true;
+
+  writeable_[TZEROWAIT] = true;
+
+  writeable_[XTARGET] = true;
+  readable_[XTARGET] = true;
+
+  writeable_[VDCMIN] = true;
+
+  writeable_[SW_MODE] = true;
+  readable_[SW_MODE] = true;
+
+  stored_[RAMP_STAT] = 0x780;
+  writeable_[RAMP_STAT] = true;
+  readable_[RAMP_STAT] = true;
+
+  readable_[XLATCH] = true;
+
+  writeable_[ENCMODE] = true;
+  readable_[ENCMODE] = true;
+
+  writeable_[X_ENC] = true;
+  readable_[X_ENC] = true;
+
+  writeable_[ENC_CONST] = true;
+
+  writeable_[ENC_STATUS] = true;
+  readable_[ENC_STATUS] = true;
+
+  readable_[ENC_LATCH] = true;
+
+  writeable_[ENC_DEVIATION] = true;
+
+  stored_[CHOPCONF] = 0x10410150;
+  writeable_[CHOPCONF] = true;
+  readable_[CHOPCONF] = true;
 
   interface_.setup(spi, chip_select_pin);
 }
