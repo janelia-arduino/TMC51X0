@@ -38,18 +38,18 @@ void printRegisterPortion(const char * str, uint32_t value, bool hex=false)
 
 void printRegister(uint32_t register_data)
 {
-  tmc51x0::Registers::Inputs inputs;
-  inputs.bytes = register_data;
-  printRegisterPortion("inputs", inputs.bytes, true);
-  printRegisterPortion("refl_step", inputs.refl_step);
-  printRegisterPortion("refr_dir", inputs.refr_dir);
-  printRegisterPortion("encb_dcen_cfg4", inputs.encb_dcen_cfg4);
-  printRegisterPortion("enca_dcin_cfg5", inputs.enca_dcin_cfg5);
-  printRegisterPortion("drv_enn", inputs.drv_enn);
-  printRegisterPortion("enc_n_dco_cfg6", inputs.enc_n_dco_cfg6);
-  printRegisterPortion("sd_mode", inputs.sd_mode);
-  printRegisterPortion("swcomp_in", inputs.swcomp_in);
-  printRegisterPortion("version", inputs.version, true);
+  tmc51x0::Registers::Ioin ioin;
+  ioin.bytes = register_data;
+  printRegisterPortion("ioin", ioin.bytes, true);
+  printRegisterPortion("refl_step", ioin.refl_step);
+  printRegisterPortion("refr_dir", ioin.refr_dir);
+  printRegisterPortion("encb_dcen_cfg4", ioin.encb_dcen_cfg4);
+  printRegisterPortion("enca_dcin_cfg5", ioin.enca_dcin_cfg5);
+  printRegisterPortion("drv_enn", ioin.drv_enn);
+  printRegisterPortion("enc_n_dco_cfg6", ioin.enc_n_dco_cfg6);
+  printRegisterPortion("sd_mode", ioin.sd_mode);
+  printRegisterPortion("swcomp_in", ioin.swcomp_in);
+  printRegisterPortion("version", ioin.version, true);
 
   Serial.println("--------------------------");
 }
@@ -78,6 +78,6 @@ void loop()
     stepper.driver.hardwareEnable();
   }
   enabled = not enabled;
-  printRegister(stepper.registers.read(tmc51x0::Registers::INPUTS));
+  printRegister(stepper.registers.read(tmc51x0::Registers::IOIN));
   delay(DELAY);
 }

@@ -20,8 +20,11 @@ struct Registers
 {
   enum RegisterAddress
   {
-    GLOBAL_CONFIG = 0,
-    INPUTS = 0x04,
+    GLOBAL_CONFIG = 0x00,
+    GSTAT = 0x01,
+    IFCNT = 0x02,
+    NODECONF = 0x03,
+    IOIN = 0x04,
     CHOPPER_CONFIG = 0x6C,
     ADDRESS_COUNT = 0x6D,
   };
@@ -30,6 +33,8 @@ struct Registers
     uint32_t data);
   uint32_t read(RegisterAddress register_address);
   uint32_t getStored(RegisterAddress register_address);
+  bool writeable(RegisterAddress register_address);
+  bool readable(RegisterAddress register_address);
 
   union GlobalConfig
   {
@@ -57,7 +62,7 @@ struct Registers
     uint32_t bytes;
   };
 
-  union Inputs
+  union Ioin
   {
     struct
     {
@@ -100,23 +105,22 @@ struct Registers
     uint32_t bytes;
   };
   const static uint8_t DISABLE_TOFF = 0b0;
-  const static uint8_t DEFAULT_TOFF_ENABLE = 3;
-  const static uint8_t DEFAULT_HSTART = 0b101;
-  const static uint8_t DEFAULT_HEND = 0b10;
-  const static uint8_t DEFAULT_TBL = 0b10;
-  const static uint8_t DEFAULT_TPFD = 0b100;
-  const static uint8_t DEFAULT_INTERPOLATION = 0b1;
+  const static uint8_t TOFF_ENABLE_DEFAULT = 3;
+  const static uint8_t HSTART_DEFAULT = 0b101;
+  const static uint8_t HEND_DEFAULT = 0b10;
+  const static uint8_t TBL_DEFAULT = 0b10;
+  const static uint8_t TPFD_DEFAULT = 0b100;
+  const static uint8_t INTERPOLATION_DEFAULT = 0b1;
 
 private:
   Interface interface_;
-  uint32_t stored_[ADDRESS_COUNT];
+
+  uint32_t stored_[ADDRESS_COUNT] = {0};
+  bool writeable_[ADDRESS_COUNT] = {false};
+  bool readable_[ADDRESS_COUNT] = {false};
 
   void setup(SPIClass & spi,
     size_t chip_select_pin);
-
-  const static uint32_t DEFAULT_GLOBAL_CONFIG = 0x9;
-  const static uint32_t DEFAULT_INPUTS = 0;
-  const static uint32_t DEFAULT_CHOPPER_CONFIG = 0x10410150;
 
   const static uint8_t MRES_256 = 0b0000;
   const static uint8_t MRES_128 = 0b0001;

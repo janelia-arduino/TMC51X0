@@ -139,7 +139,7 @@ void Driver::disable()
 void Driver::setup(Registers & registers)
 {
   registers_ptr_ = &registers;
-  toff_ = Registers::DEFAULT_TOFF_ENABLE;
+  toff_ = Registers::TOFF_ENABLE_DEFAULT;
 }
 
 uint32_t Driver::constrain_(uint32_t value, uint32_t low, uint32_t high)
