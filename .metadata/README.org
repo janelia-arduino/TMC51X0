@@ -78,11 +78,11 @@ stepper motor controller.
 
 **** Teensy 4.0
 
-#+html: <img src="./images/trinamic_wiring-TMC51X0-tmc51x0_bob-teensy40.svg" width="1920px">
+#+html: <img src="./images/trinamic_wiring-TMC51X0-tmc51x0-bob-teensy40.svg" width="1920px">
 
 **** Pico
 
-#+html: <img src="./images/trinamic_wiring-TMC51X0-tmc51x0_bob-pico.svg" width="1920px">
+#+html: <img src="./images/trinamic_wiring-TMC51X0-tmc51x0-bob-pico.svg" width="1920px">
 
 *** Wiring Documentation Source
 

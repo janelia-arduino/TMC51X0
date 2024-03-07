@@ -1,15 +1,15 @@
-- [Library Information](#orgd5c1002)
-- [Stepper Motors](#org6c6f8c9)
-- [Stepper Motor Controllers and Drivers](#org3a5c2cf)
-- [Examples](#orgaf40bca)
-- [Hardware Documentation](#orgf0164d2)
-- [Host Computer Setup](#org8bcaa95)
+- [Library Information](#org6e7589d)
+- [Stepper Motors](#orgcceddc0)
+- [Stepper Motor Controllers and Drivers](#org1a8d8f5)
+- [Examples](#org4ec16b9)
+- [Hardware Documentation](#orgfb6c993)
+- [Host Computer Setup](#org0985a63)
 
     <!-- This file is generated automatically from metadata -->
     <!-- File edits may be overwritten! -->
 
 
-<a id="orgd5c1002"></a>
+<a id="org6e7589d"></a>
 
 # Library Information
 
@@ -36,7 +36,7 @@ The TMC5160 uses external MOSFETs to drive higher current motors from 1A to seve
 <img src="./images/trinamic_wiring-TMC51X0-description.svg" width="1920px">
 
 
-<a id="org6c6f8c9"></a>
+<a id="orgcceddc0"></a>
 
 # Stepper Motors
 
@@ -47,7 +47,7 @@ A stepper motor, also known as step motor or stepping motor, is a brushless DC e
 [Wikipedia - Stepper Motor](https://en.wikipedia.org/wiki/Stepper_motor)
 
 
-<a id="org3a5c2cf"></a>
+<a id="org1a8d8f5"></a>
 
 # Stepper Motor Controllers and Drivers
 
@@ -64,7 +64,7 @@ A stepper motor controller is responsible for the commanding either the motor ki
 A stepper motor driver is responsible for commanding the electrical current through the motor coils as it changes with time to meet the requirements of the stepper motor controller.
 
 
-<a id="orgaf40bca"></a>
+<a id="org4ec16b9"></a>
 
 # Examples
 
@@ -76,11 +76,11 @@ A stepper motor driver is responsible for commanding the electrical current thro
 
 1.  Teensy 4.0
 
-    <img src="./images/trinamic_wiring-TMC51X0-tmc51x0_bob-teensy40.svg" width="1920px">
+    <img src="./images/trinamic_wiring-TMC51X0-tmc51x0-bob-teensy40.svg" width="1920px">
 
 2.  Pico
 
-    <img src="./images/trinamic_wiring-TMC51X0-tmc51x0_bob-pico.svg" width="1920px">
+    <img src="./images/trinamic_wiring-TMC51X0-tmc51x0-bob-pico.svg" width="1920px">
 
 
 ### Wiring Documentation Source
@@ -88,7 +88,7 @@ A stepper motor driver is responsible for commanding the electrical current thro
 <https://github.com/janelia-kicad/trinamic_wiring>
 
 
-<a id="orgf0164d2"></a>
+<a id="orgfb6c993"></a>
 
 # Hardware Documentation
 
@@ -98,7 +98,7 @@ A stepper motor driver is responsible for commanding the electrical current thro
 [Datasheets](./datasheet)
 
 
-<a id="org8bcaa95"></a>
+<a id="org0985a63"></a>
 
 # Host Computer Setup
 
