@@ -136,6 +136,37 @@ struct Registers
     uint32_t bytes;
   };
 
+  union Encmode
+  {
+    struct
+    {
+      uint32_t pol_a : 1;
+      uint32_t pol_b : 1;
+      uint32_t pol_n : 1;
+      uint32_t ignore_ab : 1;
+      uint32_t clr_cont : 1;
+      uint32_t clr_once : 1;
+      uint32_t pos_edge : 1;
+      uint32_t neg_edge : 1;
+      uint32_t clr_enc_x : 1;
+      uint32_t latch_x_act : 1;
+      uint32_t enc_sel_decimal : 1;
+      uint32_t reserved : 21;
+    };
+    uint32_t bytes;
+  };
+
+  union EncStatus
+  {
+    struct
+    {
+      uint32_t n_event : 1;
+      uint32_t devition_warn : 1;
+      uint32_t reserved : 30;
+    };
+    uint32_t bytes;
+  };
+
   union Chopconf
   {
     struct

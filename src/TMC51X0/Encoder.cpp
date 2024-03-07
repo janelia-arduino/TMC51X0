@@ -1,20 +1,23 @@
 // ----------------------------------------------------------------------------
-// TMC51X0.cpp
+// Encoder.cpp
 //
 // Authors:
 // Peter Polidoro peter@polidoro.io
 // ----------------------------------------------------------------------------
-#include "TMC51X0.hpp"
+#include "Encoder.hpp"
 
 
 using namespace tmc51x0;
 
-void TMC51X0::setup(SPIClass & spi,
-  size_t chip_select_pin)
+int32_t Encoder::readActualPosition()
 {
-  registers.setup(spi, chip_select_pin);
-  driver.setup(registers);
-  controller.setup(registers);
-  encoder.setup(registers);
+  return registers_ptr_->read(Registers::X_ENC);
+}
+
+// private
+
+void Encoder::setup(Registers & registers)
+{
+  registers_ptr_ = &registers;
 }
 
