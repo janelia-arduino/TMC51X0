@@ -172,9 +172,48 @@ void Registers::setup(SPIClass & spi,
 
   writeable_[ENC_DEVIATION] = true;
 
+  writeable_[MSLUT_0] = true;
+
+  writeable_[MSLUT_1] = true;
+
+  writeable_[MSLUT_2] = true;
+
+  writeable_[MSLUT_3] = true;
+
+  writeable_[MSLUT_4] = true;
+
+  writeable_[MSLUT_5] = true;
+
+  writeable_[MSLUT_6] = true;
+
+  writeable_[MSLUT_7] = true;
+
+  writeable_[MSLUTSEL] = true;
+
+  writeable_[MSLUTSTART] = true;
+
+  readable_[MSCNT] = true;
+
+  readable_[MSCURACT] = true;
+
   stored_[CHOPCONF] = 0x10410150;
   writeable_[CHOPCONF] = true;
   readable_[CHOPCONF] = true;
+
+  writeable_[COOLCONF] = true;
+
+  writeable_[DCCTRL] = true;
+
+  readable_[DRV_STATUS] = true;
+
+  stored_[PWMCONF] = 0xC40C001E;
+  writeable_[PWMCONF] = true;
+
+  readable_[PWM_SCALE] = true;
+
+  readable_[PWM_AUTO] = true;
+
+  readable_[LOST_STEPS] = true;
 
   interface_.setup(spi, chip_select_pin);
 }
