@@ -190,6 +190,41 @@ struct Registers
     uint32_t bytes;
   };
 
+  union IholdIrun
+  {
+    struct
+    {
+      uint32_t ihold : 5;
+      uint32_t reserved0 : 3;
+      uint32_t irun : 5;
+      uint32_t reserved1 : 3;
+      uint32_t iholddelay : 4;
+      uint32_t reserved2 : 12;
+    };
+    uint32_t bytes;
+  };
+
+  union SwMode
+  {
+    struct
+    {
+      uint32_t stop_l_enable : 1;
+      uint32_t stop_r_enable : 1;
+      uint32_t pol_stop_l : 1;
+      uint32_t pol_stop_r : 1;
+      uint32_t swap_lr : 1;
+      uint32_t latch_l_active : 1;
+      uint32_t latch_l_inactive : 1;
+      uint32_t latch_r_active : 1;
+      uint32_t latch_r_inactive : 1;
+      uint32_t en_latch_encoder : 1;
+      uint32_t sg_stop : 1;
+      uint32_t en_softstop : 1;
+      uint32_t reserved : 20;
+    };
+    uint32_t bytes;
+  };
+
   union Encmode
   {
     struct
