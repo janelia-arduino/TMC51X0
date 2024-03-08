@@ -225,6 +225,29 @@ struct Registers
     uint32_t bytes;
   };
 
+  union RampStat
+  {
+    struct
+    {
+      uint32_t status_stop_l : 1;
+      uint32_t status_stop_r : 1;
+      uint32_t status_latch_l : 1;
+      uint32_t status_latch_r : 1;
+      uint32_t event_stop_l : 1;
+      uint32_t event_stop_r : 1;
+      uint32_t event_stop_sg : 1;
+      uint32_t event_pos_reached : 1;
+      uint32_t velocity_reached : 1;
+      uint32_t position_reached : 1;
+      uint32_t vzero : 1;
+      uint32_t t_zerowait_active : 1;
+      uint32_t second_move : 1;
+      uint32_t status_sg : 1;
+      uint32_t reserved : 18;
+    };
+    uint32_t bytes;
+  };
+
   union Encmode
   {
     struct
@@ -252,6 +275,30 @@ struct Registers
       uint32_t n_event : 1;
       uint32_t devition_warn : 1;
       uint32_t reserved : 30;
+    };
+    uint32_t bytes;
+  };
+
+  union Mslutstart
+  {
+    struct
+    {
+      uint32_t start_sin : 8;
+      uint32_t reserved0 : 8;
+      uint32_t start_sin90 : 8;
+      uint32_t reserved1 : 8;
+    };
+    uint32_t bytes;
+  };
+
+  union Mscuract
+  {
+    struct
+    {
+      uint32_t cur_b : 9;
+      uint32_t reserved0 : 7;
+      uint32_t cur_a : 9;
+      uint32_t reserved1 : 7;
     };
     uint32_t bytes;
   };
@@ -287,6 +334,103 @@ struct Registers
   const static uint8_t TBL_DEFAULT = 0b10;
   const static uint8_t TPFD_DEFAULT = 0b100;
   const static uint8_t INTERPOLATION_DEFAULT = 0b1;
+
+  union Coolconf
+  {
+    struct
+    {
+      uint32_t semin : 4;
+      uint32_t reserved0 : 1;
+      uint32_t seup : 2;
+      uint32_t reserved1 : 1;
+      uint32_t semax : 4;
+      uint32_t reserved2 : 1;
+      uint32_t sedn : 2;
+      uint32_t seimin : 1;
+      uint32_t sgt : 7;
+      uint32_t reserved3 : 1;
+      uint32_t sfilt : 1;
+      uint32_t reserved4 : 7;
+    };
+    uint32_t bytes;
+  };
+
+  union Dcctrl
+  {
+    struct
+    {
+      uint32_t dc_time : 10;
+      uint32_t reserved0 : 6;
+      uint32_t dc_sg : 8;
+      uint32_t reserved1 : 8;
+    };
+    uint32_t bytes;
+  };
+
+  union DrvStatus
+  {
+    struct
+    {
+      uint32_t sg_result : 10;
+      uint32_t reserved0 : 2;
+      uint32_t s2vsa : 1;
+      uint32_t s2vsb : 1;
+      uint32_t stealth : 1;
+      uint32_t fsactive : 1;
+      uint32_t cs_actual : 5;
+      uint32_t reserved1 : 3;
+      uint32_t stallguard : 1;
+      uint32_t ot : 1;
+      uint32_t otpw : 1;
+      uint32_t s2ga : 1;
+      uint32_t s2gb : 1;
+      uint32_t ola : 1;
+      uint32_t olb : 1;
+      uint32_t stst : 1;
+    };
+    uint32_t bytes;
+  };
+
+  union Pwmconf
+  {
+    struct
+    {
+      uint32_t pwm_ofs : 8;
+      uint32_t pwm_grad : 8;
+      uint32_t pwm_freq : 2;
+      uint32_t pwm_autoscale : 1;
+      uint32_t pwm_autograd : 1;
+      uint32_t freewheel : 2;
+      uint32_t reserved0 : 2;
+      uint32_t pwm_reg : 4;
+      uint32_t pwm_lim : 4;
+    };
+    uint32_t bytes;
+  };
+
+  union PwmScale
+  {
+    struct
+    {
+      uint32_t pwm_scale_sum : 8;
+      uint32_t reserved0 : 8;
+      uint32_t pwm_scale_auto : 9;
+      uint32_t reserved1 : 7;
+    };
+    uint32_t bytes;
+  };
+
+  union PwmAuto
+  {
+    struct
+    {
+      uint32_t pwm_ofs_auto : 8;
+      uint32_t reserved0 : 8;
+      uint32_t pwm_grad_auto : 8;
+      uint32_t reserved1 : 8;
+    };
+    uint32_t bytes;
+  };
 
 private:
   Interface interface_;
