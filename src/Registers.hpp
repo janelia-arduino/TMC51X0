@@ -327,13 +327,6 @@ struct Registers
     };
     uint32_t bytes;
   };
-  const static uint8_t DISABLE_TOFF = 0b0;
-  const static uint8_t TOFF_ENABLE_DEFAULT = 3;
-  const static uint8_t HSTART_DEFAULT = 0b101;
-  const static uint8_t HEND_DEFAULT = 0b10;
-  const static uint8_t TBL_DEFAULT = 0b10;
-  const static uint8_t TPFD_DEFAULT = 0b100;
-  const static uint8_t INTERPOLATION_DEFAULT = 0b1;
 
   union Coolconf
   {
@@ -441,19 +434,6 @@ private:
 
   void setup(SPIClass & spi,
     size_t chip_select_pin);
-
-  const static uint8_t MRES_256 = 0b0000;
-  const static uint8_t MRES_128 = 0b0001;
-  const static uint8_t MRES_064 = 0b0010;
-  const static uint8_t MRES_032 = 0b0011;
-  const static uint8_t MRES_016 = 0b0100;
-  const static uint8_t MRES_008 = 0b0101;
-  const static uint8_t MRES_004 = 0b0110;
-  const static uint8_t MRES_002 = 0b0111;
-  const static uint8_t MRES_001 = 0b1000;
-
-  const static uint8_t VERSION_TMC5130 = 0x11;
-  const static uint8_t VERSION_TMC5160 = 0x30;
 
   friend class ::TMC51X0;
 };

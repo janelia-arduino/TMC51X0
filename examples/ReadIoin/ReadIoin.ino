@@ -71,11 +71,11 @@ void loop()
 {
   if (enabled)
   {
-    stepper.driver.hardwareDisable();
+    stepper.driver.disable();
   }
   else
   {
-    stepper.driver.hardwareEnable();
+    stepper.driver.enable();
   }
   enabled = not enabled;
   printRegister(stepper.registers.read(tmc51x0::Registers::IOIN));

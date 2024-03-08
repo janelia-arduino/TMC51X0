@@ -77,11 +77,11 @@ void loop()
 {
   if (enabled)
   {
-    stepper.driver.softwareDisable();
+    stepper.driver.disable();
   }
   else
   {
-    stepper.driver.softwareEnable();
+    stepper.driver.enable();
   }
   enabled = not enabled;
   printRegister(stepper.registers.read(tmc51x0::Registers::CHOPCONF));
