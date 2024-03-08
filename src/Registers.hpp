@@ -9,7 +9,7 @@
 #define TMC51X0_REGISTERS_HPP
 #include <Arduino.h>
 
-#include "Interface.hpp"
+#include "TMC51X0/Interface.hpp"
 
 
 class TMC51X0;
@@ -98,7 +98,7 @@ struct Registers
     {
       uint32_t recalibrate : 1;
       uint32_t faststandstill : 1;
-      uint32_t enable_pwm_mode : 1;
+      uint32_t en_pwm_mode : 1;
       uint32_t multistep_filt : 1;
       uint32_t shaft : 1;
       uint32_t diag0_error : 1;
@@ -118,6 +118,29 @@ struct Registers
     uint32_t bytes;
   };
 
+  union Gstat
+  {
+    struct
+    {
+      uint32_t reset : 1;
+      uint32_t drv_err : 1;
+      uint32_t uv_cp : 1;
+      uint32_t reserved : 29;
+    };
+    uint32_t bytes;
+  };
+
+  union Nodeconf
+  {
+    struct
+    {
+      uint32_t nodeaddr : 8;
+      uint32_t senddelay : 4;
+      uint32_t reserved : 20;
+    };
+    uint32_t bytes;
+  };
+
   union Ioin
   {
     struct
@@ -132,6 +155,37 @@ struct Registers
       uint32_t swcomp_in : 1;
       uint32_t reserved : 16;
       uint32_t version : 8;
+    };
+    uint32_t bytes;
+  };
+
+  union ShortConf
+  {
+    struct
+    {
+      uint32_t s2vs_level : 4;
+      uint32_t reserved0 : 4;
+      uint32_t s2g_level : 4;
+      uint32_t reserved1 : 4;
+      uint32_t shortfilter : 2;
+      uint32_t shortdelay : 1;
+      uint32_t reserved2 : 13;
+    };
+    uint32_t bytes;
+  };
+
+  union DrvConf
+  {
+    struct
+    {
+      uint32_t bbmtime : 5;
+      uint32_t reserved0 : 3;
+      uint32_t bbmclks : 4;
+      uint32_t reserved1 : 4;
+      uint32_t otselect : 2;
+      uint32_t drvstrength : 2;
+      uint32_t filt_isense : 2;
+      uint32_t reserved2 : 10;
     };
     uint32_t bytes;
   };

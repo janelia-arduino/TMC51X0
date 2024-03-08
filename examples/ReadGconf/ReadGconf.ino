@@ -41,7 +41,7 @@ void printRegister(uint32_t register_data)
   printRegisterPortion("gconf", gconf.bytes, true);
   printRegisterPortion("recalibrate", gconf.recalibrate);
   printRegisterPortion("faststandstill", gconf.faststandstill);
-  printRegisterPortion("enable_pwm_mode", gconf.enable_pwm_mode);
+  printRegisterPortion("en_pwm_mode", gconf.en_pwm_mode);
   printRegisterPortion("multistep_filt", gconf.multistep_filt);
   printRegisterPortion("shaft", gconf.shaft);
   printRegisterPortion("diag0_error", gconf.diag0_error);
