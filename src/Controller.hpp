@@ -22,6 +22,14 @@ public:
 private:
   Registers * registers_ptr_;
 
+  enum RampMode
+  {
+    POSITION = 0,
+    VELOCITY_POSITIVE = 1,
+    VELOCITY_NEGATIVE = 2,
+    HOLD = 3,
+  };
+
   void setup(Registers & registers);
 
   friend class ::TMC51X0;

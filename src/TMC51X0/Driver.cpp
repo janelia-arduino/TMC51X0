@@ -33,6 +33,51 @@ void Driver::disable()
   softwareDisable();
 }
 
+void Driver::setGlobalCurrentScaler(uint8_t percent)
+{
+  uint8_t scaler = percentToGlobalCurrentScaler(percent);
+  Serial.print("percent = ");
+  Serial.print(percent);
+  Serial.print(", scaler = ");
+  Serial.println(scaler);
+  // registers_ptr_->write(Registers::GLOBAL_SCALER, scaler);
+}
+
+void Driver::setRunCurrent(uint8_t percent)
+{
+  Registers::IholdIrun ihold_irun;
+  ihold_irun.bytes = registers_ptr_->getStored(Registers::IHOLD_IRUN);
+  ihold_irun.irun = percentToCurrentSetting(percent);
+  registers_ptr_->write(Registers::IHOLD_IRUN, ihold_irun.bytes);
+}
+
+void Driver::setHoldCurrent(uint8_t percent)
+{
+  Registers::IholdIrun ihold_irun;
+  ihold_irun.bytes = registers_ptr_->getStored(Registers::IHOLD_IRUN);
+  ihold_irun.ihold = percentToCurrentSetting(percent);
+  registers_ptr_->write(Registers::IHOLD_IRUN, ihold_irun.bytes);
+}
+
+void Driver::setHoldDelay(uint8_t percent)
+{
+  Registers::IholdIrun ihold_irun;
+  ihold_irun.bytes = registers_ptr_->getStored(Registers::IHOLD_IRUN);
+  ihold_irun.iholddelay = percentToHoldDelaySetting(percent);
+  registers_ptr_->write(Registers::IHOLD_IRUN, ihold_irun.bytes);
+}
+
+void Driver::setAllCurrentValues(uint8_t run_current_percent,
+  uint8_t hold_current_percent,
+  uint8_t hold_delay_percent)
+{
+  Registers::IholdIrun ihold_irun;
+  ihold_irun.irun = percentToCurrentSetting(run_current_percent);
+  ihold_irun.ihold = percentToCurrentSetting(hold_current_percent);
+  ihold_irun.iholddelay = percentToHoldDelaySetting(hold_delay_percent);
+  registers_ptr_->write(Registers::IHOLD_IRUN, ihold_irun.bytes);
+}
+
 void Driver::enableAutomaticCurrentControl()
 {
   Registers::Pwmconf pwmconf;
@@ -93,6 +138,73 @@ void Driver::softwareDisable()
   chopconf.bytes = registers_ptr_->getStored(Registers::CHOPCONF);
   chopconf.toff = DISABLE_TOFF;
   registers_ptr_->write(Registers::CHOPCONF, chopconf.bytes);
+}
+
+uint8_t Driver::percentToGlobalCurrentScaler(uint8_t percent)
+{
+  uint8_t constrained_percent = constrain_(percent,
+    PERCENT_MIN,
+    PERCENT_MAX);
+  uint16_t scaler = map(constrained_percent,
+    PERCENT_MIN,
+    PERCENT_MAX,
+    GLOBAL_SCALER_MIN,
+    GLOBAL_SCALER_MAX);
+  if (scaler < GLOBAL_SCALER_THRESHOLD)
+  {
+    scaler = GLOBAL_SCALER_THRESHOLD;
+  }
+  else if (scaler >= GLOBAL_SCALER_MAX)
+  {
+    scaler = 0;
+  }
+  return scaler;
+}
+
+uint8_t Driver::percentToCurrentSetting(uint8_t percent)
+{
+  uint8_t constrained_percent = constrain_(percent,
+    PERCENT_MIN,
+    PERCENT_MAX);
+  uint8_t current_setting = map(constrained_percent,
+    PERCENT_MIN,
+    PERCENT_MAX,
+    CURRENT_SETTING_MIN,
+    CURRENT_SETTING_MAX);
+  return current_setting;
+}
+
+uint8_t Driver::currentSettingToPercent(uint8_t current_setting)
+{
+  uint8_t percent = map(current_setting,
+    CURRENT_SETTING_MIN,
+    CURRENT_SETTING_MAX,
+    PERCENT_MIN,
+    PERCENT_MAX);
+  return percent;
+}
+
+uint8_t Driver::percentToHoldDelaySetting(uint8_t percent)
+{
+  uint8_t constrained_percent = constrain_(percent,
+    PERCENT_MIN,
+    PERCENT_MAX);
+  uint8_t hold_delay_setting = map(constrained_percent,
+    PERCENT_MIN,
+    PERCENT_MAX,
+    HOLD_DELAY_MIN,
+    HOLD_DELAY_MAX);
+  return hold_delay_setting;
+}
+
+uint8_t Driver::holdDelaySettingToPercent(uint8_t hold_delay_setting)
+{
+  uint8_t percent = map(hold_delay_setting,
+    HOLD_DELAY_MIN,
+    HOLD_DELAY_MAX,
+    PERCENT_MIN,
+    PERCENT_MAX);
+  return percent;
 }
 
 void Driver::minimizeMotorCurrent()

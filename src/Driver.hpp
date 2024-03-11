@@ -27,6 +27,26 @@ public:
   void enable();
   void disable();
 
+  // range 0-100
+  // 100: full scale
+  // 0..11: not allowed for operation
+  // values >50 recommended for best results
+  // 12 = reset default
+  void setGlobalCurrentScaler(uint8_t percent);
+
+  // range 0-100
+  // 0 = reset default
+  void setRunCurrent(uint8_t percent);
+  // range 0-100
+  // 0 = reset default
+  void setHoldCurrent(uint8_t percent);
+  // range 0-100
+  void setHoldDelay(uint8_t percent);
+  // range 0-100
+  void setAllCurrentValues(uint8_t run_current_percent,
+    uint8_t hold_current_percent,
+    uint8_t hold_delay_percent);
+
   void enableAutomaticCurrentControl();
   void disableAutomaticCurrentControl();
 private:
@@ -54,7 +74,8 @@ private:
 
   const static uint8_t PERCENT_MIN = 0;
   const static uint8_t PERCENT_MAX = 100;
-  const static uint32_t GLOBAL_SCALER_MIN = 32;
+  const static uint32_t GLOBAL_SCALER_MIN = 0;
+  const static uint32_t GLOBAL_SCALER_THRESHOLD = 32;
   const static uint32_t GLOBAL_SCALER_MAX = 256;
   const static uint8_t CURRENT_SETTING_MIN = 0;
   const static uint8_t CURRENT_SETTING_MAX = 31;
@@ -70,6 +91,12 @@ private:
   void hardwareDisable();
   void softwareEnable();
   void softwareDisable();
+
+  uint8_t percentToGlobalCurrentScaler(uint8_t percent);
+  uint8_t percentToCurrentSetting(uint8_t percent);
+  uint8_t currentSettingToPercent(uint8_t current_setting);
+  uint8_t percentToHoldDelaySetting(uint8_t percent);
+  uint8_t holdDelaySettingToPercent(uint8_t hold_delay_setting);
 
   void minimizeMotorCurrent();
 
