@@ -19,9 +19,6 @@ namespace tmc51x0
 class Controller
 {
 public:
-private:
-  Registers * registers_ptr_;
-
   enum RampMode
   {
     POSITION = 0,
@@ -29,6 +26,16 @@ private:
     VELOCITY_NEGATIVE = 2,
     HOLD = 3,
   };
+  void setRampMode(RampMode mode);
+
+  int32_t getActualPosition();
+  int32_t getActualVelocity();
+
+  void setVelocityMax(uint32_t velocity);
+  void setAccelerationMax(uint32_t acceleration);
+
+private:
+  Registers * registers_ptr_;
 
   void setup(Registers & registers);
 

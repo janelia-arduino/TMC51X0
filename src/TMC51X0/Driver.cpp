@@ -96,6 +96,38 @@ void Driver::disableAutomaticCurrentControl()
   registers_ptr_->write(Registers::PWMCONF, pwmconf.bytes);
 }
 
+void Driver::setPwmOffset(uint8_t pwm_amplitude)
+{
+  Registers::Pwmconf pwmconf;
+  pwmconf.bytes = registers_ptr_->getStored(Registers::PWMCONF);
+  pwmconf.pwm_ofs = pwm_amplitude;
+  registers_ptr_->write(Registers::PWMCONF, pwmconf.bytes);
+}
+
+void Driver::setPwmGradient(uint8_t pwm_amplitude)
+{
+  Registers::Pwmconf pwmconf;
+  pwmconf.bytes = registers_ptr_->getStored(Registers::PWMCONF);
+  pwmconf.pwm_grad = pwm_amplitude;
+  registers_ptr_->write(Registers::PWMCONF, pwmconf.bytes);
+}
+
+void Driver::enableStealthChop()
+{
+  Registers::Gconf gconf;
+  gconf.bytes = registers_ptr_->getStored(Registers::GCONF);
+  gconf.en_pwm_mode = 1;
+  registers_ptr_->write(Registers::GCONF, gconf.bytes);
+}
+
+void Driver::disableStealthChop()
+{
+  Registers::Gconf gconf;
+  gconf.bytes = registers_ptr_->getStored(Registers::GCONF);
+  gconf.en_pwm_mode = 0;
+  registers_ptr_->write(Registers::GCONF, gconf.bytes);
+}
+
 // private
 
 void Driver::setup(Registers & registers)
@@ -105,6 +137,7 @@ void Driver::setup(Registers & registers)
 
   disable();
   minimizeMotorCurrent();
+  enableStealthChop();
   disableAutomaticCurrentControl();
 }
 

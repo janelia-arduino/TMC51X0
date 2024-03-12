@@ -26,6 +26,8 @@ struct TMC51X0
   tmc51x0::Controller controller;
   tmc51x0::Encoder encoder;
 
+  tmc51x0::Registers::Gstat readAndClearGlobalStatus();
+
 private:
   // const static uint8_t VERSION_TMC5130 = 0x11;
   // const static uint8_t VERSION_TMC5160 = 0x30;

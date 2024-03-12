@@ -49,6 +49,15 @@ public:
 
   void enableAutomaticCurrentControl();
   void disableAutomaticCurrentControl();
+
+  // range 0-255
+  void setPwmOffset(uint8_t pwm_amplitude);
+  // range 0-255
+  void setPwmGradient(uint8_t pwm_amplitude);
+
+  void enableStealthChop();
+  void disableStealthChop();
+
 private:
   Registers * registers_ptr_;
   int16_t hardware_enable_pin_;
