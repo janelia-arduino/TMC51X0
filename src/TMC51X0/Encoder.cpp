@@ -16,8 +16,10 @@ int32_t Encoder::readActualPosition()
 
 // private
 
-void Encoder::setup(Registers & registers)
+void Encoder::setup(Registers & registers,
+  Converter & converter)
 {
   registers_ptr_ = &registers;
+  converter_ptr_ = &converter;
 }
 

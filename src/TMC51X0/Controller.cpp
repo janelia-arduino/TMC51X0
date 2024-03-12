@@ -43,8 +43,10 @@ void Controller::setAccelerationMax(uint32_t acceleration)
 
 // private
 
-void Controller::setup(Registers & registers)
+void Controller::setup(Registers & registers,
+  Converter & converter)
 {
   registers_ptr_ = &registers;
+  converter_ptr_ = &converter;
 }
 

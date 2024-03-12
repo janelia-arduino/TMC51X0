@@ -172,9 +172,11 @@ void Driver::disableCoolStep()
 
 // private
 
-void Driver::setup(Registers & registers)
+void Driver::setup(Registers & registers,
+  Converter & converter)
 {
   registers_ptr_ = &registers;
+  converter_ptr_ = &converter;
   toff_ = TOFF_ENABLE_DEFAULT;
 
   disable();

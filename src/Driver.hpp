@@ -10,6 +10,7 @@
 #include <Arduino.h>
 
 #include "TMC51X0/Constants.hpp"
+#include "TMC51X0/Converter.hpp"
 #include "Registers.hpp"
 
 
@@ -73,6 +74,7 @@ public:
 
 private:
   Registers * registers_ptr_;
+  Converter * converter_ptr_;
   int16_t hardware_enable_pin_;
   uint8_t toff_;
 
@@ -116,7 +118,8 @@ private:
   const static uint8_t SEMAX_MIN = 0;
   const static uint8_t SEMAX_MAX = 15;
 
-  void setup(Registers & registers);
+  void setup(Registers & registers,
+    Converter & converter);
 
   void hardwareEnable();
   void hardwareDisable();
