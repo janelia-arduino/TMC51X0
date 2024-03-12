@@ -21,6 +21,11 @@ int32_t Controller::getActualPosition()
   return registers_ptr_->read(Registers::XACTUAL);
 }
 
+void Controller::setActualPosition(int32_t position)
+{
+  return registers_ptr_->write(Registers::XACTUAL, position);
+}
+
 int32_t Controller::getActualVelocity()
 {
   return registers_ptr_->read(Registers::VACTUAL);

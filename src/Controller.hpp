@@ -29,6 +29,7 @@ public:
   void setRampMode(RampMode mode);
 
   int32_t getActualPosition();
+  void setActualPosition(int32_t position);
   int32_t getActualVelocity();
 
   void setVelocityMax(uint32_t velocity);

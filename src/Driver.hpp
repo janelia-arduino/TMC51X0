@@ -27,36 +27,49 @@ public:
   void enable();
   void disable();
 
-  // range 0-100
+  // range 0..100
   // 100: full scale
   // 0..11: not allowed for operation
   // values >50 recommended for best results
   // 12 = reset default
   void setGlobalCurrentScaler(uint8_t percent);
 
-  // range 0-100
+  // range 0..100
   // 0 = reset default
   void setRunCurrent(uint8_t percent);
-  // range 0-100
+  // range 0..100
   // 0 = reset default
   void setHoldCurrent(uint8_t percent);
-  // range 0-100
+  // range 0..100
   void setHoldDelay(uint8_t percent);
-  // range 0-100
+  // range 0..100
   void setAllCurrentValues(uint8_t run_current_percent,
     uint8_t hold_current_percent,
     uint8_t hold_delay_percent);
 
-  void enableAutomaticCurrentControl();
-  void disableAutomaticCurrentControl();
+  void enableAutomaticCurrentScaling();
+  void disableAutomaticCurrentScaling();
+  void enableAutomaticGradientAdaptation();
+  void disableAutomaticGradientAdaptation();
 
-  // range 0-255
+  // range 0..255
   void setPwmOffset(uint8_t pwm_amplitude);
-  // range 0-255
+  // range 0..255
   void setPwmGradient(uint8_t pwm_amplitude);
 
   void enableStealthChop();
   void disableStealthChop();
+
+  // 0 indifferent value
+  // 1..63 less sensitivity
+  // -1..-64 higher sensitivity
+  void setStallGuardThreshold(int8_t threshold);
+
+  // lower_threshold: min = 1, max = 15
+  // upper_threshold: min = 0, max = 15, 0..2 recommended
+  void enableCoolStep(uint8_t lower_threshold=1,
+    uint8_t upper_threshold=0);
+  void disableCoolStep();
 
 private:
   Registers * registers_ptr_;
@@ -93,6 +106,15 @@ private:
   const static uint8_t IHOLD_DEFAULT = 16;
   const static uint8_t IRUN_DEFAULT = 31;
   const static uint8_t IHOLDDELAY_DEFAULT = 1;
+
+  const static uint8_t SEIMIN_UPPER_CURRENT_LIMIT = 20;
+  const static uint8_t SEIMIN_LOWER_SETTING = 0;
+  const static uint8_t SEIMIN_UPPER_SETTING = 1;
+  const static uint8_t SEMIN_OFF = 0;
+  const static uint8_t SEMIN_MIN = 1;
+  const static uint8_t SEMIN_MAX = 15;
+  const static uint8_t SEMAX_MIN = 0;
+  const static uint8_t SEMAX_MAX = 15;
 
   void setup(Registers & registers);
 

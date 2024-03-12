@@ -78,20 +78,34 @@ void Driver::setAllCurrentValues(uint8_t run_current_percent,
   registers_ptr_->write(Registers::IHOLD_IRUN, ihold_irun.bytes);
 }
 
-void Driver::enableAutomaticCurrentControl()
+void Driver::enableAutomaticCurrentScaling()
 {
   Registers::Pwmconf pwmconf;
   pwmconf.bytes = registers_ptr_->getStored(Registers::PWMCONF);
   pwmconf.pwm_autoscale = 1;
-  pwmconf.pwm_autograd = 1;
   registers_ptr_->write(Registers::PWMCONF, pwmconf.bytes);
 }
 
-void Driver::disableAutomaticCurrentControl()
+void Driver::disableAutomaticCurrentScaling()
 {
   Registers::Pwmconf pwmconf;
   pwmconf.bytes = registers_ptr_->getStored(Registers::PWMCONF);
   pwmconf.pwm_autoscale = 0;
+  registers_ptr_->write(Registers::PWMCONF, pwmconf.bytes);
+}
+
+void Driver::enableAutomaticGradientAdaptation()
+{
+  Registers::Pwmconf pwmconf;
+  pwmconf.bytes = registers_ptr_->getStored(Registers::PWMCONF);
+  pwmconf.pwm_autograd = 1;
+  registers_ptr_->write(Registers::PWMCONF, pwmconf.bytes);
+}
+
+void Driver::disableAutomaticGradientAdaptation()
+{
+  Registers::Pwmconf pwmconf;
+  pwmconf.bytes = registers_ptr_->getStored(Registers::PWMCONF);
   pwmconf.pwm_autograd = 0;
   registers_ptr_->write(Registers::PWMCONF, pwmconf.bytes);
 }
@@ -128,6 +142,34 @@ void Driver::disableStealthChop()
   registers_ptr_->write(Registers::GCONF, gconf.bytes);
 }
 
+void Driver::setStallGuardThreshold(int8_t threshold)
+{
+  Registers::Coolconf coolconf;
+  coolconf.bytes = registers_ptr_->getStored(Registers::COOLCONF);
+  coolconf.sgt = threshold;
+  registers_ptr_->write(Registers::COOLCONF, coolconf.bytes);
+}
+
+void Driver::enableCoolStep(uint8_t lower_threshold,
+    uint8_t upper_threshold)
+{
+  Registers::Coolconf coolconf;
+  coolconf.bytes = registers_ptr_->getStored(Registers::COOLCONF);
+  lower_threshold = constrain_(lower_threshold, SEMIN_MIN, SEMIN_MAX);
+  coolconf.semin = lower_threshold;
+  upper_threshold = constrain_(upper_threshold, SEMAX_MIN, SEMAX_MAX);
+  coolconf.semax = upper_threshold;
+  registers_ptr_->write(Registers::COOLCONF, coolconf.bytes);
+}
+
+void Driver::disableCoolStep()
+{
+  Registers::Coolconf coolconf;
+  coolconf.bytes = registers_ptr_->getStored(Registers::COOLCONF);
+  coolconf.semin = SEMIN_OFF;
+  registers_ptr_->write(Registers::COOLCONF, coolconf.bytes);
+}
+
 // private
 
 void Driver::setup(Registers & registers)
@@ -138,7 +180,8 @@ void Driver::setup(Registers & registers)
   disable();
   minimizeMotorCurrent();
   enableStealthChop();
-  disableAutomaticCurrentControl();
+  disableAutomaticCurrentScaling();
+  disableAutomaticGradientAdaptation();
 }
 
 void Driver::hardwareEnable()

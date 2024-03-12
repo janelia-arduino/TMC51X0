@@ -18,12 +18,16 @@ const int DELAY = 1000;
 
 const uint8_t GLOBAL_CURRENT_SCALAR_PERCENT = 50;
 const uint8_t RUN_CURRENT_PERCENT = 50;
-const uint8_t PWM_OFFSET = 100;
-const uint8_t PWM_GRADIENT = 100;
+const uint8_t PWM_OFFSET = 50;
+const uint8_t PWM_GRADIENT = 50;
+// const int8_t STALL_GUARD_THRESHOLD = -20;
+// const uint8_t COOL_STEP_LOWER_THRESHOLD = 1;
+// const uint8_t COOL_STEP_UPPER_THRESHOLD = 0;
 
-const uint32_t VELOCITY_MAX = 10000;
+const uint32_t VELOCITY_MAX = 20000;
 const uint32_t ACCELERATION_MAX = 10000;
 const tmc51x0::Controller::RampMode RAMP_MODE = tmc51x0::Controller::VELOCITY_POSITIVE;
+const int32_t INITIAL_POSITION = 0;
 
 // Instantiate TMC51X0
 TMC51X0 stepper;
@@ -59,16 +63,8 @@ void printRegisterRampStat(uint32_t register_data)
   printRegisterPortion("ramp_stat", ramp_stat.bytes, true);
   printRegisterPortion("status_stop_l", ramp_stat.status_stop_l);
   printRegisterPortion("status_stop_r", ramp_stat.status_stop_r);
-  printRegisterPortion("status_latch_l", ramp_stat.status_latch_l);
-  printRegisterPortion("status_latch_r", ramp_stat.status_latch_r);
-  printRegisterPortion("event_stop_l", ramp_stat.event_stop_l);
-  printRegisterPortion("event_stop_r", ramp_stat.event_stop_r);
-  printRegisterPortion("event_pos_reached", ramp_stat.event_pos_reached);
   printRegisterPortion("velocity_reached", ramp_stat.velocity_reached);
-  printRegisterPortion("position_reached", ramp_stat.position_reached);
   printRegisterPortion("vzero", ramp_stat.vzero);
-  printRegisterPortion("t_zerowait_active", ramp_stat.t_zerowait_active);
-  printRegisterPortion("second_move", ramp_stat.second_move);
   printRegisterPortion("status_sg", ramp_stat.status_sg);
   Serial.println("--------------------------");
 }
@@ -79,38 +75,19 @@ void printRegisterDrvStatus(uint32_t register_data)
   drv_status.bytes = register_data;
   printRegisterPortion("drv_status", drv_status.bytes, true);
   printRegisterPortion("sg_result", drv_status.sg_result, true);
-  printRegisterPortion("s2vsa", drv_status.s2vsa);
-  printRegisterPortion("s2vsb", drv_status.s2vsb);
   printRegisterPortion("stealth", drv_status.stealth);
-  printRegisterPortion("fsactive", drv_status.fsactive);
   printRegisterPortion("cs_actual", drv_status.cs_actual, true);
-  printRegisterPortion("ot", drv_status.ot);
-  printRegisterPortion("otpw", drv_status.otpw);
-  printRegisterPortion("s2ga", drv_status.s2ga);
-  printRegisterPortion("s2gb", drv_status.s2gb);
-  printRegisterPortion("ola", drv_status.ola);
-  printRegisterPortion("olb", drv_status.olb);
   printRegisterPortion("stst", drv_status.stst);
   Serial.println("--------------------------");
 }
 
-void printRegisterSwMode(uint32_t register_data)
+void printRegisterPwmScale(uint32_t register_data)
 {
-  tmc51x0::Registers::SwMode sw_mode;
-  sw_mode.bytes = register_data;
-  printRegisterPortion("sw_mode", sw_mode.bytes, true);
-  printRegisterPortion("stop_l_enable", sw_mode.stop_l_enable);
-  printRegisterPortion("stop_r_enable", sw_mode.stop_r_enable);
-  printRegisterPortion("pol_stop_l", sw_mode.pol_stop_l);
-  printRegisterPortion("pol_stop_r", sw_mode.pol_stop_r);
-  printRegisterPortion("swap_lr", sw_mode.swap_lr);
-  printRegisterPortion("latch_l_active", sw_mode.latch_l_active);
-  printRegisterPortion("latch_l_inactive", sw_mode.latch_l_inactive);
-  printRegisterPortion("latch_r_active", sw_mode.latch_r_active);
-  printRegisterPortion("latch_r_inactive", sw_mode.latch_r_inactive);
-  printRegisterPortion("en_latch_encoder", sw_mode.en_latch_encoder);
-  printRegisterPortion("sg_stop", sw_mode.sg_stop);
-  printRegisterPortion("en_softstop", sw_mode.en_softstop);
+  tmc51x0::Registers::PwmScale pwm_scale;
+  pwm_scale.bytes = register_data;
+  printRegisterPortion("pwm_scale", pwm_scale.bytes, true);
+  printRegisterPortion("pwm_scale_sum", pwm_scale.pwm_scale_sum, true);
+  printRegisterPortion("pwm_scale_auto", pwm_scale.pwm_scale_auto, true);
   Serial.println("--------------------------");
 }
 
@@ -129,10 +106,13 @@ void setup()
   stepper.driver.setRunCurrent(RUN_CURRENT_PERCENT);
   stepper.driver.setPwmOffset(PWM_OFFSET);
   stepper.driver.setPwmGradient(PWM_GRADIENT);
+  // stepper.driver.setStallGuardThreshold(STALL_GUARD_THRESHOLD);
+  // stepper.driver.enableCoolStep(COOL_STEP_LOWER_THRESHOLD, COOL_STEP_UPPER_THRESHOLD);
 
   stepper.controller.setVelocityMax(VELOCITY_MAX);
   stepper.controller.setAccelerationMax(ACCELERATION_MAX);
   stepper.controller.setRampMode(RAMP_MODE);
+  stepper.controller.setActualPosition(INITIAL_POSITION);
 
   stepper.driver.enable();
 }
@@ -142,14 +122,13 @@ void loop()
   printGlobalStatus(stepper.readAndClearGlobalStatus());
   printRegisterRampStat(stepper.registers.read(tmc51x0::Registers::RAMP_STAT));
   printRegisterDrvStatus(stepper.registers.read(tmc51x0::Registers::DRV_STATUS));
-  printRegisterSwMode(stepper.registers.read(tmc51x0::Registers::SW_MODE));
+  printRegisterPwmScale(stepper.registers.read(tmc51x0::Registers::PWM_SCALE));
 
-  Serial.print("ramp mode: ");
-  Serial.println(stepper.registers.read(tmc51x0::Registers::RAMPMODE));
   Serial.print("actual position: ");
   Serial.println(stepper.controller.getActualPosition());
   Serial.print("actual velocity: ");
   Serial.println(stepper.controller.getActualVelocity());
+  Serial.println("--------------------------");
   Serial.println("--------------------------");
   delay(DELAY);
 }
