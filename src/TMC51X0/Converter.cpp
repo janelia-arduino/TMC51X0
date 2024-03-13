@@ -12,12 +12,12 @@ using namespace tmc51x0;
 
 Converter::Converter()
 {
-  clock_frequency_ = CLOCK_FREQUENCY_DEFAULT;
+  clock_frequency_mhz_ = CLOCK_FREQUENCY_MHZ_DEFAULT;
 }
 
-void Converter::setClockFrequency(uint8_t clock_frequency_mhz)
+void Converter::setClockFrequencyMHz(uint8_t clock_frequency_mhz)
 {
-  clock_frequency_ = clock_frequency_mhz*1000000;
+  clock_frequency_mhz_ = clock_frequency_mhz;
 }
 
 uint8_t Converter::percentToGlobalCurrentScaler(uint8_t percent)
@@ -90,17 +90,33 @@ uint8_t Converter::holdDelaySettingToPercent(uint8_t hold_delay_setting)
 uint32_t Converter::velocityChipToHz(uint32_t velocity_chip)
 {
   uint64_t velocity_hz;
-  velocity_hz = ((uint64_t)velocity_chip * clock_frequency_);
-  velocity_hz = velocity_hz / HZ_TO_CHIP_MULTIPLIER;
+  velocity_hz = (uint64_t)velocity_chip * ((uint64_t)clock_frequency_mhz_ * 1000000);
+  velocity_hz = velocity_hz / (uint64_t)VELOCITY_SCALER;
   return velocity_hz;
 }
 
 uint32_t Converter::velocityHzToChip(uint32_t velocity_hz)
 {
   uint64_t velocity_chip;
-  velocity_chip = ((uint64_t)velocity_hz * HZ_TO_CHIP_MULTIPLIER);
-  velocity_chip = velocity_chip / clock_frequency_;
+  velocity_chip = (uint64_t)velocity_hz * (uint64_t)VELOCITY_SCALER;
+  velocity_chip = velocity_chip / ((uint64_t)clock_frequency_mhz_ * 1000000);
   return velocity_chip;
+}
+
+uint32_t Converter::accelerationChipToHzPerS(uint32_t acceleration_chip)
+{
+  uint64_t acceleration_hz_per_s;
+  acceleration_hz_per_s = (uint64_t)acceleration_chip * ((uint64_t)clock_frequency_mhz_ * (uint64_t)clock_frequency_mhz_ * 1000);
+  acceleration_hz_per_s = acceleration_hz_per_s / (uint64_t)ACCELERATION_SCALER;
+  return acceleration_hz_per_s;
+}
+
+uint32_t Converter::accelerationHzPerSToChip(uint32_t acceleration_hz_per_s)
+{
+  uint64_t acceleration_chip;
+  acceleration_chip = (uint64_t)acceleration_hz_per_s * (uint64_t)ACCELERATION_SCALER;
+  acceleration_chip = acceleration_chip / ((uint64_t)clock_frequency_mhz_ * (uint64_t)clock_frequency_mhz_ * 1000);
+  return acceleration_chip;
 }
 
 // private

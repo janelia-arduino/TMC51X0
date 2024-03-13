@@ -17,7 +17,7 @@ class Converter
 public:
   Converter();
 
-  void setClockFrequency(uint8_t clock_frequency_mhz);
+  void setClockFrequencyMHz(uint8_t clock_frequency_mhz);
 
   uint8_t percentToGlobalCurrentScaler(uint8_t percent);
   uint8_t percentToCurrentSetting(uint8_t percent);
@@ -27,6 +27,9 @@ public:
 
   uint32_t velocityChipToHz(uint32_t velocity_chip);
   uint32_t velocityHzToChip(uint32_t velocity_hz);
+
+  uint32_t accelerationChipToHzPerS(uint32_t acceleration_chip);
+  uint32_t accelerationHzPerSToChip(uint32_t acceleration_hz_per_s);
 
   const static uint8_t PERCENT_MIN = 0;
   const static uint8_t PERCENT_MAX = 100;
@@ -42,9 +45,10 @@ public:
   const static uint8_t SEMAX_MIN = 0;
   const static uint8_t SEMAX_MAX = 15;
 private:
-  uint64_t clock_frequency_;
-  const static uint64_t CLOCK_FREQUENCY_DEFAULT = 12000000;
-  const static uint64_t HZ_TO_CHIP_MULTIPLIER = 16777216;
+  uint8_t clock_frequency_mhz_;
+  const static uint8_t CLOCK_FREQUENCY_MHZ_DEFAULT = 12;
+  const static uint32_t VELOCITY_SCALER = 16777216;
+  const static uint32_t ACCELERATION_SCALER = 2199;
 
   uint32_t constrain_(uint32_t value, uint32_t low, uint32_t high);
 };

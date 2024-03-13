@@ -108,7 +108,7 @@ void setup()
   stepper.setup(spi, CHIP_SELECT_PIN);
   stepper.driver.setHardwareEnablePin(HARDWARE_ENABLE_PIN);
 
-  stepper.converter.setClockFrequency(CLOCK_FREQUENCY_MHZ);
+  stepper.converter.setClockFrequencyMHz(CLOCK_FREQUENCY_MHZ);
 
   stepper.driver.setGlobalCurrentScaler(GLOBAL_CURRENT_SCALAR);
   stepper.driver.setRunCurrent(RUN_CURRENT);
@@ -134,14 +134,22 @@ void loop()
 
   Serial.print("VELOCITY_MAX: ");
   Serial.println(VELOCITY_MAX);
-  Serial.print("ACCELERATION_MAX: ");
-  Serial.println(ACCELERATION_MAX);
   Serial.print("VELOCITY_MAX (Hz): ");
   uint32_t velocity_hz = stepper.converter.velocityChipToHz(VELOCITY_MAX);
   Serial.println(velocity_hz);
   Serial.print("VELOCITY_MAX (chip): ");
   uint32_t velocity_chip = stepper.converter.velocityHzToChip(velocity_hz);
   Serial.println(velocity_chip);
+
+  Serial.print("ACCELERATION_MAX: ");
+  Serial.println(ACCELERATION_MAX);
+  Serial.print("ACCELERATION_MAX (HzPerS): ");
+  uint32_t acceleration_hz_per_s = stepper.converter.accelerationChipToHzPerS(ACCELERATION_MAX);
+  Serial.println(acceleration_hz_per_s);
+  Serial.print("ACCELERATION_MAX (chip): ");
+  uint32_t acceleration_chip = stepper.converter.accelerationHzPerSToChip(acceleration_hz_per_s);
+  Serial.println(acceleration_chip);
+
   Serial.print("tstep: ");
   Serial.println(stepper.controller.getTstep());
   Serial.print("actual position: ");
