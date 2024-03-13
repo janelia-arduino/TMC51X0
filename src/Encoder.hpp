@@ -9,8 +9,8 @@
 #define TMC51X0_ENCODER_HPP
 
 #include "TMC51X0/Constants.hpp"
-#include "TMC51X0/Converter.hpp"
 #include "Registers.hpp"
+#include "Converter.hpp"
 
 
 class TMC51X0;

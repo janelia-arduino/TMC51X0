@@ -16,13 +16,13 @@ const uint8_t HARDWARE_ENABLE_PIN = 4;
 const long SERIAL_BAUD_RATE = 115200;
 const int DELAY = 1000;
 
-const uint8_t GLOBAL_CURRENT_SCALAR_PERCENT = 50;
-const uint8_t RUN_CURRENT_PERCENT = 50;
-const uint8_t PWM_OFFSET = 50;
-const uint8_t PWM_GRADIENT = 50;
+const uint8_t GLOBAL_CURRENT_SCALAR = 129;
+const uint8_t RUN_CURRENT = 16;
+const uint8_t PWM_OFFSET = 25;
+const uint8_t PWM_GRADIENT = 25;
 // const int8_t STALL_GUARD_THRESHOLD = -20;
-// const uint8_t COOL_STEP_LOWER_THRESHOLD = 1;
-// const uint8_t COOL_STEP_UPPER_THRESHOLD = 0;
+// const uint8_t COOL_STEP_MINIMUM = 1;
+// const uint8_t COOL_STEP_MAXIMUM = 0;
 
 const uint32_t VELOCITY_MAX = 20000;
 const uint32_t ACCELERATION_MAX = 10000;
@@ -102,12 +102,12 @@ void setup()
   stepper.setup(spi, CHIP_SELECT_PIN);
   stepper.driver.setHardwareEnablePin(HARDWARE_ENABLE_PIN);
 
-  stepper.driver.setGlobalCurrentScaler(GLOBAL_CURRENT_SCALAR_PERCENT);
-  stepper.driver.setRunCurrent(RUN_CURRENT_PERCENT);
+  stepper.driver.setGlobalCurrentScaler(GLOBAL_CURRENT_SCALAR);
+  stepper.driver.setRunCurrent(RUN_CURRENT);
   stepper.driver.setPwmOffset(PWM_OFFSET);
   stepper.driver.setPwmGradient(PWM_GRADIENT);
   // stepper.driver.setStallGuardThreshold(STALL_GUARD_THRESHOLD);
-  // stepper.driver.enableCoolStep(COOL_STEP_LOWER_THRESHOLD, COOL_STEP_UPPER_THRESHOLD);
+  // stepper.driver.enableCoolStep(COOL_STEP_MINIMUM, COOL_STEP_MAXIMUM);
 
   stepper.controller.setVelocityMax(VELOCITY_MAX);
   stepper.controller.setAccelerationMax(ACCELERATION_MAX);

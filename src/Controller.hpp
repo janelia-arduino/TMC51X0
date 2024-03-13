@@ -9,8 +9,8 @@
 #define TMC51X0_CONTROLLER_HPP
 
 #include "TMC51X0/Constants.hpp"
-#include "TMC51X0/Converter.hpp"
 #include "Registers.hpp"
+#include "Converter.hpp"
 
 
 class TMC51X0;
@@ -29,11 +29,16 @@ public:
   };
   void setRampMode(RampMode mode);
 
+  // -2^31..(2^31)-1 microsteps
   int32_t getActualPosition();
+  // -2^31..(2^31)-1 microsteps
   void setActualPosition(int32_t position);
+  // -(2^23)-1..(2^23)-1 microsteps/t
   int32_t getActualVelocity();
 
+  // 0..(2^23)-512 microsteps/t
   void setVelocityMax(uint32_t velocity);
+  // 0..(2^16)-1 microsteps/ta^2
   void setAccelerationMax(uint32_t acceleration);
 
 private:
