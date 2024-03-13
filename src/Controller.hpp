@@ -29,6 +29,8 @@ public:
   };
   void setRampMode(RampMode mode);
 
+  int32_t getTstep();
+
   // -2^31..(2^31)-1 microsteps
   int32_t getActualPosition();
   // -2^31..(2^31)-1 microsteps

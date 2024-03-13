@@ -10,9 +10,14 @@
 using namespace tmc51x0;
 
 
-void Converter::setup(uint8_t clock_frequency_mhz)
+Converter::Converter()
 {
-  clock_frequency_mhz_ = clock_frequency_mhz;
+  clock_frequency_ = CLOCK_FREQUENCY_DEFAULT;
+}
+
+void Converter::setClockFrequency(uint8_t clock_frequency_mhz)
+{
+  clock_frequency_ = clock_frequency_mhz*1000000;
 }
 
 uint8_t Converter::percentToGlobalCurrentScaler(uint8_t percent)
@@ -80,6 +85,22 @@ uint8_t Converter::holdDelaySettingToPercent(uint8_t hold_delay_setting)
     PERCENT_MIN,
     PERCENT_MAX);
   return percent;
+}
+
+uint32_t Converter::velocityChipToHz(uint32_t velocity_chip)
+{
+  uint64_t velocity_hz;
+  velocity_hz = ((uint64_t)velocity_chip * clock_frequency_);
+  velocity_hz = velocity_hz / HZ_TO_CHIP_MULTIPLIER;
+  return velocity_hz;
+}
+
+uint32_t Converter::velocityHzToChip(uint32_t velocity_hz)
+{
+  uint64_t velocity_chip;
+  velocity_chip = ((uint64_t)velocity_hz * HZ_TO_CHIP_MULTIPLIER);
+  velocity_chip = velocity_chip / clock_frequency_;
+  return velocity_chip;
 }
 
 // private

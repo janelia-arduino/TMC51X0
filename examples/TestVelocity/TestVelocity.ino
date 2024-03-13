@@ -16,6 +16,11 @@ const uint8_t HARDWARE_ENABLE_PIN = 4;
 const long SERIAL_BAUD_RATE = 115200;
 const int DELAY = 1000;
 
+// converter constants
+// internal clock is ~12MHz
+const uint8_t CLOCK_FREQUENCY_MHZ = 12;
+
+// driver constants
 const uint8_t GLOBAL_CURRENT_SCALAR = 129;
 const uint8_t RUN_CURRENT = 16;
 const uint8_t PWM_OFFSET = 25;
@@ -24,7 +29,8 @@ const uint8_t PWM_GRADIENT = 25;
 // const uint8_t COOL_STEP_MINIMUM = 1;
 // const uint8_t COOL_STEP_MAXIMUM = 0;
 
-const uint32_t VELOCITY_MAX = 20000;
+// controller constants
+const uint32_t VELOCITY_MAX = 50000;
 const uint32_t ACCELERATION_MAX = 10000;
 const tmc51x0::Controller::RampMode RAMP_MODE = tmc51x0::Controller::VELOCITY_POSITIVE;
 const int32_t INITIAL_POSITION = 0;
@@ -102,6 +108,8 @@ void setup()
   stepper.setup(spi, CHIP_SELECT_PIN);
   stepper.driver.setHardwareEnablePin(HARDWARE_ENABLE_PIN);
 
+  stepper.converter.setClockFrequency(CLOCK_FREQUENCY_MHZ);
+
   stepper.driver.setGlobalCurrentScaler(GLOBAL_CURRENT_SCALAR);
   stepper.driver.setRunCurrent(RUN_CURRENT);
   stepper.driver.setPwmOffset(PWM_OFFSET);
@@ -124,6 +132,18 @@ void loop()
   printRegisterDrvStatus(stepper.registers.read(tmc51x0::Registers::DRV_STATUS));
   printRegisterPwmScale(stepper.registers.read(tmc51x0::Registers::PWM_SCALE));
 
+  Serial.print("VELOCITY_MAX: ");
+  Serial.println(VELOCITY_MAX);
+  Serial.print("ACCELERATION_MAX: ");
+  Serial.println(ACCELERATION_MAX);
+  Serial.print("VELOCITY_MAX (Hz): ");
+  uint32_t velocity_hz = stepper.converter.velocityChipToHz(VELOCITY_MAX);
+  Serial.println(velocity_hz);
+  Serial.print("VELOCITY_MAX (chip): ");
+  uint32_t velocity_chip = stepper.converter.velocityHzToChip(velocity_hz);
+  Serial.println(velocity_chip);
+  Serial.print("tstep: ");
+  Serial.println(stepper.controller.getTstep());
   Serial.print("actual position: ");
   Serial.println(stepper.controller.getActualPosition());
   Serial.print("actual velocity: ");

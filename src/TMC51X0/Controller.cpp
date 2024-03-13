@@ -16,6 +16,11 @@ void Controller::setRampMode(RampMode mode)
   registers_ptr_->write(Registers::RAMPMODE, mode);
 }
 
+int32_t Controller::getTstep()
+{
+  return registers_ptr_->read(Registers::TSTEP);
+}
+
 int32_t Controller::getActualPosition()
 {
   return registers_ptr_->read(Registers::XACTUAL);
