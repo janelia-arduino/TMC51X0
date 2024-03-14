@@ -59,6 +59,16 @@ public:
   void enableStealthChop();
   void disableStealthChop();
 
+  enum StandstillMode
+  {
+    NORMAL=0,
+    FREEWHEELING=1,
+    PASSIVE_BRAKING_LS=2,
+    PASSIVE_BRAKING_HS=3,
+  };
+  // only available with StealthChop enabled
+  void setStandstillMode(StandstillMode mode);
+
   // 0 indifferent value
   // 1..63 less sensitivity
   // -1..-64 higher sensitivity

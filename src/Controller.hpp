@@ -47,6 +47,11 @@ private:
   Registers * registers_ptr_;
   Converter * converter_ptr_;
 
+  const static RampMode RAMP_MODE_DEFAULT = VELOCITY_POSITIVE;
+  const static uint32_t ACTUAL_POSITION_DEFAULT = 0;
+  const static uint32_t VELOCITY_MAX_DEFAULT = 0;
+  const static uint32_t ACCELERATION_MAX_DEFAULT = 1000;
+
   void setup(Registers & registers,
     Converter & converter);
 

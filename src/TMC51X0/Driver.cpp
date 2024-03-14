@@ -126,6 +126,14 @@ void Driver::disableStealthChop()
   registers_ptr_->write(Registers::GCONF, gconf.bytes);
 }
 
+void Driver::setStandstillMode(Driver::StandstillMode mode)
+{
+  Registers::Pwmconf pwmconf;
+  pwmconf.bytes = registers_ptr_->getStored(Registers::PWMCONF);
+  pwmconf.freewheel = mode;
+  registers_ptr_->write(Registers::PWMCONF, pwmconf.bytes);
+}
+
 void Driver::setStallGuardThreshold(int8_t threshold)
 {
   Registers::Coolconf coolconf;

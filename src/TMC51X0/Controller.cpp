@@ -53,5 +53,10 @@ void Controller::setup(Registers & registers,
 {
   registers_ptr_ = &registers;
   converter_ptr_ = &converter;
+
+  setRampMode(RAMP_MODE_DEFAULT);
+  setActualPosition(ACTUAL_POSITION_DEFAULT);
+  setVelocityMax(VELOCITY_MAX_DEFAULT);
+  setAccelerationMax(ACCELERATION_MAX_DEFAULT);
 }
 
