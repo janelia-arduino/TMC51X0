@@ -32,7 +32,7 @@ const uint8_t PWM_GRADIENT = 25;
 // const uint8_t COOL_STEP_MAXIMUM = 0;
 
 // controller constants
-const uint32_t VELOCITY_MAX = 200000;
+const uint32_t VELOCITY_MAX = 400000;
 const uint32_t ACCELERATION_MAX = 10000;
 const tmc51x0::Controller::RampMode RAMP_MODE = tmc51x0::Controller::VELOCITY_POSITIVE;
 const int32_t INITIAL_POSITION = 0;

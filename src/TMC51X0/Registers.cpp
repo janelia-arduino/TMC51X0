@@ -73,6 +73,11 @@ bool Registers::readable(RegisterAddress register_address)
 void Registers::setup(SPIClass & spi,
   size_t chip_select_pin)
 {
+  for (uint8_t register_address=0; register_address<ADDRESS_COUNT; ++register_address)
+  {
+    stored_[register_address] = 0;
+  }
+
   stored_[GCONF] = 0x9;
   writeable_[GCONF] = true;
   readable_[GCONF] = true;
@@ -216,4 +221,5 @@ void Registers::setup(SPIClass & spi,
   readable_[LOST_STEPS] = true;
 
   interface_.setup(spi, chip_select_pin);
+
 }
