@@ -27,7 +27,14 @@ public:
     VELOCITY_NEGATIVE = 2,
     HOLD = 3,
   };
-  void setRampMode(RampMode mode);
+  void setRampMode(RampMode ramp_mode);
+
+  enum StopMode
+  {
+    HARD = 0,
+    SOFT = 1,
+  };
+  void setStopMode(StopMode stop_mode);
 
   int32_t getTstep();
 
@@ -48,6 +55,7 @@ private:
   Converter * converter_ptr_;
 
   const static RampMode RAMP_MODE_DEFAULT = VELOCITY_POSITIVE;
+  const static StopMode STOP_MODE_DEFAULT = SOFT;
   const static uint32_t ACTUAL_POSITION_DEFAULT = 0;
   const static uint32_t VELOCITY_MAX_DEFAULT = 0;
   const static uint32_t ACCELERATION_MAX_DEFAULT = 1000;

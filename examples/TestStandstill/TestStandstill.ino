@@ -38,13 +38,12 @@ void setup()
   stepper.driver.setHoldCurrent(HOLD_CURRENT);
   stepper.driver.setHoldDelay(HOLD_DELAY);
   stepper.driver.enable();
+
+  delay(DELAY);
 }
 
 void loop()
 {
-  Serial.print("ramp_mode: ");
-  Serial.println(stepper.registers.read(tmc51x0::Registers::RAMPMODE));
-
   Serial.println("standstill mode = NORMAL");
   stepper.driver.setStandstillMode(tmc51x0::Driver::NORMAL);
   delay(DELAY);
