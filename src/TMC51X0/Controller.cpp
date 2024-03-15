@@ -22,7 +22,7 @@ void Controller::setStopMode(StopMode stop_mode)
   registers_ptr_->write(Registers::SW_MODE, sw_mode.bytes);
 }
 
-int32_t Controller::getTstep()
+uint32_t Controller::getTstep()
 {
   return registers_ptr_->read(Registers::TSTEP);
 }

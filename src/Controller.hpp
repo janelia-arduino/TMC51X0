@@ -36,7 +36,7 @@ public:
   };
   void setStopMode(StopMode stop_mode);
 
-  int32_t getTstep();
+  uint32_t getTstep();
 
   // -2^31..(2^31)-1 microsteps
   int32_t getActualPosition();

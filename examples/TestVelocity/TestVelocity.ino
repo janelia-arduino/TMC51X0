@@ -19,8 +19,8 @@ const int DELAY = 1000;
 // converter constants
 // internal clock is ~12MHz
 const uint8_t CLOCK_FREQUENCY_MHZ = 12;
-// 200 fullsteps per revolution for many steppers
-constexpr uint32_t FULLSTEPS_TO_REAL_UNITS_COUNT = 200;
+// 200 fullsteps per revolution for many steppers * 256 microsteps per fullstep
+constexpr uint32_t MICROSTEPS_TO_REAL_UNITS_COUNT = 51200;
 
 // driver constants
 const uint8_t GLOBAL_CURRENT_SCALAR = 129;
@@ -111,7 +111,7 @@ void setup()
   stepper.driver.setHardwareEnablePin(HARDWARE_ENABLE_PIN);
 
   stepper.converter.setClockFrequencyMHz(CLOCK_FREQUENCY_MHZ);
-  stepper.converter.setFullstepsToRealUnitsCount(FULLSTEPS_TO_REAL_UNITS_COUNT);
+  stepper.converter.setMicrostepsToRealUnitsCount(MICROSTEPS_TO_REAL_UNITS_COUNT);
 
   stepper.driver.setGlobalCurrentScaler(GLOBAL_CURRENT_SCALAR);
   stepper.driver.setRunCurrent(RUN_CURRENT);
@@ -135,38 +135,37 @@ void loop()
   printRegisterDrvStatus(stepper.registers.read(tmc51x0::Registers::DRV_STATUS));
   printRegisterPwmScale(stepper.registers.read(tmc51x0::Registers::PWM_SCALE));
 
-  Serial.print("tstep: ");
-  Serial.println(stepper.controller.getTstep());
-  Serial.println("--------------------------");
-
-  Serial.print("ACCELERATION_MAX (chip): ");
+  Serial.print("ACCELERATION_MAX (chip units): ");
   Serial.println(ACCELERATION_MAX);
-  uint32_t acceleration_hz_per_s = stepper.converter.accelerationChipToHzPerS(ACCELERATION_MAX);
-  Serial.print("ACCELERATION_MAX (HzPerS): ");
-  Serial.println(acceleration_hz_per_s);
   uint32_t acceleration_real = stepper.converter.accelerationChipToReal(ACCELERATION_MAX);
-  Serial.print("acceleration (real): ");
+  Serial.print("acceleration (rotations per second per second): ");
   Serial.println(acceleration_real);
   Serial.println("--------------------------");
 
-  Serial.print("VELOCITY_MAX (chip): ");
+  Serial.print("VELOCITY_MAX (chip units): ");
   Serial.println(VELOCITY_MAX);
-  uint32_t velocity_hz = stepper.converter.velocityChipToHz(VELOCITY_MAX);
-  Serial.print("VELOCITY_MAX (Hz): ");
-  Serial.println(velocity_hz);
   uint32_t actual_velocity_chip = stepper.controller.getActualVelocity();
-  Serial.print("actual velocity (chip): ");
+  Serial.print("actual_velocity (chip units): ");
   Serial.println(actual_velocity_chip);
   uint32_t actual_velocity_real = stepper.converter.velocityChipToReal(actual_velocity_chip);
-  Serial.print("actual velocity (real): ");
+  Serial.print("actual_velocity (rotations per second): ");
   Serial.println(actual_velocity_real);
+  uint32_t tstep = stepper.controller.getTstep();
+  Serial.print("tstep (chip units): ");
+  Serial.println(tstep);
+uint32_t velocity_real = stepper.converter.tstepToVelocityReal(tstep);
+  Serial.print("tstepToVelocityReal (rotations per second): ");
+  Serial.println(velocity_real);
+  tstep = stepper.converter.velocityRealToTstep(velocity_real);
+  Serial.print("velocityRealToTstep (chip_units): ");
+  Serial.println(tstep);
   Serial.println("--------------------------");
 
   int32_t actual_position_chip = stepper.controller.getActualPosition();
-  Serial.print("actual position (chip): ");
+  Serial.print("actual position (chip units): ");
   Serial.println(actual_position_chip);
   int32_t actual_position_real = stepper.converter.positionChipToReal(actual_position_chip);
-  Serial.print("actual position (real): ");
+  Serial.print("actual position (rotations): ");
   Serial.println(actual_position_real);
 
 
