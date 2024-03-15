@@ -62,6 +62,22 @@ void Driver::setHoldDelay(uint8_t hold_delay)
   registers_ptr_->write(Registers::IHOLD_IRUN, ihold_irun.bytes);
 }
 
+void Driver::enableStealthChop()
+{
+  Registers::Gconf gconf;
+  gconf.bytes = registers_ptr_->getStored(Registers::GCONF);
+  gconf.en_pwm_mode = 1;
+  registers_ptr_->write(Registers::GCONF, gconf.bytes);
+}
+
+void Driver::disableStealthChop()
+{
+  Registers::Gconf gconf;
+  gconf.bytes = registers_ptr_->getStored(Registers::GCONF);
+  gconf.en_pwm_mode = 0;
+  registers_ptr_->write(Registers::GCONF, gconf.bytes);
+}
+
 void Driver::enableAutomaticCurrentScaling()
 {
   Registers::Pwmconf pwmconf;
@@ -110,22 +126,6 @@ void Driver::setPwmGradient(uint8_t pwm_amplitude)
   registers_ptr_->write(Registers::PWMCONF, pwmconf.bytes);
 }
 
-void Driver::enableStealthChop()
-{
-  Registers::Gconf gconf;
-  gconf.bytes = registers_ptr_->getStored(Registers::GCONF);
-  gconf.en_pwm_mode = 1;
-  registers_ptr_->write(Registers::GCONF, gconf.bytes);
-}
-
-void Driver::disableStealthChop()
-{
-  Registers::Gconf gconf;
-  gconf.bytes = registers_ptr_->getStored(Registers::GCONF);
-  gconf.en_pwm_mode = 0;
-  registers_ptr_->write(Registers::GCONF, gconf.bytes);
-}
-
 void Driver::setStandstillMode(Driver::StandstillMode mode)
 {
   Registers::Pwmconf pwmconf;
@@ -134,9 +134,67 @@ void Driver::setStandstillMode(Driver::StandstillMode mode)
   registers_ptr_->write(Registers::PWMCONF, pwmconf.bytes);
 }
 
+void Driver::setMotorDirection(MotorDirection motor_direction)
+{
+  Registers::Gconf gconf;
+  gconf.bytes = registers_ptr_->getStored(Registers::GCONF);
+  gconf.shaft = motor_direction;
+  registers_ptr_->write(Registers::GCONF, gconf.bytes);
+}
+
+void Driver::setChopperMode(ChopperMode chopper_mode)
+{
+  Registers::Chopconf chopconf;
+  chopconf.bytes = registers_ptr_->getStored(Registers::CHOPCONF);
+  chopconf.chm = chopper_mode;
+  registers_ptr_->write(Registers::CHOPCONF, chopconf.bytes);
+}
+
 void Driver::setStealthChopThreshold(uint32_t tstep)
 {
   registers_ptr_->write(Registers::TPWMTHRS, tstep);
+}
+
+void Driver::setCoolStepThreshold(uint32_t tstep)
+{
+  registers_ptr_->write(Registers::TCOOLTHRS, tstep);
+}
+
+void Driver::setHighVelocityThreshold(uint32_t tstep)
+{
+  registers_ptr_->write(Registers::THIGH, tstep);
+}
+
+void Driver::enableHighVelocityFullstep()
+{
+  Registers::Chopconf chopconf;
+  chopconf.bytes = registers_ptr_->getStored(Registers::CHOPCONF);
+  chopconf.vhighfs = 1;
+  registers_ptr_->write(Registers::CHOPCONF, chopconf.bytes);
+}
+
+void Driver::disableHighVelocityFullstep()
+{
+  Registers::Chopconf chopconf;
+  chopconf.bytes = registers_ptr_->getStored(Registers::CHOPCONF);
+  chopconf.vhighfs = 0;
+  registers_ptr_->write(Registers::CHOPCONF, chopconf.bytes);
+}
+
+void Driver::enableHighVelocityChopperSwitch()
+{
+  Registers::Chopconf chopconf;
+  chopconf.bytes = registers_ptr_->getStored(Registers::CHOPCONF);
+  chopconf.vhighchm = 1;
+  registers_ptr_->write(Registers::CHOPCONF, chopconf.bytes);
+}
+
+void Driver::disableHighVelocityChopperSwitch()
+{
+  Registers::Chopconf chopconf;
+  chopconf.bytes = registers_ptr_->getStored(Registers::CHOPCONF);
+  chopconf.vhighchm = 0;
+  registers_ptr_->write(Registers::CHOPCONF, chopconf.bytes);
 }
 
 void Driver::setStallGuardThreshold(int8_t threshold)
@@ -179,6 +237,18 @@ void Driver::setup(Registers & registers,
   enableStealthChop();
   disableAutomaticCurrentScaling();
   disableAutomaticGradientAdaptation();
+  setPwmOffset(PWM_SETTING_DEFAULT);
+  setPwmGradient(PWM_SETTING_DEFAULT);
+  setStandstillMode(STANDSTILL_MODE_DEFAULT);
+  setMotorDirection(MOTOR_DIRECTION_DEFAULT);
+  setChopperMode(CHOPPER_MODE_DEFAULT);
+  setStealthChopThreshold(TSTEP_THRESHOLD_DEFAULT);
+  setCoolStepThreshold(TSTEP_THRESHOLD_DEFAULT);
+  setHighVelocityThreshold(TSTEP_THRESHOLD_DEFAULT);
+  disableHighVelocityFullstep();
+  disableHighVelocityChopperSwitch();
+  setStallGuardThreshold(STALL_GUARD_THRESHOLD_DEFAULT);
+  enableCoolStep();
 }
 
 void Driver::hardwareEnable()

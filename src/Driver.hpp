@@ -46,6 +46,9 @@ public:
   // 1..15: delay per current reduction step in multiple of 2^18 clocks
   void setHoldDelay(uint8_t hold_delay);
 
+  void enableStealthChop();
+  void disableStealthChop();
+
   void enableAutomaticCurrentScaling();
   void disableAutomaticCurrentScaling();
   void enableAutomaticGradientAdaptation();
@@ -55,9 +58,6 @@ public:
   void setPwmOffset(uint8_t pwm_amplitude);
   // range 0..255
   void setPwmGradient(uint8_t pwm_amplitude);
-
-  void enableStealthChop();
-  void disableStealthChop();
 
   enum StandstillMode
   {
@@ -69,7 +69,28 @@ public:
   // only available with StealthChop enabled
   void setStandstillMode(StandstillMode mode);
 
+  enum MotorDirection
+  {
+    FORWARD = 0,
+    REVERSE = 1,
+  };
+  void setMotorDirection(MotorDirection motor_direction);
+
+  enum ChopperMode
+  {
+    SPREAD_CYCLE = 0,
+    CLASSIC = 1,
+  };
+  void setChopperMode(ChopperMode chopper_mode);
+
   void setStealthChopThreshold(uint32_t tstep);
+  void setCoolStepThreshold(uint32_t tstep);
+  void setHighVelocityThreshold(uint32_t tstep);
+
+  void enableHighVelocityFullstep();
+  void disableHighVelocityFullstep();
+  void enableHighVelocityChopperSwitch();
+  void disableHighVelocityChopperSwitch();
 
   // 0 indifferent value
   // 1..63 less sensitivity
@@ -90,6 +111,15 @@ private:
 
   const static uint32_t GLOBAL_SCALER_DEFAULT = 129;
   const static uint32_t CURRENT_SETTING_DEFAULT = 0;
+
+  const static uint32_t PWM_SETTING_DEFAULT = 0;
+  const static uint32_t TSTEP_THRESHOLD_DEFAULT = 0;
+
+  const static StandstillMode STANDSTILL_MODE_DEFAULT = NORMAL;
+  const static MotorDirection MOTOR_DIRECTION_DEFAULT = FORWARD;
+  const static ChopperMode CHOPPER_MODE_DEFAULT = SPREAD_CYCLE;
+
+  const static uint32_t STALL_GUARD_THRESHOLD_DEFAULT = 0;
 
   const static uint8_t DISABLE_TOFF = 0b0;
   const static uint8_t TOFF_ENABLE_DEFAULT = 3;

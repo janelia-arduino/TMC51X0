@@ -33,14 +33,14 @@ void Converter::setMicrostepsToRealUnitsCount(uint32_t microsteps_to_real_units_
 int32_t Converter::positionChipToReal(int32_t position_chip)
 {
   int32_t position_real;
-  position_real = position_chip / microsteps_to_real_units_count_;
+  position_real = position_chip / (int32_t)microsteps_to_real_units_count_;
   return position_real;
 }
 
 int32_t Converter::positionRealToChip(int32_t position_real)
 {
   int32_t position_chip;
-  position_chip = position_real * microsteps_to_real_units_count_;
+  position_chip = position_real * (int32_t)microsteps_to_real_units_count_;
   return position_chip;
 }
 

@@ -313,7 +313,7 @@ struct Registers
       uint32_t fd3 : 1;
       uint32_t disfdcc : 1;
       uint32_t reserved_0 : 1;
-      uint32_t chopper_mode : 1;
+      uint32_t chm : 1;
       uint32_t tbl : 2;
       uint32_t reserved_1 : 1;
       uint32_t vhighfs : 1;

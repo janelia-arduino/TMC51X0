@@ -28,14 +28,17 @@ const uint8_t GLOBAL_CURRENT_SCALAR = 50; // percent
 const uint8_t RUN_CURRENT = 50; // percent
 const uint8_t PWM_OFFSET = 10; // percent
 const uint8_t PWM_GRADIENT = 10; // percent
+const tmc51x0::Driver::MotorDirection MOTOR_DIRECTION = tmc51x0::Driver::FORWARD;
 const uint8_t STEALTH_CHOP_THRESHOLD = 5; // rot/s
+const uint8_t COOL_STEP_THRESHOLD = 6; // rot/s
+const uint8_t COOL_STEP_MINIMUM = 1;
+const uint8_t COOL_STEP_MAXIMUM = 0;
+const uint8_t HIGH_VELOCITY_THRESHOLD = 9; // rot/s
 // const int8_t STALL_GUARD_THRESHOLD = -20;
-// const uint8_t COOL_STEP_MINIMUM = 1;
-// const uint8_t COOL_STEP_MAXIMUM = 0;
 
 // controller constants
 const uint32_t VELOCITY_TARGET_MIN = 1;  // rot/s
-const uint32_t VELOCITY_TARGET_MAX = 10; // rot/s
+const uint32_t VELOCITY_TARGET_MAX = 25; // rot/s
 const uint32_t VELOCITY_TARGET_INC = 1;  // rot/s
 const uint32_t ACCELERATION_MAX = 2;  // rot/(s^2)
 const tmc51x0::Controller::RampMode RAMP_MODE = tmc51x0::Controller::VELOCITY_POSITIVE;
@@ -122,9 +125,12 @@ void setup()
   stepper.driver.setRunCurrent(stepper.converter.percentToCurrentSetting(RUN_CURRENT));
   stepper.driver.setPwmOffset(stepper.converter.percentToPwmSetting(PWM_OFFSET));
   stepper.driver.setPwmGradient(stepper.converter.percentToPwmSetting(PWM_GRADIENT));
-  stepper.driver.setStealthChopThreshold(stepper.converter.velocityRealToTstep(STEALTH_CHOP_THRESHOLD));
+  stepper.driver.setMotorDirection(MOTOR_DIRECTION);
+  // stepper.driver.setStealthChopThreshold(stepper.converter.velocityRealToTstep(STEALTH_CHOP_THRESHOLD));
+  stepper.driver.setCoolStepThreshold(stepper.converter.velocityRealToTstep(COOL_STEP_THRESHOLD));
+  stepper.driver.enableCoolStep(COOL_STEP_MINIMUM, COOL_STEP_MAXIMUM);
+  stepper.driver.setHighVelocityThreshold(stepper.converter.velocityRealToTstep(HIGH_VELOCITY_THRESHOLD));
   // stepper.driver.setStallGuardThreshold(STALL_GUARD_THRESHOLD);
-  // stepper.driver.enableCoolStep(COOL_STEP_MINIMUM, COOL_STEP_MAXIMUM);
 
   velocity_target = VELOCITY_TARGET_MIN;
   stepper.controller.setVelocityMax(stepper.converter.velocityRealToChip(velocity_target));
