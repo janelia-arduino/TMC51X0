@@ -14,7 +14,7 @@ const uint8_t CHIP_SELECT_PIN = 10;
 const uint8_t HARDWARE_ENABLE_PIN = 4;
 
 const long SERIAL_BAUD_RATE = 115200;
-const int DELAY = 1000;
+const int DELAY = 2000;
 
 // converter constants
 // internal clock is ~12MHz
@@ -32,13 +32,16 @@ const uint8_t PWM_GRADIENT = 25;
 // const uint8_t COOL_STEP_MAXIMUM = 0;
 
 // controller constants
-const uint32_t VELOCITY_MAX = 400000;
-const uint32_t ACCELERATION_MAX = 10000;
+const uint32_t VELOCITY_TARGET_MIN = 1;  // rot/s
+const uint32_t VELOCITY_TARGET_MAX = 10; // rot/s
+const uint32_t VELOCITY_TARGET_INC = 1;  // rot/s
+const uint32_t ACCELERATION_MAX = 2;  // rot/(s^2)
 const tmc51x0::Controller::RampMode RAMP_MODE = tmc51x0::Controller::VELOCITY_POSITIVE;
 const int32_t INITIAL_POSITION = 0;
 
 // Instantiate TMC51X0
 TMC51X0 stepper;
+uint32_t velocity_target;
 
 void printRegisterPortion(const char * str, uint32_t value, bool hex=false)
 {
@@ -120,12 +123,15 @@ void setup()
   // stepper.driver.setStallGuardThreshold(STALL_GUARD_THRESHOLD);
   // stepper.driver.enableCoolStep(COOL_STEP_MINIMUM, COOL_STEP_MAXIMUM);
 
-  stepper.controller.setVelocityMax(VELOCITY_MAX);
-  stepper.controller.setAccelerationMax(ACCELERATION_MAX);
+  velocity_target = VELOCITY_TARGET_MIN;
+  stepper.controller.setVelocityMax(stepper.converter.velocityRealToChip(velocity_target));
+  stepper.controller.setAccelerationMax(stepper.converter.accelerationRealToChip(ACCELERATION_MAX));
   stepper.controller.setRampMode(RAMP_MODE);
   stepper.controller.setActualPosition(INITIAL_POSITION);
 
   stepper.driver.enable();
+
+  delay(DELAY);
 }
 
 void loop()
@@ -135,15 +141,14 @@ void loop()
   printRegisterDrvStatus(stepper.registers.read(tmc51x0::Registers::DRV_STATUS));
   printRegisterPwmScale(stepper.registers.read(tmc51x0::Registers::PWM_SCALE));
 
-  Serial.print("ACCELERATION_MAX (chip units): ");
-  Serial.println(ACCELERATION_MAX);
-  uint32_t acceleration_real = stepper.converter.accelerationChipToReal(ACCELERATION_MAX);
   Serial.print("acceleration (rotations per second per second): ");
-  Serial.println(acceleration_real);
+  Serial.println(ACCELERATION_MAX);
+  Serial.print("acceleration (chip units): ");
+  Serial.println(stepper.converter.accelerationRealToChip(ACCELERATION_MAX));
   Serial.println("--------------------------");
 
-  Serial.print("VELOCITY_MAX (chip units): ");
-  Serial.println(VELOCITY_MAX);
+  Serial.print("velocity_target (rotations per second): ");
+  Serial.println(velocity_target);
   uint32_t actual_velocity_chip = stepper.controller.getActualVelocity();
   Serial.print("actual_velocity (chip units): ");
   Serial.println(actual_velocity_chip);
@@ -153,7 +158,7 @@ void loop()
   uint32_t tstep = stepper.controller.getTstep();
   Serial.print("tstep (chip units): ");
   Serial.println(tstep);
-uint32_t velocity_real = stepper.converter.tstepToVelocityReal(tstep);
+  uint32_t velocity_real = stepper.converter.tstepToVelocityReal(tstep);
   Serial.print("tstepToVelocityReal (rotations per second): ");
   Serial.println(velocity_real);
   tstep = stepper.converter.velocityRealToTstep(velocity_real);
@@ -167,9 +172,18 @@ uint32_t velocity_real = stepper.converter.tstepToVelocityReal(tstep);
   int32_t actual_position_real = stepper.converter.positionChipToReal(actual_position_chip);
   Serial.print("actual position (rotations): ");
   Serial.println(actual_position_real);
-
+  Serial.println("--------------------------");
 
   Serial.println("--------------------------");
-  Serial.println("--------------------------");
+
+  delay(DELAY);
+
+  velocity_target += VELOCITY_TARGET_INC;
+  if (velocity_target > VELOCITY_TARGET_MAX)
+  {
+    velocity_target = VELOCITY_TARGET_MIN;
+  }
+  stepper.controller.setVelocityMax(stepper.converter.velocityRealToChip(velocity_target));
+
   delay(DELAY);
 }
