@@ -134,6 +134,11 @@ void Driver::setStandstillMode(Driver::StandstillMode mode)
   registers_ptr_->write(Registers::PWMCONF, pwmconf.bytes);
 }
 
+void Driver::setStealthChopThreshold(uint32_t tstep)
+{
+  registers_ptr_->write(Registers::TPWMTHRS, tstep);
+}
+
 void Driver::setStallGuardThreshold(int8_t threshold)
 {
   Registers::Coolconf coolconf;

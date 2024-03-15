@@ -14,7 +14,7 @@ const uint8_t CHIP_SELECT_PIN = 10;
 const uint8_t HARDWARE_ENABLE_PIN = 4;
 
 const long SERIAL_BAUD_RATE = 115200;
-const int DELAY = 2000;
+const int DELAY = 4000;
 
 // converter constants
 // internal clock is ~12MHz
@@ -27,6 +27,7 @@ const uint8_t GLOBAL_CURRENT_SCALAR = 129;
 const uint8_t RUN_CURRENT = 16;
 const uint8_t PWM_OFFSET = 25;
 const uint8_t PWM_GRADIENT = 25;
+const uint8_t STEALTH_CHOP_THRESHOLD = 5; // rot/s
 // const int8_t STALL_GUARD_THRESHOLD = -20;
 // const uint8_t COOL_STEP_MINIMUM = 1;
 // const uint8_t COOL_STEP_MAXIMUM = 0;
@@ -120,6 +121,7 @@ void setup()
   stepper.driver.setRunCurrent(RUN_CURRENT);
   stepper.driver.setPwmOffset(PWM_OFFSET);
   stepper.driver.setPwmGradient(PWM_GRADIENT);
+  stepper.driver.setStealthChopThreshold(stepper.converter.velocityRealToTstep(STEALTH_CHOP_THRESHOLD));
   // stepper.driver.setStallGuardThreshold(STALL_GUARD_THRESHOLD);
   // stepper.driver.enableCoolStep(COOL_STEP_MINIMUM, COOL_STEP_MAXIMUM);
 
@@ -164,6 +166,10 @@ void loop()
   tstep = stepper.converter.velocityRealToTstep(velocity_real);
   Serial.print("velocityRealToTstep (chip_units): ");
   Serial.println(tstep);
+  Serial.print("STEALTH_CHOP_THRESHOLD (rot per s): ");
+  Serial.println(STEALTH_CHOP_THRESHOLD);
+  Serial.print("STEALTH_CHOP_THRESHOLD (chip units): ");
+  Serial.println(stepper.converter.velocityRealToTstep(STEALTH_CHOP_THRESHOLD));
   Serial.println("--------------------------");
 
   int32_t actual_position_chip = stepper.controller.getActualPosition();

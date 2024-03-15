@@ -69,6 +69,8 @@ public:
   // only available with StealthChop enabled
   void setStandstillMode(StandstillMode mode);
 
+  void setStealthChopThreshold(uint32_t tstep);
+
   // 0 indifferent value
   // 1..63 less sensitivity
   // -1..-64 higher sensitivity
