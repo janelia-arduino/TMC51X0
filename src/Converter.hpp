@@ -33,10 +33,23 @@ public:
   uint32_t accelerationRealToChip(uint32_t acceleration_chip);
 
   uint8_t percentToGlobalCurrentScaler(uint8_t percent);
+
   uint8_t percentToCurrentSetting(uint8_t percent);
   uint8_t currentSettingToPercent(uint8_t current_setting);
+
   uint8_t percentToHoldDelaySetting(uint8_t percent);
   uint8_t holdDelaySettingToPercent(uint8_t hold_delay_setting);
+
+  uint8_t percentToPwmSetting(uint8_t percent);
+
+private:
+  uint8_t clock_frequency_mhz_;
+  uint32_t microsteps_to_real_units_count_;
+  const static uint8_t CLOCK_FREQUENCY_MHZ_DEFAULT = 12;
+  const static uint32_t VELOCITY_SCALER = 16777216;
+  const static uint32_t ACCELERATION_SCALER = 2199;
+  const static uint32_t MICROSTEPS_TO_REAL_UNITS_COUNT_DEFAULT = 1;
+  const static uint32_t DIVISOR_DEFAULT = 1;
 
   const static uint8_t PERCENT_MIN = 0;
   const static uint8_t PERCENT_MAX = 100;
@@ -47,18 +60,13 @@ public:
   const static uint8_t CURRENT_SETTING_MAX = 31;
   const static uint8_t HOLD_DELAY_MIN = 0;
   const static uint8_t HOLD_DELAY_MAX = 15;
+  const static uint8_t PWM_SETTING_MIN = 0;
+  const static uint8_t PWM_SETTING_MAX = 255;
+
   const static uint8_t SEMIN_MIN = 1;
   const static uint8_t SEMIN_MAX = 15;
   const static uint8_t SEMAX_MIN = 0;
   const static uint8_t SEMAX_MAX = 15;
-private:
-  uint8_t clock_frequency_mhz_;
-  uint32_t microsteps_to_real_units_count_;
-  const static uint8_t CLOCK_FREQUENCY_MHZ_DEFAULT = 12;
-  const static uint32_t VELOCITY_SCALER = 16777216;
-  const static uint32_t ACCELERATION_SCALER = 2199;
-  const static uint32_t MICROSTEPS_TO_REAL_UNITS_COUNT_DEFAULT = 1;
-  const static uint32_t DIVISOR_DEFAULT = 1;
 
   uint32_t velocityChipToHz(uint32_t velocity_chip);
   uint32_t velocityHzToChip(uint32_t velocity_hz);

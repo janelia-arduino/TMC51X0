@@ -157,6 +157,19 @@ uint8_t Converter::holdDelaySettingToPercent(uint8_t hold_delay_setting)
   return percent;
 }
 
+uint8_t Converter::percentToPwmSetting(uint8_t percent)
+{
+  uint8_t constrained_percent = constrain_(percent,
+    PERCENT_MIN,
+    PERCENT_MAX);
+  uint8_t pwm_setting = map(constrained_percent,
+    PERCENT_MIN,
+    PERCENT_MAX,
+    PWM_SETTING_MIN,
+    PWM_SETTING_MAX);
+  return pwm_setting;
+}
+
 // private
 
 uint32_t Converter::velocityChipToHz(uint32_t velocity_chip)

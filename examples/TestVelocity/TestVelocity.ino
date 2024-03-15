@@ -20,13 +20,14 @@ const int DELAY = 4000;
 // internal clock is ~12MHz
 const uint8_t CLOCK_FREQUENCY_MHZ = 12;
 // 200 fullsteps per revolution for many steppers * 256 microsteps per fullstep
+// one "real unit" in this example is one rotation of the motor shaft
 constexpr uint32_t MICROSTEPS_TO_REAL_UNITS_COUNT = 51200;
 
 // driver constants
-const uint8_t GLOBAL_CURRENT_SCALAR = 129;
-const uint8_t RUN_CURRENT = 16;
-const uint8_t PWM_OFFSET = 25;
-const uint8_t PWM_GRADIENT = 25;
+const uint8_t GLOBAL_CURRENT_SCALAR = 50; // percent
+const uint8_t RUN_CURRENT = 50; // percent
+const uint8_t PWM_OFFSET = 10; // percent
+const uint8_t PWM_GRADIENT = 10; // percent
 const uint8_t STEALTH_CHOP_THRESHOLD = 5; // rot/s
 // const int8_t STALL_GUARD_THRESHOLD = -20;
 // const uint8_t COOL_STEP_MINIMUM = 1;
@@ -117,10 +118,10 @@ void setup()
   stepper.converter.setClockFrequencyMHz(CLOCK_FREQUENCY_MHZ);
   stepper.converter.setMicrostepsToRealUnitsCount(MICROSTEPS_TO_REAL_UNITS_COUNT);
 
-  stepper.driver.setGlobalCurrentScaler(GLOBAL_CURRENT_SCALAR);
-  stepper.driver.setRunCurrent(RUN_CURRENT);
-  stepper.driver.setPwmOffset(PWM_OFFSET);
-  stepper.driver.setPwmGradient(PWM_GRADIENT);
+  stepper.driver.setGlobalCurrentScaler(stepper.converter.percentToGlobalCurrentScaler(GLOBAL_CURRENT_SCALAR));
+  stepper.driver.setRunCurrent(stepper.converter.percentToCurrentSetting(RUN_CURRENT));
+  stepper.driver.setPwmOffset(stepper.converter.percentToPwmSetting(PWM_OFFSET));
+  stepper.driver.setPwmGradient(stepper.converter.percentToPwmSetting(PWM_GRADIENT));
   stepper.driver.setStealthChopThreshold(stepper.converter.velocityRealToTstep(STEALTH_CHOP_THRESHOLD));
   // stepper.driver.setStallGuardThreshold(STALL_GUARD_THRESHOLD);
   // stepper.driver.enableCoolStep(COOL_STEP_MINIMUM, COOL_STEP_MAXIMUM);
@@ -129,7 +130,7 @@ void setup()
   stepper.controller.setVelocityMax(stepper.converter.velocityRealToChip(velocity_target));
   stepper.controller.setAccelerationMax(stepper.converter.accelerationRealToChip(ACCELERATION_MAX));
   stepper.controller.setRampMode(RAMP_MODE);
-  stepper.controller.setActualPosition(INITIAL_POSITION);
+  stepper.controller.setActualPosition(stepper.converter.positionRealToChip(INITIAL_POSITION));
 
   stepper.driver.enable();
 
@@ -166,7 +167,7 @@ void loop()
   tstep = stepper.converter.velocityRealToTstep(velocity_real);
   Serial.print("velocityRealToTstep (chip_units): ");
   Serial.println(tstep);
-  Serial.print("STEALTH_CHOP_THRESHOLD (rot per s): ");
+  Serial.print("STEALTH_CHOP_THRESHOLD (rotations per second): ");
   Serial.println(STEALTH_CHOP_THRESHOLD);
   Serial.print("STEALTH_CHOP_THRESHOLD (chip units): ");
   Serial.println(stepper.converter.velocityRealToTstep(STEALTH_CHOP_THRESHOLD));
