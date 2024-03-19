@@ -273,7 +273,7 @@ struct Registers
     struct
     {
       uint32_t n_event : 1;
-      uint32_t devition_warn : 1;
+      uint32_t deviation_warn : 1;
       uint32_t reserved : 30;
     };
     uint32_t bytes;
