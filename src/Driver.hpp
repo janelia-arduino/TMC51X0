@@ -33,18 +33,18 @@ public:
   // 32..255: 32/256..255/256 of maximum current
   // >128 recommended for best results
   // reset default: 129
-  void setGlobalCurrentScaler(uint8_t scaler);
+  void writeGlobalCurrentScaler(uint8_t scaler);
 
   // 0..31: 1/32..32/32
   // 16..31: for best microstep performance
   // reset default: 0
-  void setRunCurrent(uint8_t run_current);
+  void writeRunCurrent(uint8_t run_current);
   // 0..31: 1/32..32/32
   // reset default: 0
-  void setHoldCurrent(uint8_t hold_current);
+  void writeHoldCurrent(uint8_t hold_current);
   // 0: instant power down
   // 1..15: delay per current reduction step in multiple of 2^18 clocks
-  void setHoldDelay(uint8_t hold_delay);
+  void writeHoldDelay(uint8_t hold_delay);
 
   void enableStealthChop();
   void disableStealthChop();
@@ -55,9 +55,9 @@ public:
   void disableAutomaticGradientAdaptation();
 
   // range 0..255
-  void setPwmOffset(uint8_t pwm_amplitude);
+  void writePwmOffset(uint8_t pwm_amplitude);
   // range 0..255
-  void setPwmGradient(uint8_t pwm_amplitude);
+  void writePwmGradient(uint8_t pwm_amplitude);
 
   enum StandstillMode
   {
@@ -67,25 +67,25 @@ public:
     PASSIVE_BRAKING_HS=3,
   };
   // only available with StealthChop enabled
-  void setStandstillMode(StandstillMode mode);
+  void writeStandstillMode(StandstillMode mode);
 
   enum MotorDirection
   {
     FORWARD = 0,
     REVERSE = 1,
   };
-  void setMotorDirection(MotorDirection motor_direction);
+  void writeMotorDirection(MotorDirection motor_direction);
 
   enum ChopperMode
   {
     SPREAD_CYCLE = 0,
     CLASSIC = 1,
   };
-  void setChopperMode(ChopperMode chopper_mode);
+  void writeChopperMode(ChopperMode chopper_mode);
 
-  void setStealthChopThreshold(uint32_t tstep);
-  void setCoolStepThreshold(uint32_t tstep);
-  void setHighVelocityThreshold(uint32_t tstep);
+  void writeStealthChopThreshold(uint32_t tstep);
+  void writeCoolStepThreshold(uint32_t tstep);
+  void writeHighVelocityThreshold(uint32_t tstep);
 
   void enableHighVelocityFullstep();
   void disableHighVelocityFullstep();
@@ -95,7 +95,7 @@ public:
   // 0 indifferent value
   // 1..63 less sensitivity
   // -1..-64 higher sensitivity
-  void setStallGuardThreshold(int8_t threshold);
+  void writeStallGuardThreshold(int8_t threshold);
 
   // minimum: 1..15
   // maximum: 0..15

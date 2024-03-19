@@ -121,22 +121,22 @@ void setup()
   stepper.converter.setClockFrequencyMHz(CLOCK_FREQUENCY_MHZ);
   stepper.converter.setMicrostepsToRealUnitsCount(MICROSTEPS_TO_REAL_UNITS_COUNT);
 
-  stepper.driver.setGlobalCurrentScaler(stepper.converter.percentToGlobalCurrentScaler(GLOBAL_CURRENT_SCALAR));
-  stepper.driver.setRunCurrent(stepper.converter.percentToCurrentSetting(RUN_CURRENT));
-  stepper.driver.setPwmOffset(stepper.converter.percentToPwmSetting(PWM_OFFSET));
-  stepper.driver.setPwmGradient(stepper.converter.percentToPwmSetting(PWM_GRADIENT));
-  stepper.driver.setMotorDirection(MOTOR_DIRECTION);
-  // stepper.driver.setStealthChopThreshold(stepper.converter.velocityRealToTstep(STEALTH_CHOP_THRESHOLD));
-  stepper.driver.setCoolStepThreshold(stepper.converter.velocityRealToTstep(COOL_STEP_THRESHOLD));
+  stepper.driver.writeGlobalCurrentScaler(stepper.converter.percentToGlobalCurrentScaler(GLOBAL_CURRENT_SCALAR));
+  stepper.driver.writeRunCurrent(stepper.converter.percentToCurrentSetting(RUN_CURRENT));
+  stepper.driver.writePwmOffset(stepper.converter.percentToPwmSetting(PWM_OFFSET));
+  stepper.driver.writePwmGradient(stepper.converter.percentToPwmSetting(PWM_GRADIENT));
+  stepper.driver.writeMotorDirection(MOTOR_DIRECTION);
+  // stepper.driver.writeStealthChopThreshold(stepper.converter.velocityRealToTstep(STEALTH_CHOP_THRESHOLD));
+  stepper.driver.writeCoolStepThreshold(stepper.converter.velocityRealToTstep(COOL_STEP_THRESHOLD));
   stepper.driver.enableCoolStep(COOL_STEP_MINIMUM, COOL_STEP_MAXIMUM);
-  stepper.driver.setHighVelocityThreshold(stepper.converter.velocityRealToTstep(HIGH_VELOCITY_THRESHOLD));
-  // stepper.driver.setStallGuardThreshold(STALL_GUARD_THRESHOLD);
+  stepper.driver.writeHighVelocityThreshold(stepper.converter.velocityRealToTstep(HIGH_VELOCITY_THRESHOLD));
+  // stepper.driver.writeStallGuardThreshold(STALL_GUARD_THRESHOLD);
 
   velocity_target = VELOCITY_TARGET_MIN;
-  stepper.controller.setVelocityMax(stepper.converter.velocityRealToChip(velocity_target));
-  stepper.controller.setAccelerationMax(stepper.converter.accelerationRealToChip(ACCELERATION_MAX));
-  stepper.controller.setRampMode(RAMP_MODE);
-  stepper.controller.setActualPosition(stepper.converter.positionRealToChip(INITIAL_POSITION));
+  stepper.controller.writeVelocityMax(stepper.converter.velocityRealToChip(velocity_target));
+  stepper.controller.writeAccelerationMax(stepper.converter.accelerationRealToChip(ACCELERATION_MAX));
+  stepper.controller.writeRampMode(RAMP_MODE);
+  stepper.controller.writeActualPosition(stepper.converter.positionRealToChip(INITIAL_POSITION));
 
   stepper.driver.enable();
 
@@ -158,13 +158,13 @@ void loop()
 
   Serial.print("velocity_target (rotations per second): ");
   Serial.println(velocity_target);
-  uint32_t actual_velocity_chip = stepper.controller.getActualVelocity();
+  uint32_t actual_velocity_chip = stepper.controller.readActualVelocity();
   Serial.print("actual_velocity (chip units): ");
   Serial.println(actual_velocity_chip);
   uint32_t actual_velocity_real = stepper.converter.velocityChipToReal(actual_velocity_chip);
   Serial.print("actual_velocity (rotations per second): ");
   Serial.println(actual_velocity_real);
-  uint32_t tstep = stepper.controller.getTstep();
+  uint32_t tstep = stepper.controller.readTstep();
   Serial.print("tstep (chip units): ");
   Serial.println(tstep);
   uint32_t velocity_real = stepper.converter.tstepToVelocityReal(tstep);
@@ -179,7 +179,7 @@ void loop()
   Serial.println(stepper.converter.velocityRealToTstep(STEALTH_CHOP_THRESHOLD));
   Serial.println("--------------------------");
 
-  int32_t actual_position_chip = stepper.controller.getActualPosition();
+  int32_t actual_position_chip = stepper.controller.readActualPosition();
   Serial.print("actual position (chip units): ");
   Serial.println(actual_position_chip);
   int32_t actual_position_real = stepper.converter.positionChipToReal(actual_position_chip);
@@ -196,7 +196,7 @@ void loop()
   {
     velocity_target = VELOCITY_TARGET_MIN;
   }
-  stepper.controller.setVelocityMax(stepper.converter.velocityRealToChip(velocity_target));
+  stepper.controller.writeVelocityMax(stepper.converter.velocityRealToChip(velocity_target));
 
   delay(DELAY);
 }

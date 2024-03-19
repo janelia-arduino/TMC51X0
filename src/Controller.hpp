@@ -27,28 +27,28 @@ public:
     VELOCITY_NEGATIVE = 2,
     HOLD = 3,
   };
-  void setRampMode(RampMode ramp_mode);
+  void writeRampMode(RampMode ramp_mode);
 
   enum StopMode
   {
     HARD = 0,
     SOFT = 1,
   };
-  void setStopMode(StopMode stop_mode);
+  void writeStopMode(StopMode stop_mode);
 
-  uint32_t getTstep();
+  uint32_t readTstep();
 
   // -2^31..(2^31)-1 microsteps
-  int32_t getActualPosition();
+  int32_t readActualPosition();
   // -2^31..(2^31)-1 microsteps
-  void setActualPosition(int32_t position);
+  void writeActualPosition(int32_t position);
   // -(2^23)-1..(2^23)-1 microsteps/t
-  int32_t getActualVelocity();
+  int32_t readActualVelocity();
 
   // 0..(2^23)-512 microsteps/t
-  void setVelocityMax(uint32_t velocity);
+  void writeVelocityMax(uint32_t velocity);
   // 0..(2^16)-1 microsteps/ta^2
-  void setAccelerationMax(uint32_t acceleration);
+  void writeAccelerationMax(uint32_t acceleration);
 
 private:
   Registers * registers_ptr_;

@@ -35,8 +35,8 @@ void setup()
   stepper.driver.setHardwareEnablePin(HARDWARE_ENABLE_PIN);
 
   stepper.driver.enableStealthChop();
-  stepper.driver.setHoldCurrent(HOLD_CURRENT);
-  stepper.driver.setHoldDelay(HOLD_DELAY);
+  stepper.driver.writeHoldCurrent(HOLD_CURRENT);
+  stepper.driver.writeHoldDelay(HOLD_DELAY);
   stepper.driver.enable();
 
   delay(DELAY);
@@ -45,19 +45,19 @@ void setup()
 void loop()
 {
   Serial.println("standstill mode = NORMAL");
-  stepper.driver.setStandstillMode(tmc51x0::Driver::NORMAL);
+  stepper.driver.writeStandstillMode(tmc51x0::Driver::NORMAL);
   delay(DELAY);
 
   Serial.println("standstill mode = FREEWHEELING");
-  stepper.driver.setStandstillMode(tmc51x0::Driver::FREEWHEELING);
+  stepper.driver.writeStandstillMode(tmc51x0::Driver::FREEWHEELING);
   delay(DELAY);
 
   Serial.println("standstill mode = PASSIVE_BRAKING_LS");
-  stepper.driver.setStandstillMode(tmc51x0::Driver::PASSIVE_BRAKING_LS);
+  stepper.driver.writeStandstillMode(tmc51x0::Driver::PASSIVE_BRAKING_LS);
   delay(DELAY);
 
   Serial.println("standstill mode = PASSIVE_BRAKING_HS");
-  stepper.driver.setStandstillMode(tmc51x0::Driver::PASSIVE_BRAKING_HS);
+  stepper.driver.writeStandstillMode(tmc51x0::Driver::PASSIVE_BRAKING_HS);
   delay(DELAY);
 
   Serial.println("--------------------------");
