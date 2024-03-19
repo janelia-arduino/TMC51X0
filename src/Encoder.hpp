@@ -20,8 +20,11 @@ namespace tmc51x0
 class Encoder
 {
 public:
+  // -2^31..(2^31)-1 microsteps
   int32_t readActualPosition();
-  // Registers::EncStatus readStatus();
+
+  Registers::EncStatus readAndClearStatus();
+
 private:
   Registers * registers_ptr_;
   Converter * converter_ptr_;

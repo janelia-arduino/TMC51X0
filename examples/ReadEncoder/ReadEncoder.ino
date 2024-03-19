@@ -18,6 +18,8 @@ const int DELAY = 100;
 // Instantiate TMC51X0
 TMC51X0 stepper;
 uint32_t register_data;
+int32_t encoder_actual_position;
+tmc51x0::Registers::EncStatus encoder_status;
 
 void setup()
 {
@@ -32,8 +34,13 @@ void setup()
 
 void loop()
 {
-  int32_t encoder_actual_position = stepper.encoder.readActualPosition();
+  encoder_actual_position = stepper.encoder.readActualPosition();
   Serial.print("encoder_actual_position: ");
   Serial.println(encoder_actual_position);
+  encoder_status = stepper.encoder.readAndClearStatus();
+  Serial.print("encoder_status.n_event: ");
+  Serial.print(encoder_status.n_event);
+  Serial.print(" , encoder_status.deviation_warn: ");
+  Serial.println(encoder_status.deviation_warn);
   delay(DELAY);
 }
