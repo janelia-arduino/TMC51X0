@@ -268,6 +268,16 @@ struct Registers
     uint32_t bytes;
   };
 
+  union EncConst
+  {
+    struct
+    {
+      uint32_t fractional : 16;
+      uint32_t integer : 16;
+    };
+    uint32_t bytes;
+  };
+
   union EncStatus
   {
     struct

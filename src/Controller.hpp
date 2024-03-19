@@ -56,7 +56,7 @@ private:
 
   const static RampMode RAMP_MODE_DEFAULT = VELOCITY_POSITIVE;
   const static StopMode STOP_MODE_DEFAULT = SOFT;
-  const static uint32_t ACTUAL_POSITION_DEFAULT = 0;
+  const static int32_t ACTUAL_POSITION_DEFAULT = 0;
   const static uint32_t VELOCITY_MAX_DEFAULT = 0;
   const static uint32_t ACCELERATION_MAX_DEFAULT = 10000;
 

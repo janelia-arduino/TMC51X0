@@ -15,6 +15,16 @@ const uint8_t CHIP_SELECT_PIN = 10;
 const long SERIAL_BAUD_RATE = 115200;
 const int DELAY = 100;
 
+const tmc51x0::Encoder::FractionalMode FRACTIONAL_MODE = tmc51x0::Encoder::BINARY;
+// 256 encoder single signal pulses per revolution
+// 256*4 = 1024 quadrature encoder pulses per revolution
+// 51200 microsteps per revolution
+// 51200/1024 = 50.0 microsteps per encoder pulse
+const int16_t MICROSTEPS_PER_PULSE_INTEGER = 50;
+const int16_t MICROSTEPS_PER_PULSE_FRACTIONAL = 0;
+
+const int32_t INITIAL_POSITION = 0;
+
 // Instantiate TMC51X0
 TMC51X0 stepper;
 uint32_t register_data;
@@ -30,6 +40,10 @@ void setup()
   spi.setRX(RX_PIN);
 #endif
   stepper.setup(spi, CHIP_SELECT_PIN);
+
+  stepper.encoder.writeFractionalMode(FRACTIONAL_MODE);
+  stepper.encoder.writeMicrostepsPerPulse(MICROSTEPS_PER_PULSE_INTEGER, MICROSTEPS_PER_PULSE_FRACTIONAL);
+  // stepper.encoder.writeActualPosition(stepper.converter.positionRealToEncoder(INITIAL_POSITION));
 }
 
 void loop()

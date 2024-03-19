@@ -21,7 +21,7 @@ const int DELAY = 4000;
 const uint8_t CLOCK_FREQUENCY_MHZ = 12;
 // 200 fullsteps per revolution for many steppers * 256 microsteps per fullstep
 // one "real unit" in this example is one rotation of the motor shaft
-constexpr uint32_t MICROSTEPS_TO_REAL_UNITS_COUNT = 51200;
+constexpr uint32_t MICROSTEPS_PER_REAL_UNIT = 51200;
 
 // driver constants
 const uint8_t GLOBAL_CURRENT_SCALAR = 50; // percent
@@ -119,7 +119,7 @@ void setup()
   stepper.driver.setHardwareEnablePin(HARDWARE_ENABLE_PIN);
 
   stepper.converter.setClockFrequencyMHz(CLOCK_FREQUENCY_MHZ);
-  stepper.converter.setMicrostepsToRealUnitsCount(MICROSTEPS_TO_REAL_UNITS_COUNT);
+  stepper.converter.setMicrostepsPerRealUnit(MICROSTEPS_PER_REAL_UNIT);
 
   stepper.driver.writeGlobalCurrentScaler(stepper.converter.percentToGlobalCurrentScaler(GLOBAL_CURRENT_SCALAR));
   stepper.driver.writeRunCurrent(stepper.converter.percentToCurrentSetting(RUN_CURRENT));

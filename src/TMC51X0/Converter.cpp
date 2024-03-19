@@ -13,7 +13,7 @@ using namespace tmc51x0;
 Converter::Converter()
 {
   clock_frequency_mhz_ = CLOCK_FREQUENCY_MHZ_DEFAULT;
-  microsteps_to_real_units_count_ = MICROSTEPS_TO_REAL_UNITS_COUNT_DEFAULT;
+  microsteps_per_real_unit_ = MICROSTEPS_PER_REAL_UNIT_DEFAULT;
 }
 
 void Converter::setClockFrequencyMHz(uint8_t clock_frequency_mhz)
@@ -21,26 +21,26 @@ void Converter::setClockFrequencyMHz(uint8_t clock_frequency_mhz)
   clock_frequency_mhz_ = clock_frequency_mhz;
 }
 
-void Converter::setMicrostepsToRealUnitsCount(uint32_t microsteps_to_real_units_count)
+void Converter::setMicrostepsPerRealUnit(uint32_t microsteps_per_real_unit)
 {
-  if (microsteps_to_real_units_count == 0)
+  if (microsteps_per_real_unit == 0)
   {
-    microsteps_to_real_units_count = MICROSTEPS_TO_REAL_UNITS_COUNT_DEFAULT;
+    microsteps_per_real_unit = MICROSTEPS_PER_REAL_UNIT_DEFAULT;
   }
-  microsteps_to_real_units_count_ = microsteps_to_real_units_count;
+  microsteps_per_real_unit_ = microsteps_per_real_unit;
 }
 
 int32_t Converter::positionChipToReal(int32_t position_chip)
 {
   int32_t position_real;
-  position_real = position_chip / (int32_t)microsteps_to_real_units_count_;
+  position_real = position_chip / (int32_t)microsteps_per_real_unit_;
   return position_real;
 }
 
 int32_t Converter::positionRealToChip(int32_t position_real)
 {
   int32_t position_chip;
-  position_chip = position_real * (int32_t)microsteps_to_real_units_count_;
+  position_chip = position_real * (int32_t)microsteps_per_real_unit_;
   return position_chip;
 }
 

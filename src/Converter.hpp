@@ -18,7 +18,7 @@ public:
   Converter();
 
   void setClockFrequencyMHz(uint8_t clock_frequency_mhz);
-  void setMicrostepsToRealUnitsCount(uint32_t count);
+  void setMicrostepsPerRealUnit(uint32_t microsteps_per_real_unit);
 
   int32_t positionChipToReal(int32_t position_chip);
   int32_t positionRealToChip(int32_t position_real);
@@ -44,11 +44,11 @@ public:
 
 private:
   uint8_t clock_frequency_mhz_;
-  uint32_t microsteps_to_real_units_count_;
+  uint32_t microsteps_per_real_unit_;
   const static uint8_t CLOCK_FREQUENCY_MHZ_DEFAULT = 12;
   const static uint32_t VELOCITY_SCALER = 16777216;
   const static uint32_t ACCELERATION_SCALER = 2199;
-  const static uint32_t MICROSTEPS_TO_REAL_UNITS_COUNT_DEFAULT = 1;
+  const static uint32_t MICROSTEPS_PER_REAL_UNIT_DEFAULT = 1;
   const static uint32_t DIVISOR_DEFAULT = 1;
 
   const static uint8_t PERCENT_MIN = 0;
