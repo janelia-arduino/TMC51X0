@@ -17,7 +17,7 @@ namespace constants
 {
 // SPI Settings
 constexpr uint32_t spi_clock = 2500000;
-#if defined(ARDUINO_ARCH_SAMD) || defined(ARDUINO_ARCH_RP2040)
+#if defined(ARDUINO_ARCH_SAMD) || defined(ARDUINO_ARCH_RP2040) || defined(ARDUINO_ARCH_RENESAS)
   constexpr BitOrder spi_bit_order = MSBFIRST;
 #else
   constexpr uint8_t spi_bit_order = MSBFIRST;
