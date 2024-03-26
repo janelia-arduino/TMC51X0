@@ -37,16 +37,16 @@ const uint8_t HIGH_VELOCITY_THRESHOLD = 9; // rot/s
 // const int8_t STALL_GUARD_THRESHOLD = -20;
 
 // controller constants
-const uint32_t VELOCITY_TARGET_MIN = 1;  // rot/s
-const uint32_t VELOCITY_TARGET_MAX = 25; // rot/s
-const uint32_t VELOCITY_TARGET_INC = 1;  // rot/s
+const uint32_t VELOCITY_TARGET = 4; // rot/s
+const uint32_t POSITION_TARGET_MIN = 1;  // rot
+const uint32_t POSITION_TARGET_MAX = 10;  // rot
 const uint32_t ACCELERATION_MAX = 2;  // rot/(s^2)
-const tmc51x0::Controller::RampMode RAMP_MODE = tmc51x0::Controller::VELOCITY_POSITIVE;
+const tmc51x0::Controller::RampMode RAMP_MODE = tmc51x0::Controller::POSITION;
 const int32_t INITIAL_POSITION = 0;
 
 // Instantiate TMC51X0
 TMC51X0 stepper;
-uint32_t velocity_target;
+uint32_t position_target;
 
 void printRegisterPortion(const char * str, uint32_t value, bool hex=false)
 {
@@ -132,8 +132,7 @@ void setup()
   stepper.driver.writeHighVelocityThreshold(stepper.converter.velocityRealToTstep(HIGH_VELOCITY_THRESHOLD));
   // stepper.driver.writeStallGuardThreshold(STALL_GUARD_THRESHOLD);
 
-  velocity_target = VELOCITY_TARGET_MIN;
-  stepper.controller.writeMaxVelocity(stepper.converter.velocityRealToChip(velocity_target));
+  stepper.controller.writeMaxVelocity(stepper.converter.velocityRealToChip(VELOCITY_TARGET));
   stepper.controller.writeMaxAcceleration(stepper.converter.accelerationRealToChip(ACCELERATION_MAX));
   stepper.controller.writeRampMode(RAMP_MODE);
   stepper.controller.writeActualPosition(stepper.converter.positionRealToChip(INITIAL_POSITION));

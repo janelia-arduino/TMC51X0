@@ -27,6 +27,7 @@ public:
     VELOCITY_NEGATIVE = 2,
     HOLD = 3,
   };
+  // reset default: VELOCITY_POSITIVE
   void writeRampMode(RampMode ramp_mode);
 
   enum StopMode
@@ -34,6 +35,7 @@ public:
     HARD = 0,
     SOFT = 1,
   };
+  // reset default: SOFT
   void writeStopMode(StopMode stop_mode);
 
   uint32_t readTstep();
@@ -46,9 +48,32 @@ public:
   int32_t readActualVelocity();
 
   // 0..(2^23)-512 microsteps/t
-  void writeVelocityMax(uint32_t velocity);
+  // reset default: 0
+  void writeMaxVelocity(uint32_t velocity);
   // 0..(2^16)-1 microsteps/ta^2
-  void writeAccelerationMax(uint32_t acceleration);
+  // reset default: 10000
+  void writeMaxAcceleration(uint32_t acceleration);
+
+  // 0..(2^18)-1 microsteps/t
+  // reset default: 0
+  void writeStartVelocity(uint32_t velocity);
+  // 0..(2^18)-1 microsteps/t
+  // reset default: 10
+  void writeStopVelocity(uint32_t velocity);
+
+  // 0..(2^16)-1 microsteps/ta^2
+  // reset default: 0
+  void writeFirstAcceleration(uint32_t acceleration);
+  // 0..(2^20)-1 microsteps/t
+  // reset default: 0
+  void writeFirstVelocity(uint32_t velocity);
+
+  // 0..(2^16)-1 microsteps/ta^2
+  // reset default: 0
+  void writeMaxDeceleration(uint32_t deceleration);
+  // 0..(2^16)-1 microsteps/ta^2
+  // reset default: 10000
+  void writeFirstDeceleration(uint32_t deceleration);
 
 private:
   Registers * registers_ptr_;
@@ -57,8 +82,14 @@ private:
   const static RampMode RAMP_MODE_DEFAULT = VELOCITY_POSITIVE;
   const static StopMode STOP_MODE_DEFAULT = SOFT;
   const static int32_t ACTUAL_POSITION_DEFAULT = 0;
-  const static uint32_t VELOCITY_MAX_DEFAULT = 0;
-  const static uint32_t ACCELERATION_MAX_DEFAULT = 10000;
+  const static uint32_t MAX_VELOCITY_DEFAULT = 0;
+  const static uint32_t MAX_ACCELERATION_DEFAULT = 10000;
+  const static uint32_t START_VELOCITY_DEFAULT = 0;
+  const static uint32_t STOP_VELOCITY_DEFAULT = 10;
+  const static uint32_t FIRST_ACCELERATION_DEFAULT = 0;
+  const static uint32_t FIRST_VELOCITY_DEFAULT = 0;
+  const static uint32_t MAX_DECELERATION_DEFAULT = 0;
+  const static uint32_t FIRST_DECELERATION_DEFAULT = 10000;
 
   void setup(Registers & registers,
     Converter & converter);
