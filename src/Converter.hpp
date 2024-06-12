@@ -42,10 +42,16 @@ public:
 
   uint8_t percentToPwmSetting(uint8_t percent);
 
+  uint16_t millisecondsToTzerowait(uint16_t milliseconds);
+
 private:
   uint8_t clock_frequency_mhz_;
+  uint8_t clock_duration_ns_;
   uint32_t microsteps_per_real_unit_;
   const static uint8_t CLOCK_FREQUENCY_MHZ_DEFAULT = 12;
+  const static uint16_t CLOCK_FREQUENCY_TO_DURATION_SCALER = 1000;
+  const static uint32_t MILLISECONDS_PER_SECOND = 1000000;
+  const static uint32_t TZEROWAIT_SCALER = 512;
   const static uint32_t VELOCITY_SCALER = 16777216;
   const static uint32_t ACCELERATION_SCALER = 2199;
   const static uint32_t MICROSTEPS_PER_REAL_UNIT_DEFAULT = 1;

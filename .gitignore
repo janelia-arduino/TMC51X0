@@ -11,3 +11,6 @@
 .\#*
 .pio
 .venv
+GPATH
+GRTAGS
+GTAGS

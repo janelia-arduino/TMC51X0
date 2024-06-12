@@ -47,6 +47,9 @@ public:
   // -(2^23)-1..(2^23)-1 microsteps/t
   int32_t readActualVelocity();
 
+  bool velocityReached();
+  bool positionReached();
+
   // 0..(2^23)-512 microsteps/t
   // reset default: 0
   void writeMaxVelocity(uint32_t velocity);
@@ -75,6 +78,16 @@ public:
   // reset default: 10000
   void writeFirstDeceleration(uint32_t deceleration);
 
+  // 0..(2^16)-1 *512 tclk
+  // ~0..2s
+  // reset default: 0
+  void writeTzerowait(uint32_t tzerowait);
+
+  // -2^31..(2^31)-1 microsteps
+  int32_t readTargetPosition();
+  // -2^31..(2^31)-1 microsteps
+  void writeTargetPosition(int32_t position);
+
 private:
   Registers * registers_ptr_;
   Converter * converter_ptr_;
@@ -90,6 +103,8 @@ private:
   const static uint32_t FIRST_VELOCITY_DEFAULT = 0;
   const static uint32_t MAX_DECELERATION_DEFAULT = 0;
   const static uint32_t FIRST_DECELERATION_DEFAULT = 10000;
+  const static uint32_t TZEROWAIT_DEFAULT = 0;
+  const static int32_t TARGET_POSITION_DEFAULT = 0;
 
   void setup(Registers & registers,
     Converter & converter);

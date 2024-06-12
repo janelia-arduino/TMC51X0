@@ -42,6 +42,20 @@ int32_t Controller::readActualVelocity()
   return registers_ptr_->read(Registers::VACTUAL);
 }
 
+bool Controller::velocityReached()
+{
+  Registers::RampStat ramp_stat;
+  ramp_stat.bytes = registers_ptr_->read(Registers::RAMP_STAT);
+  return ramp_stat.velocity_reached;
+}
+
+bool Controller::positionReached()
+{
+  Registers::RampStat ramp_stat;
+  ramp_stat.bytes = registers_ptr_->read(Registers::RAMP_STAT);
+  return ramp_stat.position_reached;
+}
+
 void Controller::writeMaxVelocity(uint32_t velocity)
 {
   registers_ptr_->write(Registers::VMAX, velocity);
@@ -82,6 +96,21 @@ void Controller::writeFirstDeceleration(uint32_t deceleration)
   registers_ptr_->write(Registers::D1, deceleration);
 }
 
+void Controller::writeTzerowait(uint32_t tzerowait)
+{
+  registers_ptr_->write(Registers::TZEROWAIT, tzerowait);
+}
+
+int32_t Controller::readTargetPosition()
+{
+  return registers_ptr_->read(Registers::XTARGET);
+}
+
+void Controller::writeTargetPosition(int32_t position)
+{
+  return registers_ptr_->write(Registers::XTARGET, position);
+}
+
 // private
 
 void Controller::setup(Registers & registers,
@@ -101,5 +130,7 @@ void Controller::setup(Registers & registers,
   writeFirstVelocity(FIRST_VELOCITY_DEFAULT);
   writeMaxDeceleration(MAX_DECELERATION_DEFAULT);
   writeFirstDeceleration(FIRST_DECELERATION_DEFAULT);
+  writeTzerowait(TZEROWAIT_DEFAULT);
+  writeTargetPosition(TARGET_POSITION_DEFAULT);
 }
 

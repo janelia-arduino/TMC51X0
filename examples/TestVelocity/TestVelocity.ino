@@ -24,8 +24,8 @@ const uint8_t CLOCK_FREQUENCY_MHZ = 12;
 constexpr uint32_t MICROSTEPS_PER_REAL_UNIT = 51200;
 
 // driver constants
-const uint8_t GLOBAL_CURRENT_SCALAR = 50; // percent
-const uint8_t RUN_CURRENT = 50; // percent
+const uint8_t GLOBAL_CURRENT_SCALAR = 20; // percent
+const uint8_t RUN_CURRENT = 20; // percent
 const uint8_t PWM_OFFSET = 10; // percent
 const uint8_t PWM_GRADIENT = 10; // percent
 const tmc51x0::Driver::MotorDirection MOTOR_DIRECTION = tmc51x0::Driver::FORWARD;

@@ -12,13 +12,14 @@ using namespace tmc51x0;
 
 Converter::Converter()
 {
-  clock_frequency_mhz_ = CLOCK_FREQUENCY_MHZ_DEFAULT;
+  setClockFrequencyMHz(CLOCK_FREQUENCY_MHZ_DEFAULT);
   microsteps_per_real_unit_ = MICROSTEPS_PER_REAL_UNIT_DEFAULT;
 }
 
 void Converter::setClockFrequencyMHz(uint8_t clock_frequency_mhz)
 {
   clock_frequency_mhz_ = clock_frequency_mhz;
+  clock_duration_ns_ = CLOCK_FREQUENCY_TO_DURATION_SCALER / (uint16_t)clock_frequency_mhz;
 }
 
 void Converter::setMicrostepsPerRealUnit(uint32_t microsteps_per_real_unit)
@@ -168,6 +169,11 @@ uint8_t Converter::percentToPwmSetting(uint8_t percent)
     PWM_SETTING_MIN,
     PWM_SETTING_MAX);
   return pwm_setting;
+}
+
+uint16_t Converter::millisecondsToTzerowait(uint16_t milliseconds)
+{
+  return ((uint32_t)milliseconds * MILLISECONDS_PER_SECOND) / (TZEROWAIT_SCALER * clock_duration_ns_);
 }
 
 // private
