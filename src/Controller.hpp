@@ -50,6 +50,9 @@ public:
   bool velocityReached();
   bool positionReached();
 
+  void rampToZeroVelocity();
+  bool zeroVelocity();
+
   // 0..(2^23)-512 microsteps/t
   // reset default: 0
   void writeMaxVelocity(uint32_t velocity);
@@ -87,6 +90,9 @@ public:
   int32_t readTargetPosition();
   // -2^31..(2^31)-1 microsteps
   void writeTargetPosition(int32_t position);
+
+  // -2^31..(2^31)-1 microsteps
+  void writeComparePosition(int32_t position);
 
 private:
   Registers * registers_ptr_;

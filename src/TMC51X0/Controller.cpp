@@ -56,6 +56,19 @@ bool Controller::positionReached()
   return ramp_stat.position_reached;
 }
 
+void Controller::rampToZeroVelocity()
+{
+  writeStartVelocity(0);
+  writeMaxVelocity(0);
+}
+
+bool Controller::zeroVelocity()
+{
+  Registers::RampStat ramp_stat;
+  ramp_stat.bytes = registers_ptr_->read(Registers::RAMP_STAT);
+  return ramp_stat.vzero;
+}
+
 void Controller::writeMaxVelocity(uint32_t velocity)
 {
   registers_ptr_->write(Registers::VMAX, velocity);
@@ -109,6 +122,11 @@ int32_t Controller::readTargetPosition()
 void Controller::writeTargetPosition(int32_t position)
 {
   return registers_ptr_->write(Registers::XTARGET, position);
+}
+
+void Controller::writeComparePosition(int32_t position)
+{
+  return registers_ptr_->write(Registers::X_COMPARE, position);
 }
 
 // private

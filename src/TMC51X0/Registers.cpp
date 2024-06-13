@@ -92,7 +92,7 @@ void Registers::setup(SPIClass & spi,
 
   readable_[IOIN] = true;
 
-  writeable_[X_COMPARE] = true;
+  writeable_[jX_COMPARE] = true;
 
   writeable_[OTP_PROG] = true;
 

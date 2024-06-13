@@ -96,6 +96,8 @@ public:
   // 1..63 less sensitivity
   // -1..-64 higher sensitivity
   void writeStallGuardThreshold(int8_t threshold);
+  void enableStallGuardFilter();
+  void disableStallGuardFilter();
 
   // minimum: 1..15
   // maximum: 0..15
@@ -120,6 +122,8 @@ private:
   const static ChopperMode CHOPPER_MODE_DEFAULT = SPREAD_CYCLE;
 
   const static uint32_t STALL_GUARD_THRESHOLD_DEFAULT = 0;
+  const static uint8_t STALL_GUARD_FILTER_ENABLE = 1;
+  const static uint8_t STALL_GUARD_FILTER_DISABLE = 0;
 
   const static uint8_t DISABLE_TOFF = 0b0;
   const static uint8_t TOFF_ENABLE_DEFAULT = 3;

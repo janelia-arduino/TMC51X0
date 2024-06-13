@@ -143,14 +143,21 @@ void setup()
   stepper.driver.writeHighVelocityThreshold(stepper.converter.velocityRealToTstep(HIGH_VELOCITY_THRESHOLD));
   // stepper.driver.writeStallGuardThreshold(STALL_GUARD_THRESHOLD);
 
-  stepper.controller.writeStartVelocity(stepper.converter.velocityRealToChip(START_VELOCITY));
   stepper.controller.writeStopVelocity(stepper.converter.velocityRealToChip(STOP_VELOCITY));
-  stepper.controller.writeMaxVelocity(stepper.converter.velocityRealToChip(MAX_VELOCITY));
   stepper.controller.writeMaxAcceleration(stepper.converter.accelerationRealToChip(MAX_ACCELERATION));
   stepper.controller.writeRampMode(RAMP_MODE);
   stepper.controller.writeActualPosition(stepper.converter.positionRealToChip(INITIAL_POSITION));
 
   stepper.driver.enable();
+
+  stepper.controller.rampToZeroVelocity();
+  while (!stepper.controller.zeroVelocity())
+  {
+    Serial.println("Waiting for zero velocity.");
+    delay(DELAY);
+  }
+  stepper.controller.writeStartVelocity(stepper.converter.velocityRealToChip(START_VELOCITY));
+  stepper.controller.writeMaxVelocity(stepper.converter.velocityRealToChip(MAX_VELOCITY));
 
   target_position = MIN_TARGET_POSITION;
   stepper.controller.writeTargetPosition(stepper.converter.positionRealToChip(target_position));

@@ -205,6 +205,22 @@ void Driver::writeStallGuardThreshold(int8_t threshold)
   registers_ptr_->write(Registers::COOLCONF, coolconf.bytes);
 }
 
+void Driver::enableStallGuardFilter()
+{
+  Registers::Coolconf coolconf;
+  coolconf.bytes = registers_ptr_->getStored(Registers::COOLCONF);
+  coolconf.sfilt = STALL_GUARD_FILTER_ENABLE;
+  registers_ptr_->write(Registers::COOLCONF, coolconf.bytes);
+}
+
+void Driver::disableStallGuardFilter()
+{
+  Registers::Coolconf coolconf;
+  coolconf.bytes = registers_ptr_->getStored(Registers::COOLCONF);
+  coolconf.sfilt = STALL_GUARD_FILTER_DISABLE;
+  registers_ptr_->write(Registers::COOLCONF, coolconf.bytes);
+}
+
 void Driver::enableCoolStep(uint8_t minimum,
     uint8_t maximum)
 {
