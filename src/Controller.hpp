@@ -115,6 +115,8 @@ private:
   const static uint32_t FIRST_DECELERATION_DEFAULT = 10000;
   const static uint32_t TZEROWAIT_DEFAULT = 0;
   const static int32_t TARGET_POSITION_DEFAULT = 0;
+  const static int32_t MAX_POSITIVE_VELOCITY = 8388607;
+  const static int32_t VELOCITY_SIGN_CONVERSION = 16777216;
 
   void initialize(Registers & registers,
     Converter & converter);
