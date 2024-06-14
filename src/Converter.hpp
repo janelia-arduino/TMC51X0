@@ -27,14 +27,14 @@ public:
   int32_t positionChipToReal(int32_t position_chip);
   int32_t positionRealToChip(int32_t position_real);
 
-  uint32_t velocityChipToReal(uint32_t velocity_chip);
-  uint32_t velocityRealToChip(uint32_t velocity_real);
+  int32_t velocityChipToReal(int32_t velocity_chip);
+  int32_t velocityRealToChip(int32_t velocity_real);
 
-  uint32_t tstepToVelocityReal(uint32_t tstep);
-  uint32_t velocityRealToTstep(uint32_t velocity_real);
+  int32_t tstepToVelocityReal(int32_t tstep);
+  int32_t velocityRealToTstep(int32_t velocity_real);
 
-  uint32_t accelerationChipToReal(uint32_t acceleration_chip);
-  uint32_t accelerationRealToChip(uint32_t acceleration_chip);
+  int32_t accelerationChipToReal(int32_t acceleration_chip);
+  int32_t accelerationRealToChip(int32_t acceleration_chip);
 
   uint8_t percentToGlobalCurrentScaler(uint8_t percent);
 
@@ -81,16 +81,16 @@ private:
   void setClockFrequencyMHz(uint8_t clock_frequency_mhz);
   void setMicrostepsPerRealUnit(uint32_t microsteps_per_real_unit);
 
-  uint32_t velocityChipToHz(uint32_t velocity_chip);
-  uint32_t velocityHzToChip(uint32_t velocity_hz);
-  uint32_t velocityRealToHz(uint32_t velocity_real);
-  uint32_t velocityHzToReal(uint32_t velocity_hz);
+  int32_t velocityChipToHz(int32_t velocity_chip);
+  int32_t velocityHzToChip(int32_t velocity_hz);
+  int32_t velocityRealToHz(int32_t velocity_real);
+  int32_t velocityHzToReal(int32_t velocity_hz);
 
-  uint32_t tstepToVelocityHz(uint32_t tstep);
-  uint32_t velocityHzToTstep(uint32_t velocity_hz);
+  int32_t tstepToVelocityHz(int32_t tstep);
+  int32_t velocityHzToTstep(int32_t velocity_hz);
 
-  uint32_t accelerationChipToHzPerS(uint32_t acceleration_chip);
-  uint32_t accelerationHzPerSToChip(uint32_t acceleration_hz_per_s);
+  int32_t accelerationChipToHzPerS(int32_t acceleration_chip);
+  int32_t accelerationHzPerSToChip(int32_t acceleration_hz_per_s);
 
   uint32_t constrain_(uint32_t value, uint32_t low, uint32_t high);
 };

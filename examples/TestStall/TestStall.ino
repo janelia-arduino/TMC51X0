@@ -58,8 +58,6 @@ void setup()
   stepper_interface.setup(spi, CHIP_SELECT_PIN);
   stall_stop_enabled = false;
 
-  stepper_interface.driver.setHardwareEnablePin(HARDWARE_ENABLE_PIN);
-
   tmc51x0::Converter::Settings converter_settings =
     {
       CLOCK_FREQUENCY_MHZ,
@@ -67,7 +65,8 @@ void setup()
     };
   stepper_interface.converter.setup(converter_settings);
 
-  stepper_interface.driver.writeGlobalCurrentScaler(stepper_interface.converter.percentToGlobalCurrentScaler(GLOBAL_CURRENT_SCALAR));
+  stepper_interface.driver.setHardwareEnablePin(HARDWARE_ENABLE_PIN);
+stepper_interface.driver.writeGlobalCurrentScaler(stepper_interface.converter.percentToGlobalCurrentScaler(GLOBAL_CURRENT_SCALAR));
   stepper_interface.driver.writeRunCurrent(stepper_interface.converter.percentToCurrentSetting(RUN_CURRENT));
   stepper_interface.driver.writePwmOffset(stepper_interface.converter.percentToPwmSetting(PWM_OFFSET));
   stepper_interface.driver.writePwmGradient(stepper_interface.converter.percentToPwmSetting(PWM_GRADIENT));
@@ -103,7 +102,6 @@ void loop()
   tmc51x0::Registers::DrvStatus drv_status;
   drv_status.bytes = stepper_interface.registers.read(tmc51x0::Registers::DRV_STATUS);
   stepper_interface.printer.printDrvStatus(drv_status);
-
   tmc51x0::Registers::SwMode sw_mode;
   sw_mode.bytes = stepper_interface.registers.read(tmc51x0::Registers::SW_MODE);
   stepper_interface.printer.printSwMode(sw_mode);

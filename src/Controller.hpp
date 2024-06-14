@@ -110,7 +110,7 @@ private:
   const static uint32_t START_VELOCITY_DEFAULT = 0;
   const static uint32_t STOP_VELOCITY_DEFAULT = 10;
   const static uint32_t FIRST_ACCELERATION_DEFAULT = 0;
-  const static uint32_t FIRST_VELOCITY_DEFAULT = 0;
+  const static uint32_t FIRST_VELOCITY_DEFAULT = 10;
   const static uint32_t MAX_DECELERATION_DEFAULT = 0;
   const static uint32_t FIRST_DECELERATION_DEFAULT = 10000;
   const static uint32_t TZEROWAIT_DEFAULT = 0;

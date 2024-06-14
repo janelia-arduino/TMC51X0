@@ -36,47 +36,47 @@ int32_t Converter::positionRealToChip(int32_t position_real)
   return position_chip;
 }
 
-uint32_t Converter::velocityChipToReal(uint32_t velocity_chip)
+int32_t Converter::velocityChipToReal(int32_t velocity_chip)
 {
-  uint64_t velocity_real;
+  int64_t velocity_real;
   velocity_real = velocityChipToHz(velocity_chip);
   velocity_real = positionChipToReal(velocity_real);
   return velocity_real;
 }
 
-uint32_t Converter::velocityRealToChip(uint32_t velocity_real)
+int32_t Converter::velocityRealToChip(int32_t velocity_real)
 {
-  uint64_t velocity_chip;
+  int64_t velocity_chip;
   velocity_chip = positionRealToChip(velocity_real);
   velocity_chip = velocityHzToChip(velocity_chip);
   return velocity_chip;
 }
 
-uint32_t Converter::tstepToVelocityReal(uint32_t tstep)
+int32_t Converter::tstepToVelocityReal(int32_t tstep)
 {
-  uint64_t velocity_real;
+  int64_t velocity_real;
   velocity_real = velocityHzToReal(tstepToVelocityHz(tstep));
   return velocity_real;
 }
 
-uint32_t Converter::velocityRealToTstep(uint32_t velocity_real)
+int32_t Converter::velocityRealToTstep(int32_t velocity_real)
 {
-  uint64_t tstep;
+  int64_t tstep;
   tstep = velocityHzToTstep(velocityRealToHz(velocity_real));
   return tstep;
 }
 
-uint32_t Converter::accelerationChipToReal(uint32_t acceleration_chip)
+int32_t Converter::accelerationChipToReal(int32_t acceleration_chip)
 {
-  uint64_t acceleration_real;
+  int64_t acceleration_real;
   acceleration_real = accelerationChipToHzPerS(acceleration_chip);
   acceleration_real = positionChipToReal(acceleration_real);
   return acceleration_real;
 }
 
-uint32_t Converter::accelerationRealToChip(uint32_t acceleration_real)
+int32_t Converter::accelerationRealToChip(int32_t acceleration_real)
 {
-  uint64_t acceleration_chip;
+  int64_t acceleration_chip;
   acceleration_chip = positionRealToChip(acceleration_real);
   acceleration_chip = accelerationHzPerSToChip(acceleration_chip);
   return acceleration_chip;
@@ -184,71 +184,71 @@ void Converter::setMicrostepsPerRealUnit(uint32_t microsteps_per_real_unit)
   microsteps_per_real_unit_ = microsteps_per_real_unit;
 }
 
-uint32_t Converter::velocityChipToHz(uint32_t velocity_chip)
+int32_t Converter::velocityChipToHz(int32_t velocity_chip)
 {
-  uint64_t velocity_hz;
-  velocity_hz = (uint64_t)velocity_chip * ((uint64_t)clock_frequency_mhz_ * 1000000);
-  velocity_hz = velocity_hz / (uint64_t)VELOCITY_SCALER;
+  int64_t velocity_hz;
+  velocity_hz = (int64_t)velocity_chip * ((int64_t)clock_frequency_mhz_ * 1000000);
+  velocity_hz = velocity_hz / (int64_t)VELOCITY_SCALER;
   return velocity_hz;
 }
 
-uint32_t Converter::velocityHzToChip(uint32_t velocity_hz)
+int32_t Converter::velocityHzToChip(int32_t velocity_hz)
 {
-  uint64_t velocity_chip;
-  velocity_chip = (uint64_t)velocity_hz * (uint64_t)VELOCITY_SCALER;
-  velocity_chip = velocity_chip / ((uint64_t)clock_frequency_mhz_ * 1000000);
+  int64_t velocity_chip;
+  velocity_chip = (int64_t)velocity_hz * (int64_t)VELOCITY_SCALER;
+  velocity_chip = velocity_chip / ((int64_t)clock_frequency_mhz_ * 1000000);
   return velocity_chip;
 }
 
-uint32_t Converter::velocityRealToHz(uint32_t velocity_real)
+int32_t Converter::velocityRealToHz(int32_t velocity_real)
 {
-  uint64_t velocity_hz;
+  int64_t velocity_hz;
   velocity_hz = positionRealToChip(velocity_real);
   return velocity_hz;
 }
 
-uint32_t Converter::velocityHzToReal(uint32_t velocity_hz)
+int32_t Converter::velocityHzToReal(int32_t velocity_hz)
 {
-  uint64_t velocity_real;
+  int64_t velocity_real;
   velocity_real = positionChipToReal(velocity_hz);
   return velocity_real;
 }
 
-uint32_t Converter::tstepToVelocityHz(uint32_t tstep)
+int32_t Converter::tstepToVelocityHz(int32_t tstep)
 {
   if (tstep == 0)
   {
     tstep = DIVISOR_DEFAULT;
   }
-  uint64_t velocity_hz;
-  velocity_hz = ((uint64_t)clock_frequency_mhz_ * 1000000) / tstep;
+  int64_t velocity_hz;
+  velocity_hz = ((int64_t)clock_frequency_mhz_ * 1000000) / tstep;
   return velocity_hz;
 }
 
-uint32_t Converter::velocityHzToTstep(uint32_t velocity_hz)
+int32_t Converter::velocityHzToTstep(int32_t velocity_hz)
 {
   if (velocity_hz == 0)
   {
     velocity_hz = DIVISOR_DEFAULT;
   }
-  uint64_t tstep;
-  tstep = ((uint64_t)clock_frequency_mhz_ * 1000000) / velocity_hz;
+  int64_t tstep;
+  tstep = ((int64_t)clock_frequency_mhz_ * 1000000) / velocity_hz;
   return tstep;
 }
 
-uint32_t Converter::accelerationChipToHzPerS(uint32_t acceleration_chip)
+int32_t Converter::accelerationChipToHzPerS(int32_t acceleration_chip)
 {
-  uint64_t acceleration_hz_per_s;
-  acceleration_hz_per_s = (uint64_t)acceleration_chip * ((uint64_t)clock_frequency_mhz_ * (uint64_t)clock_frequency_mhz_ * 1000);
-  acceleration_hz_per_s = acceleration_hz_per_s / (uint64_t)ACCELERATION_SCALER;
+  int64_t acceleration_hz_per_s;
+  acceleration_hz_per_s = (int64_t)acceleration_chip * ((int64_t)clock_frequency_mhz_ * (int64_t)clock_frequency_mhz_ * 1000);
+  acceleration_hz_per_s = acceleration_hz_per_s / (int64_t)ACCELERATION_SCALER;
   return acceleration_hz_per_s;
 }
 
-uint32_t Converter::accelerationHzPerSToChip(uint32_t acceleration_hz_per_s)
+int32_t Converter::accelerationHzPerSToChip(int32_t acceleration_hz_per_s)
 {
-  uint64_t acceleration_chip;
-  acceleration_chip = (uint64_t)acceleration_hz_per_s * (uint64_t)ACCELERATION_SCALER;
-  acceleration_chip = acceleration_chip / ((uint64_t)clock_frequency_mhz_ * (uint64_t)clock_frequency_mhz_ * 1000);
+  int64_t acceleration_chip;
+  acceleration_chip = (int64_t)acceleration_hz_per_s * (int64_t)ACCELERATION_SCALER;
+  acceleration_chip = acceleration_chip / ((int64_t)clock_frequency_mhz_ * (int64_t)clock_frequency_mhz_ * 1000);
   return acceleration_chip;
 }
 
