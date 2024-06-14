@@ -17,42 +17,8 @@ const long SERIAL_BAUD_RATE = 115200;
 const int DELAY = 1000;
 
 // Instantiate TMC51X0
-TMC51X0 stepper;
+TMC51X0 stepper_interface;
 bool enabled;
-
-void printRegisterPortion(const char * str, uint32_t value, bool hex=false)
-{
-  Serial.print(str);
-  if (not hex)
-  {
-    Serial.print(": 0b");
-    Serial.print(value, BIN);
-  }
-  else
-  {
-    Serial.print(": 0x");
-    Serial.print(value, HEX);
-  }
-  Serial.println();
-}
-
-void printRegister(uint32_t register_data)
-{
-  tmc51x0::Registers::Ioin ioin;
-  ioin.bytes = register_data;
-  printRegisterPortion("ioin", ioin.bytes, true);
-  printRegisterPortion("refl_step", ioin.refl_step);
-  printRegisterPortion("refr_dir", ioin.refr_dir);
-  printRegisterPortion("encb_dcen_cfg4", ioin.encb_dcen_cfg4);
-  printRegisterPortion("enca_dcin_cfg5", ioin.enca_dcin_cfg5);
-  printRegisterPortion("drv_enn", ioin.drv_enn);
-  printRegisterPortion("enc_n_dco_cfg6", ioin.enc_n_dco_cfg6);
-  printRegisterPortion("sd_mode", ioin.sd_mode);
-  printRegisterPortion("swcomp_in", ioin.swcomp_in);
-  printRegisterPortion("version", ioin.version, true);
-
-  Serial.println("--------------------------");
-}
 
 void setup()
 {
@@ -62,8 +28,8 @@ void setup()
   spi.setTX(TX_PIN);
   spi.setRX(RX_PIN);
 #endif
-  stepper.setup(spi, CHIP_SELECT_PIN);
-  stepper.driver.setHardwareEnablePin(HARDWARE_ENABLE_PIN);
+  stepper_interface.setup(spi, CHIP_SELECT_PIN);
+  stepper_interface.driver.setHardwareEnablePin(HARDWARE_ENABLE_PIN);
   enabled = false;
 }
 
@@ -71,13 +37,15 @@ void loop()
 {
   if (enabled)
   {
-    stepper.driver.disable();
+    stepper_interface.driver.disable();
   }
   else
   {
-    stepper.driver.enable();
+    stepper_interface.driver.enable();
   }
   enabled = not enabled;
-  printRegister(stepper.registers.read(tmc51x0::Registers::IOIN));
+  tmc51x0::Registers::Ioin ioin;
+  ioin.bytes = stepper_interface.registers.read(tmc51x0::Registers::IOIN);
+  stepper_interface.printer.printIoin(ioin);
   delay(DELAY);
 }

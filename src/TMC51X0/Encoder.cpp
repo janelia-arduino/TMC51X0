@@ -48,7 +48,7 @@ Registers::EncStatus Encoder::readAndClearStatus()
 
 // private
 
-void Encoder::setup(Registers & registers,
+void Encoder::initialize(Registers & registers,
   Converter & converter)
 {
   registers_ptr_ = &registers;

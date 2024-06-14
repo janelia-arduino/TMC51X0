@@ -94,9 +94,13 @@ public:
   // -2^31..(2^31)-1 microsteps
   void writeComparePosition(int32_t position);
 
+  void enableStallStop();
+  void disableStallStop();
+
 private:
   Registers * registers_ptr_;
   Converter * converter_ptr_;
+  StopMode stop_mode_;
 
   const static RampMode RAMP_MODE_DEFAULT = VELOCITY_POSITIVE;
   const static StopMode STOP_MODE_DEFAULT = SOFT;
@@ -112,7 +116,7 @@ private:
   const static uint32_t TZEROWAIT_DEFAULT = 0;
   const static int32_t TARGET_POSITION_DEFAULT = 0;
 
-  void setup(Registers & registers,
+  void initialize(Registers & registers,
     Converter & converter);
 
   friend class ::TMC51X0;

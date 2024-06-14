@@ -16,6 +16,7 @@ void Controller::writeRampMode(RampMode ramp_mode)
 
 void Controller::writeStopMode(StopMode stop_mode)
 {
+  stop_mode_ = stop_mode;
   Registers::SwMode sw_mode;
   sw_mode.bytes = registers_ptr_->getStored(Registers::SW_MODE);
   sw_mode.en_softstop = stop_mode;
@@ -121,17 +122,35 @@ int32_t Controller::readTargetPosition()
 
 void Controller::writeTargetPosition(int32_t position)
 {
-  return registers_ptr_->write(Registers::XTARGET, position);
+  registers_ptr_->write(Registers::XTARGET, position);
 }
 
 void Controller::writeComparePosition(int32_t position)
 {
-  return registers_ptr_->write(Registers::X_COMPARE, position);
+  registers_ptr_->write(Registers::X_COMPARE, position);
+}
+
+void Controller::enableStallStop()
+{
+  Registers::SwMode sw_mode;
+  sw_mode.bytes = registers_ptr_->getStored(Registers::SW_MODE);
+  sw_mode.en_softstop = HARD;
+  sw_mode.sg_stop = 1;
+  registers_ptr_->write(Registers::SW_MODE, sw_mode.bytes);
+}
+
+void Controller::disableStallStop()
+{
+  Registers::SwMode sw_mode;
+  sw_mode.bytes = registers_ptr_->getStored(Registers::SW_MODE);
+  sw_mode.en_softstop = stop_mode_;
+  sw_mode.sg_stop = 0;
+  registers_ptr_->write(Registers::SW_MODE, sw_mode.bytes);
 }
 
 // private
 
-void Controller::setup(Registers & registers,
+void Controller::initialize(Registers & registers,
   Converter & converter)
 {
   registers_ptr_ = &registers;

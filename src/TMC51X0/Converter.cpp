@@ -16,19 +16,10 @@ Converter::Converter()
   microsteps_per_real_unit_ = MICROSTEPS_PER_REAL_UNIT_DEFAULT;
 }
 
-void Converter::setClockFrequencyMHz(uint8_t clock_frequency_mhz)
+void Converter::setup(Converter::Settings settings)
 {
-  clock_frequency_mhz_ = clock_frequency_mhz;
-  clock_duration_ns_ = CLOCK_FREQUENCY_TO_DURATION_SCALER / (uint16_t)clock_frequency_mhz;
-}
-
-void Converter::setMicrostepsPerRealUnit(uint32_t microsteps_per_real_unit)
-{
-  if (microsteps_per_real_unit == 0)
-  {
-    microsteps_per_real_unit = MICROSTEPS_PER_REAL_UNIT_DEFAULT;
-  }
-  microsteps_per_real_unit_ = microsteps_per_real_unit;
+  setClockFrequencyMHz(settings.clock_frequency_mhz);
+  setMicrostepsPerRealUnit(settings.microsteps_per_real_unit);
 }
 
 int32_t Converter::positionChipToReal(int32_t position_chip)
@@ -177,6 +168,21 @@ uint16_t Converter::millisecondsToTzerowait(uint16_t milliseconds)
 }
 
 // private
+
+void Converter::setClockFrequencyMHz(uint8_t clock_frequency_mhz)
+{
+  clock_frequency_mhz_ = clock_frequency_mhz;
+  clock_duration_ns_ = CLOCK_FREQUENCY_TO_DURATION_SCALER / (uint16_t)clock_frequency_mhz;
+}
+
+void Converter::setMicrostepsPerRealUnit(uint32_t microsteps_per_real_unit)
+{
+  if (microsteps_per_real_unit == 0)
+  {
+    microsteps_per_real_unit = MICROSTEPS_PER_REAL_UNIT_DEFAULT;
+  }
+  microsteps_per_real_unit_ = microsteps_per_real_unit;
+}
 
 uint32_t Converter::velocityChipToHz(uint32_t velocity_chip)
 {

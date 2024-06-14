@@ -52,7 +52,7 @@ private:
   const static int32_t MICROSTEPS_PER_PULSE_FRACTIONAL_DEFAULT = 0;
   const static int32_t ACTUAL_POSITION_DEFAULT = 0;
 
-  void setup(Registers & registers,
+  void initialize(Registers & registers,
     Converter & converter);
 
   friend class ::TMC51X0;

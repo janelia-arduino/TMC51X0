@@ -442,7 +442,7 @@ private:
   bool writeable_[ADDRESS_COUNT] = {false};
   bool readable_[ADDRESS_COUNT] = {false};
 
-  void setup(SPIClass & spi,
+  void initialize(SPIClass & spi,
     size_t chip_select_pin);
 
   friend class ::TMC51X0;

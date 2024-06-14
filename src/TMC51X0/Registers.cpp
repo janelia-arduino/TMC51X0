@@ -70,7 +70,7 @@ bool Registers::readable(RegisterAddress register_address)
 }
 
 // private
-void Registers::setup(SPIClass & spi,
+void Registers::initialize(SPIClass & spi,
   size_t chip_select_pin)
 {
   for (uint8_t register_address=0; register_address<ADDRESS_COUNT; ++register_address)
@@ -92,7 +92,7 @@ void Registers::setup(SPIClass & spi,
 
   readable_[IOIN] = true;
 
-  writeable_[jX_COMPARE] = true;
+  writeable_[X_COMPARE] = true;
 
   writeable_[OTP_PROG] = true;
 

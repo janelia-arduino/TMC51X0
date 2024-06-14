@@ -12,10 +12,10 @@ using namespace tmc51x0;
 void TMC51X0::setup(SPIClass & spi,
   size_t chip_select_pin)
 {
-  registers.setup(spi, chip_select_pin);
-  driver.setup(registers, converter);
-  controller.setup(registers, converter);
-  encoder.setup(registers, converter);
+  registers.initialize(spi, chip_select_pin);
+  driver.initialize(registers, converter);
+  controller.initialize(registers, converter);
+  encoder.initialize(registers, converter);
 }
 
 Registers::Gstat TMC51X0::readAndClearGlobalStatus()

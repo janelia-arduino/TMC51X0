@@ -130,7 +130,7 @@ private:
 
   const static uint8_t SEMIN_OFF = 0;
 
-  void setup(Registers & registers,
+  void initialize(Registers & registers,
     Converter & converter);
 
   void hardwareEnable();

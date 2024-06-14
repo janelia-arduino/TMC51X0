@@ -15,6 +15,7 @@
 #include "Driver.hpp"
 #include "Controller.hpp"
 #include "Encoder.hpp"
+#include "Printer.hpp"
 
 
 struct TMC51X0
@@ -27,6 +28,7 @@ struct TMC51X0
   tmc51x0::Driver driver;
   tmc51x0::Controller controller;
   tmc51x0::Encoder encoder;
+  tmc51x0::Printer printer;
 
   tmc51x0::Registers::Gstat readAndClearGlobalStatus();
 

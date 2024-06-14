@@ -17,8 +17,12 @@ class Converter
 public:
   Converter();
 
-  void setClockFrequencyMHz(uint8_t clock_frequency_mhz);
-  void setMicrostepsPerRealUnit(uint32_t microsteps_per_real_unit);
+  struct Settings
+  {
+    uint8_t clock_frequency_mhz;
+    uint32_t microsteps_per_real_unit;
+  };
+  void setup(Settings settings);
 
   int32_t positionChipToReal(int32_t position_chip);
   int32_t positionRealToChip(int32_t position_real);
@@ -73,6 +77,9 @@ private:
   const static uint8_t SEMIN_MAX = 15;
   const static uint8_t SEMAX_MIN = 0;
   const static uint8_t SEMAX_MAX = 15;
+
+  void setClockFrequencyMHz(uint8_t clock_frequency_mhz);
+  void setMicrostepsPerRealUnit(uint32_t microsteps_per_real_unit);
 
   uint32_t velocityChipToHz(uint32_t velocity_chip);
   uint32_t velocityHzToChip(uint32_t velocity_hz);
