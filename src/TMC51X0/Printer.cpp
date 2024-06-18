@@ -12,7 +12,7 @@ using namespace tmc51x0;
 void Printer::readAndPrintGconf()
 {
   Registers::Gconf gconf;
-  gconf.bytes = registers_ptr_->read(tmc51x0::Registers::GCONF);
+  gconf.bytes = registers_ptr_->read(Registers::GCONF);
   printGconf(gconf);
 }
 
@@ -36,14 +36,13 @@ void Printer::printGconf(Registers::Gconf gconf)
   printRegisterPortion("small_hysteresis", gconf.small_hysteresis);
   printRegisterPortion("stop_enable", gconf.stop_enable);
   printRegisterPortion("direct_mode", gconf.direct_mode);
-
   Serial.println("--------------------------");
 }
 
 void Printer::readAndPrintGstat()
 {
   Registers::Gstat gstat;
-  gstat.bytes = registers_ptr_->read(tmc51x0::Registers::GSTAT);
+  gstat.bytes = registers_ptr_->read(Registers::GSTAT);
   printGstat(gstat);
 }
 
@@ -58,7 +57,7 @@ void Printer::printGstat(Registers::Gstat gstat)
 void Printer::readAndPrintIoin()
 {
   Registers::Ioin ioin;
-  ioin.bytes = registers_ptr_->read(tmc51x0::Registers::IOIN);
+  ioin.bytes = registers_ptr_->read(Registers::IOIN);
   printIoin(ioin);
 }
 
@@ -74,14 +73,13 @@ void Printer::printIoin(Registers::Ioin ioin)
   printRegisterPortion("sd_mode", ioin.sd_mode);
   printRegisterPortion("swcomp_in", ioin.swcomp_in);
   printRegisterPortion("version", ioin.version, true);
-
   Serial.println("--------------------------");
 }
 
 void Printer::readAndPrintSwMode()
 {
   Registers::SwMode sw_mode;
-  sw_mode.bytes = registers_ptr_->read(tmc51x0::Registers::SW_MODE);
+  sw_mode.bytes = registers_ptr_->read(Registers::SW_MODE);
   printSwMode(sw_mode);
 }
 
@@ -100,14 +98,13 @@ void Printer::printSwMode(Registers::SwMode sw_mode)
   printRegisterPortion("en_latch_encoder", sw_mode.en_latch_encoder);
   printRegisterPortion("sg_stop", sw_mode.sg_stop);
   printRegisterPortion("en_softstop", sw_mode.en_softstop);
-
   Serial.println("--------------------------");
 }
 
 void Printer::readAndPrintRampStat()
 {
   Registers::RampStat ramp_stat;
-  ramp_stat.bytes = registers_ptr_->read(tmc51x0::Registers::RAMP_STAT);
+  ramp_stat.bytes = registers_ptr_->read(Registers::RAMP_STAT);
   printRampStat(ramp_stat);
 }
 
@@ -130,10 +127,38 @@ void Printer::printRampStat(Registers::RampStat ramp_stat)
   Serial.println("--------------------------");
 }
 
+void Printer::readAndPrintChopconf()
+{
+  Registers::Chopconf chopconf;
+  chopconf.bytes = registers_ptr_->read(Registers::CHOPCONF);
+  printChopconf(chopconf);
+}
+
+void Printer::printChopconf(Registers::Chopconf chopconf)
+{
+  printRegisterPortion("chopconf", chopconf.bytes, true);
+  printRegisterPortion("toff", chopconf.toff);
+  printRegisterPortion("hstart", chopconf.hstart);
+  printRegisterPortion("hend", chopconf.hend);
+  printRegisterPortion("fd3", chopconf.fd3);
+  printRegisterPortion("disfdcc", chopconf.disfdcc);
+  printRegisterPortion("chopper mode", chopconf.chm);
+  printRegisterPortion("tbl", chopconf.tbl);
+  printRegisterPortion("vhighfs", chopconf.vhighfs);
+  printRegisterPortion("vhighchm", chopconf.vhighchm);
+  printRegisterPortion("tpfd", chopconf.tpfd);
+  printRegisterPortion("mres", chopconf.mres);
+  printRegisterPortion("interpolation", chopconf.interpolation);
+  printRegisterPortion("double edge", chopconf.double_edge);
+  printRegisterPortion("diss2g", chopconf.diss2g);
+  printRegisterPortion("diss2vs", chopconf.diss2vs);
+  Serial.println("--------------------------");
+}
+
 void Printer::readAndPrintDrvStatus()
 {
   Registers::DrvStatus drv_status;
-  drv_status.bytes = registers_ptr_->read(tmc51x0::Registers::DRV_STATUS);
+  drv_status.bytes = registers_ptr_->read(Registers::DRV_STATUS);
   printDrvStatus(drv_status);
 }
 
@@ -150,7 +175,7 @@ void Printer::printDrvStatus(Registers::DrvStatus drv_status)
 void Printer::readAndPrintPwmconf()
 {
   Registers::Pwmconf pwmconf;
-  pwmconf.bytes = registers_ptr_->read(tmc51x0::Registers::PWMCONF);
+  pwmconf.bytes = registers_ptr_->read(Registers::PWMCONF);
   printPwmconf(pwmconf);
 }
 
@@ -171,7 +196,7 @@ void Printer::printPwmconf(Registers::Pwmconf pwmconf)
 void Printer::readAndPrintPwmScale()
 {
   Registers::PwmScale pwm_scale;
-  pwm_scale.bytes = registers_ptr_->read(tmc51x0::Registers::PWM_SCALE);
+  pwm_scale.bytes = registers_ptr_->read(Registers::PWM_SCALE);
   printPwmScale(pwm_scale);
 }
 

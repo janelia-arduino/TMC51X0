@@ -33,6 +33,9 @@ public:
   void readAndPrintRampStat();
   void printRampStat(Registers::RampStat ramp_stat);
 
+  void readAndPrintChopconf();
+  void printChopconf(Registers::Chopconf chopconf);
+
   void readAndPrintDrvStatus();
   void printDrvStatus(Registers::DrvStatus drv_status);
 
