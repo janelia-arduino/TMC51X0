@@ -16,7 +16,7 @@ const long SERIAL_BAUD_RATE = 115200;
 const int DELAY = 1000;
 
 // Instantiate TMC51X0
-TMC51X0 stepper_interface;
+TMC51X0 tmc5160;
 
 void setup()
 {
@@ -26,13 +26,11 @@ void setup()
   spi.setTX(TX_PIN);
   spi.setRX(RX_PIN);
 #endif
-  stepper_interface.setup(spi, CHIP_SELECT_PIN);
+  tmc5160.setup(spi, CHIP_SELECT_PIN);
 }
 
 void loop()
 {
-  tmc51x0::Registers::Gconf gconf;
-  gconf.bytes = stepper_interface.registers.read(tmc51x0::Registers::GCONF);
-  stepper_interface.printer.printGconf(gconf);
+  tmc5160.printer.readAndPrintGconf();
   delay(DELAY);
 }

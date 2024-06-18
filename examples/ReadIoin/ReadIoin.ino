@@ -17,7 +17,7 @@ const long SERIAL_BAUD_RATE = 115200;
 const int DELAY = 1000;
 
 // Instantiate TMC51X0
-TMC51X0 stepper_interface;
+TMC51X0 tmc5160;
 bool enabled;
 
 void setup()
@@ -28,8 +28,10 @@ void setup()
   spi.setTX(TX_PIN);
   spi.setRX(RX_PIN);
 #endif
-  stepper_interface.setup(spi, CHIP_SELECT_PIN);
-  stepper_interface.driver.setHardwareEnablePin(HARDWARE_ENABLE_PIN);
+
+  tmc5160.setup(spi, CHIP_SELECT_PIN);
+  tmc5160.driver.setHardwareEnablePin(HARDWARE_ENABLE_PIN);
+
   enabled = false;
 }
 
@@ -37,15 +39,15 @@ void loop()
 {
   if (enabled)
   {
-    stepper_interface.driver.disable();
+    tmc5160.driver.disable();
   }
   else
   {
-    stepper_interface.driver.enable();
+    tmc5160.driver.enable();
   }
   enabled = not enabled;
-  tmc51x0::Registers::Ioin ioin;
-  ioin.bytes = stepper_interface.registers.read(tmc51x0::Registers::IOIN);
-  stepper_interface.printer.printIoin(ioin);
+
+  tmc5160.printer.readAndPrintIoin();
+
   delay(DELAY);
 }

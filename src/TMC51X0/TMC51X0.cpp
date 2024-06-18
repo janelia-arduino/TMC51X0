@@ -16,6 +16,7 @@ void TMC51X0::setup(SPIClass & spi,
   driver.initialize(registers, converter);
   controller.initialize(registers, converter);
   encoder.initialize(registers, converter);
+  printer.initialize(registers);
 }
 
 Registers::Gstat TMC51X0::readAndClearGlobalStatus()
