@@ -26,8 +26,7 @@ const int16_t MICROSTEPS_PER_PULSE_FRACTIONAL = 0;
 const int32_t INITIAL_POSITION = 0;
 
 // Instantiate TMC51X0
-TMC51X0 stepper;
-uint32_t register_data;
+TMC51X0 tmc5160;
 int32_t encoder_actual_position;
 tmc51x0::Registers::EncStatus encoder_status;
 
@@ -39,19 +38,19 @@ void setup()
   spi.setTX(TX_PIN);
   spi.setRX(RX_PIN);
 #endif
-  stepper.setup(spi, CHIP_SELECT_PIN);
+  tmc5160.setup(spi, CHIP_SELECT_PIN);
 
-  stepper.encoder.writeFractionalMode(FRACTIONAL_MODE);
-  stepper.encoder.writeMicrostepsPerPulse(MICROSTEPS_PER_PULSE_INTEGER, MICROSTEPS_PER_PULSE_FRACTIONAL);
-  // stepper.encoder.writeActualPosition(stepper.converter.positionRealToEncoder(INITIAL_POSITION));
+  tmc5160.encoder.writeFractionalMode(FRACTIONAL_MODE);
+  tmc5160.encoder.writeMicrostepsPerPulse(MICROSTEPS_PER_PULSE_INTEGER, MICROSTEPS_PER_PULSE_FRACTIONAL);
+  // tmc5160.encoder.writeActualPosition(tmc5160.converter.positionRealToEncoder(INITIAL_POSITION));
 }
 
 void loop()
 {
-  encoder_actual_position = stepper.encoder.readActualPosition();
+  encoder_actual_position = tmc5160.encoder.readActualPosition();
   Serial.print("encoder_actual_position: ");
   Serial.println(encoder_actual_position);
-  encoder_status = stepper.encoder.readAndClearStatus();
+  encoder_status = tmc5160.encoder.readAndClearStatus();
   Serial.print("encoder_status.n_event: ");
   Serial.print(encoder_status.n_event);
   Serial.print(" , encoder_status.deviation_warn: ");

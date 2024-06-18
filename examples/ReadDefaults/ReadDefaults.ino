@@ -16,7 +16,7 @@ const long SERIAL_BAUD_RATE = 115200;
 const int DELAY = 1000;
 
 // Instantiate TMC51X0
-TMC51X0 stepper;
+TMC51X0 tmc5160;
 uint32_t register_data;
 
 void setup()
@@ -27,16 +27,16 @@ void setup()
   spi.setTX(TX_PIN);
   spi.setRX(RX_PIN);
 #endif
-  stepper.setup(spi, CHIP_SELECT_PIN);
+  tmc5160.setup(spi, CHIP_SELECT_PIN);
 }
 
 void loop()
 {
   for (uint8_t register_address=0; register_address < tmc51x0::Registers::ADDRESS_COUNT; ++register_address)
   {
-    if ((stepper.registers.readable((tmc51x0::Registers::RegisterAddress)register_address)) && (stepper.registers.writeable((tmc51x0::Registers::RegisterAddress)register_address)))
+    if ((tmc5160.registers.readable((tmc51x0::Registers::RegisterAddress)register_address)) && (tmc5160.registers.writeable((tmc51x0::Registers::RegisterAddress)register_address)))
     {
-      register_data = stepper.registers.read((tmc51x0::Registers::RegisterAddress)register_address);
+      register_data = tmc5160.registers.read((tmc51x0::Registers::RegisterAddress)register_address);
       if (register_data != 0)
       {
         Serial.print("register_address: 0x");
