@@ -33,6 +33,8 @@ void setup()
 
 void loop()
 {
-  printRegister(tmc5160.registers.getStored(tmc51x0::Registers::PWMCONF));
+  tmc51x0::Registers::Pwmconf pwmconf;
+  pwmconf.bytes = tmc5160.registers.getStored(tmc51x0::Registers::PWMCONF);
+  tmc5160.printer.printPwmconf(pwmconf);
   delay(DELAY);
 }
