@@ -239,6 +239,13 @@ void Driver::disableCoolStep()
   registers_ptr_->write(Registers::COOLCONF, coolconf.bytes);
 }
 
+uint8_t Driver::readActualCurrentScaling()
+{
+  Registers::DrvStatus drv_status;
+  drv_status.bytes = registers_ptr_->read(Registers::DRV_STATUS);
+  return drv_status.cs_actual;
+}
+
 // private
 
 void Driver::initialize(Registers & registers,

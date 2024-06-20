@@ -20,7 +20,8 @@ public:
   struct Settings
   {
     uint8_t clock_frequency_mhz = CLOCK_FREQUENCY_MHZ_DEFAULT;
-    uint32_t microsteps_per_real_unit = MICROSTEPS_PER_REAL_UNIT_DEFAULT;
+    uint32_t microsteps_per_real_position_unit = MICROSTEPS_PER_REAL_POSITION_UNIT_DEFAULT;
+    uint16_t hz_per_real_velocity_unit = HZ_PER_REAL_VELOCITY_UNIT_DEFAULT;
   };
   void setup(Settings settings);
 
@@ -51,9 +52,12 @@ public:
 private:
   uint8_t clock_frequency_mhz_;
   uint8_t clock_duration_ns_;
-  uint32_t microsteps_per_real_unit_;
+  uint32_t microsteps_per_real_position_unit_;
+  uint16_t hz_per_real_velocity_unit_;
   const static uint8_t CLOCK_FREQUENCY_MHZ_DEFAULT = 12;
-  const static uint32_t MICROSTEPS_PER_REAL_UNIT_DEFAULT = 1;
+  const static uint32_t MICROSTEPS_PER_REAL_POSITION_UNIT_DEFAULT = 1;
+  const static uint16_t HZ_PER_REAL_VELOCITY_UNIT_DEFAULT = 1;
+
   const static uint16_t CLOCK_FREQUENCY_TO_DURATION_SCALER = 1000;
   const static uint32_t MILLISECONDS_PER_SECOND = 1000000;
   const static uint32_t TZEROWAIT_SCALER = 512;
@@ -79,7 +83,8 @@ private:
   const static uint8_t SEMAX_MAX = 15;
 
   void setClockFrequencyMHz(uint8_t clock_frequency_mhz);
-  void setMicrostepsPerRealUnit(uint32_t microsteps_per_real_unit);
+  void setMicrostepsPerRealPositionUnit(uint32_t microsteps_per_real_position_unit);
+  void setHzPerRealVelocityUnit(uint16_t hz_per_real_velocity_unit);
 
   int32_t velocityChipToHz(int32_t velocity_chip);
   int32_t velocityHzToChip(int32_t velocity_hz);

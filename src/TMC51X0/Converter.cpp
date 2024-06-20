@@ -13,26 +13,28 @@ using namespace tmc51x0;
 Converter::Converter()
 {
   setClockFrequencyMHz(CLOCK_FREQUENCY_MHZ_DEFAULT);
-  microsteps_per_real_unit_ = MICROSTEPS_PER_REAL_UNIT_DEFAULT;
+  microsteps_per_real_position_unit_ = MICROSTEPS_PER_REAL_POSITION_UNIT_DEFAULT;
+  hz_per_real_velocity_unit_ = HZ_PER_REAL_VELOCITY_UNIT_DEFAULT;
 }
 
 void Converter::setup(Converter::Settings settings)
 {
   setClockFrequencyMHz(settings.clock_frequency_mhz);
-  setMicrostepsPerRealUnit(settings.microsteps_per_real_unit);
+  setMicrostepsPerRealPositionUnit(settings.microsteps_per_real_position_unit);
+  setHzPerRealVelocityUnit(settings.hz_per_real_velocity_unit);
 }
 
 int32_t Converter::positionChipToReal(int32_t position_chip)
 {
   int32_t position_real;
-  position_real = position_chip / (int32_t)microsteps_per_real_unit_;
+  position_real = position_chip / (int32_t)microsteps_per_real_position_unit_;
   return position_real;
 }
 
 int32_t Converter::positionRealToChip(int32_t position_real)
 {
   int32_t position_chip;
-  position_chip = position_real * (int32_t)microsteps_per_real_unit_;
+  position_chip = position_real * (int32_t)microsteps_per_real_position_unit_;
   return position_chip;
 }
 
@@ -40,14 +42,14 @@ int32_t Converter::velocityChipToReal(int32_t velocity_chip)
 {
   int64_t velocity_real;
   velocity_real = velocityChipToHz(velocity_chip);
-  velocity_real = positionChipToReal(velocity_real);
+  velocity_real = velocityHzToReal(velocity_real);
   return velocity_real;
 }
 
 int32_t Converter::velocityRealToChip(int32_t velocity_real)
 {
   int64_t velocity_chip;
-  velocity_chip = positionRealToChip(velocity_real);
+  velocity_chip = velocityRealToHz(velocity_chip);
   velocity_chip = velocityHzToChip(velocity_chip);
   return velocity_chip;
 }
@@ -175,13 +177,22 @@ void Converter::setClockFrequencyMHz(uint8_t clock_frequency_mhz)
   clock_duration_ns_ = CLOCK_FREQUENCY_TO_DURATION_SCALER / (uint16_t)clock_frequency_mhz;
 }
 
-void Converter::setMicrostepsPerRealUnit(uint32_t microsteps_per_real_unit)
+void Converter::setMicrostepsPerRealPositionUnit(uint32_t microsteps_per_real_position_unit)
 {
-  if (microsteps_per_real_unit == 0)
+  if (microsteps_per_real_position_unit == 0)
   {
-    microsteps_per_real_unit = MICROSTEPS_PER_REAL_UNIT_DEFAULT;
+    microsteps_per_real_position_unit = MICROSTEPS_PER_REAL_POSITION_UNIT_DEFAULT;
   }
-  microsteps_per_real_unit_ = microsteps_per_real_unit;
+  microsteps_per_real_position_unit_ = microsteps_per_real_position_unit;
+}
+
+void Converter::setHzPerRealVelocityUnit(uint16_t hz_per_real_velocity_unit)
+{
+  if (hz_per_real_velocity_unit == 0)
+  {
+    hz_per_real_velocity_unit = HZ_PER_REAL_VELOCITY_UNIT_DEFAULT;
+  }
+  hz_per_real_velocity_unit_ = hz_per_real_velocity_unit;
 }
 
 int32_t Converter::velocityChipToHz(int32_t velocity_chip)
@@ -203,7 +214,8 @@ int32_t Converter::velocityHzToChip(int32_t velocity_hz)
 int32_t Converter::velocityRealToHz(int32_t velocity_real)
 {
   int64_t velocity_hz;
-  velocity_hz = positionRealToChip(velocity_real);
+  velocity_hz = velocity_real / hz_per_real_velocity_unit_;
+  velocity_hz = positionRealToChip(velocity_hz);
   return velocity_hz;
 }
 
@@ -211,6 +223,7 @@ int32_t Converter::velocityHzToReal(int32_t velocity_hz)
 {
   int64_t velocity_real;
   velocity_real = positionChipToReal(velocity_hz);
+  velocity_real = velocity_real * hz_per_real_velocity_unit_;
   return velocity_real;
 }
 

@@ -129,6 +129,7 @@ struct Registers
     };
     uint32_t bytes;
   };
+  Gstat readAndClearGstat();
 
   union Nodeconf
   {
@@ -436,6 +437,9 @@ struct Registers
   };
 
 private:
+  const static uint8_t VERSION_TMC5130 = 0x11;
+  const static uint8_t VERSION_TMC5160 = 0x30;
+
   Interface interface_;
 
   uint32_t stored_[ADDRESS_COUNT] = {0};

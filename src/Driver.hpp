@@ -105,6 +105,8 @@ public:
     uint8_t maximum=0);
   void disableCoolStep();
 
+  uint8_t readActualCurrentScaling();
+
 private:
   Registers * registers_ptr_;
   Converter * converter_ptr_;

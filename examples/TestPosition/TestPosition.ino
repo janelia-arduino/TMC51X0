@@ -55,7 +55,7 @@ const tmc51x0::Controller::RampMode RAMP_MODE = tmc51x0::Controller::POSITION;
 const int32_t INITIAL_POSITION = 0;
 
 // Instantiate TMC51X0
-TMC51X0 stepper_interface;
+TMC51X0 tmc5160;
 uint32_t target_position;
 
 void setup()
@@ -66,91 +66,91 @@ void setup()
   spi.setTX(TX_PIN);
   spi.setRX(RX_PIN);
 #endif
-  stepper_interface.setup(spi, CHIP_SELECT_PIN);
+  tmc5160.setup(spi, CHIP_SELECT_PIN);
 
   tmc51x0::Converter::Settings converter_settings =
     {
       CLOCK_FREQUENCY_MHZ,
       MICROSTEPS_PER_REAL_UNIT
     };
-  stepper_interface.converter.setup(converter_settings);
+  tmc5160.converter.setup(converter_settings);
 
-  stepper_interface.driver.setHardwareEnablePin(HARDWARE_ENABLE_PIN);
-  stepper_interface.driver.writeGlobalCurrentScaler(stepper_interface.converter.percentToGlobalCurrentScaler(GLOBAL_CURRENT_SCALAR));
-  stepper_interface.driver.writeRunCurrent(stepper_interface.converter.percentToCurrentSetting(RUN_CURRENT));
-  stepper_interface.driver.writePwmOffset(stepper_interface.converter.percentToPwmSetting(PWM_OFFSET));
-  stepper_interface.driver.writePwmGradient(stepper_interface.converter.percentToPwmSetting(PWM_GRADIENT));
-  stepper_interface.driver.writeMotorDirection(MOTOR_DIRECTION);
-  stepper_interface.driver.writeStealthChopThreshold(stepper_interface.converter.velocityRealToTstep(STEALTH_CHOP_THRESHOLD));
-  // stepper_interface.driver.writeCoolStepThreshold(stepper_interface.converter.velocityRealToTstep(COOL_STEP_THRESHOLD));
-  // stepper_interface.driver.enableCoolStep(MIN_COOL_STEP, MAX_COOL_STEP);
-  // stepper_interface.driver.writeHighVelocityThreshold(stepper_interface.converter.velocityRealToTstep(HIGH_VELOCITY_THRESHOLD));
-  // stepper_interface.driver.writeStallGuardThreshold(STALL_GUARD_THRESHOLD);
+  tmc5160.driver.setHardwareEnablePin(HARDWARE_ENABLE_PIN);
+  tmc5160.driver.writeGlobalCurrentScaler(tmc5160.converter.percentToGlobalCurrentScaler(GLOBAL_CURRENT_SCALAR));
+  tmc5160.driver.writeRunCurrent(tmc5160.converter.percentToCurrentSetting(RUN_CURRENT));
+  tmc5160.driver.writePwmOffset(tmc5160.converter.percentToPwmSetting(PWM_OFFSET));
+  tmc5160.driver.writePwmGradient(tmc5160.converter.percentToPwmSetting(PWM_GRADIENT));
+  tmc5160.driver.writeMotorDirection(MOTOR_DIRECTION);
+  tmc5160.driver.writeStealthChopThreshold(tmc5160.converter.velocityRealToTstep(STEALTH_CHOP_THRESHOLD));
+  // tmc5160.driver.writeCoolStepThreshold(tmc5160.converter.velocityRealToTstep(COOL_STEP_THRESHOLD));
+  // tmc5160.driver.enableCoolStep(MIN_COOL_STEP, MAX_COOL_STEP);
+  // tmc5160.driver.writeHighVelocityThreshold(tmc5160.converter.velocityRealToTstep(HIGH_VELOCITY_THRESHOLD));
+  // tmc5160.driver.writeStallGuardThreshold(STALL_GUARD_THRESHOLD);
 
-  stepper_interface.controller.writeFirstAcceleration(stepper_interface.converter.accelerationRealToChip(FIRST_ACCELERATION));
-  stepper_interface.controller.writeFirstVelocity(stepper_interface.converter.velocityRealToChip(FIRST_VELOCITY));
-  stepper_interface.controller.writeMaxAcceleration(stepper_interface.converter.accelerationRealToChip(MAX_ACCELERATION));
-  stepper_interface.controller.writeMaxDeceleration(stepper_interface.converter.accelerationRealToChip(MAX_DECELERATION));
-  stepper_interface.controller.writeFirstDeceleration(stepper_interface.converter.accelerationRealToChip(FIRST_DECELERATION));
-  stepper_interface.controller.writeStopVelocity(stepper_interface.converter.velocityRealToChip(STOP_VELOCITY));
-  stepper_interface.controller.writeRampMode(RAMP_MODE);
-  stepper_interface.controller.writeActualPosition(stepper_interface.converter.positionRealToChip(INITIAL_POSITION));
+  tmc5160.controller.writeFirstAcceleration(tmc5160.converter.accelerationRealToChip(FIRST_ACCELERATION));
+  tmc5160.controller.writeFirstVelocity(tmc5160.converter.velocityRealToChip(FIRST_VELOCITY));
+  tmc5160.controller.writeMaxAcceleration(tmc5160.converter.accelerationRealToChip(MAX_ACCELERATION));
+  tmc5160.controller.writeMaxDeceleration(tmc5160.converter.accelerationRealToChip(MAX_DECELERATION));
+  tmc5160.controller.writeFirstDeceleration(tmc5160.converter.accelerationRealToChip(FIRST_DECELERATION));
+  tmc5160.controller.writeStopVelocity(tmc5160.converter.velocityRealToChip(STOP_VELOCITY));
+  tmc5160.controller.writeRampMode(RAMP_MODE);
+  tmc5160.controller.writeActualPosition(tmc5160.converter.positionRealToChip(INITIAL_POSITION));
 
-  stepper_interface.driver.enable();
+  tmc5160.driver.enable();
 
-  stepper_interface.controller.rampToZeroVelocity();
-  while (!stepper_interface.controller.zeroVelocity())
+  tmc5160.controller.rampToZeroVelocity();
+  while (!tmc5160.controller.zeroVelocity())
   {
     Serial.println("Waiting for zero velocity.");
     delay(LOOP_DELAY);
   }
 
-  stepper_interface.controller.writeStartVelocity(stepper_interface.converter.velocityRealToChip(START_VELOCITY));
-  stepper_interface.controller.writeMaxVelocity(stepper_interface.converter.velocityRealToChip(MAX_VELOCITY));
+  tmc5160.controller.writeStartVelocity(tmc5160.converter.velocityRealToChip(START_VELOCITY));
+  tmc5160.controller.writeMaxVelocity(tmc5160.converter.velocityRealToChip(MAX_VELOCITY));
 
   // home
-  // stepper_interface.driver.writeGlobalCurrentScaler(stepper_interface.converter.percentToGlobalCurrentScaler(HOME_GLOBAL_CURRENT_SCALAR));
-  // stepper_interface.controller.writeTargetPosition(stepper_interface.converter.positionRealToChip(HOME_TARGET_POSITION));
+  // tmc5160.driver.writeGlobalCurrentScaler(tmc5160.converter.percentToGlobalCurrentScaler(HOME_GLOBAL_CURRENT_SCALAR));
+  // tmc5160.controller.writeTargetPosition(tmc5160.converter.positionRealToChip(HOME_TARGET_POSITION));
 
-  stepper_interface.driver.writeGlobalCurrentScaler(stepper_interface.converter.percentToGlobalCurrentScaler(GLOBAL_CURRENT_SCALAR));
+  tmc5160.driver.writeGlobalCurrentScaler(tmc5160.converter.percentToGlobalCurrentScaler(GLOBAL_CURRENT_SCALAR));
   randomSeed(analogRead(A0));
   long random_delay = random(5000);
   delay(random_delay);
 
   target_position = MIN_TARGET_POSITION;
-  stepper_interface.controller.writeTargetPosition(stepper_interface.converter.positionRealToChip(target_position));
+  tmc5160.controller.writeTargetPosition(tmc5160.converter.positionRealToChip(target_position));
 
 }
 
 void loop()
 {
   tmc51x0::Registers::RampStat ramp_stat;
-  ramp_stat.bytes = stepper_interface.registers.read(tmc51x0::Registers::RAMP_STAT);
-  stepper_interface.printer.printRampStat(ramp_stat);
+  ramp_stat.bytes = tmc5160.registers.read(tmc51x0::Registers::RAMP_STAT);
+  tmc5160.printer.printRampStat(ramp_stat);
   tmc51x0::Registers::DrvStatus drv_status;
-  drv_status.bytes = stepper_interface.registers.read(tmc51x0::Registers::DRV_STATUS);
-  stepper_interface.printer.printDrvStatus(drv_status);
+  drv_status.bytes = tmc5160.registers.read(tmc51x0::Registers::DRV_STATUS);
+  tmc5160.printer.printDrvStatus(drv_status);
 
   Serial.print("max_velocity (millimeters per second): ");
   Serial.println(MAX_VELOCITY);
 
-  int32_t actual_velocity_chip = stepper_interface.controller.readActualVelocity();
-  int32_t actual_velocity_real = stepper_interface.converter.velocityChipToReal(actual_velocity_chip);
+  int32_t actual_velocity_chip = tmc5160.controller.readActualVelocity();
+  int32_t actual_velocity_real = tmc5160.converter.velocityChipToReal(actual_velocity_chip);
   Serial.print("actual_velocity (millimeters per second): ");
   Serial.println(actual_velocity_real);
 
-  int32_t actual_position_chip = stepper_interface.controller.readActualPosition();
-  int32_t actual_position_real = stepper_interface.converter.positionChipToReal(actual_position_chip);
+  int32_t actual_position_chip = tmc5160.controller.readActualPosition();
+  int32_t actual_position_real = tmc5160.converter.positionChipToReal(actual_position_chip);
   Serial.print("actual position (millimeters): ");
   Serial.println(actual_position_real);
 
-  int32_t target_position_chip = stepper_interface.controller.readTargetPosition();
-  int32_t target_position_real = stepper_interface.converter.positionChipToReal(target_position_chip);
+  int32_t target_position_chip = tmc5160.controller.readTargetPosition();
+  int32_t target_position_real = tmc5160.converter.positionChipToReal(target_position_chip);
   Serial.print("target position (millimeters): ");
   Serial.println(target_position_real);
   Serial.println("--------------------------");
 
-  if (stepper_interface.controller.positionReached())
+  if (tmc5160.controller.positionReached())
   {
     Serial.println("Reached target position!");
     Serial.println("--------------------------");
@@ -164,7 +164,7 @@ void loop()
     {
       target_position = MIN_TARGET_POSITION;
     }
-stepper_interface.controller.writeTargetPosition(stepper_interface.converter.positionRealToChip(target_position));
+tmc5160.controller.writeTargetPosition(tmc5160.converter.positionRealToChip(target_position));
   }
 
   Serial.println("--------------------------");

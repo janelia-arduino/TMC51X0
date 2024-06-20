@@ -41,17 +41,10 @@ void Controller::writeActualPosition(int32_t position)
 int32_t Controller::readActualVelocity()
 {
   int32_t actual_velocity = registers_ptr_->read(Registers::VACTUAL);
-  // Serial.print("actual_velocity = ");
-  // Serial.print(actual_velocity);
   if (actual_velocity > MAX_POSITIVE_VELOCITY)
   {
-    // Serial.print("actual_velocity > MAX_POSITIVE_VELOCITY ");
     actual_velocity -= VELOCITY_SIGN_CONVERSION;
   }
-  // else
-  // {
-  //   Serial.print("actual_velocity <= MAX_POSITIVE_VELOCITY ");
-  // }
   return actual_velocity;
 }
 
