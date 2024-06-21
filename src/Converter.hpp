@@ -21,7 +21,7 @@ public:
   {
     uint8_t clock_frequency_mhz = CLOCK_FREQUENCY_MHZ_DEFAULT;
     int32_t microsteps_per_real_position_unit = MICROSTEPS_PER_REAL_POSITION_UNIT_DEFAULT;
-    int32_t hz_per_real_velocity_unit = HZ_PER_REAL_VELOCITY_UNIT_DEFAULT;
+    int32_t seconds_per_real_velocity_unit = SECONDS_PER_REAL_VELOCITY_UNIT_DEFAULT;
   };
   void setup(Settings settings);
 
@@ -53,10 +53,10 @@ private:
   uint8_t clock_frequency_mhz_;
   uint8_t clock_duration_ns_;
   int32_t microsteps_per_real_position_unit_;
-  int32_t hz_per_real_velocity_unit_;
+  int32_t seconds_per_real_velocity_unit_;
   const static uint8_t CLOCK_FREQUENCY_MHZ_DEFAULT = 12;
   const static int32_t MICROSTEPS_PER_REAL_POSITION_UNIT_DEFAULT = 1;
-  const static int32_t HZ_PER_REAL_VELOCITY_UNIT_DEFAULT = 1;
+  const static int32_t SECONDS_PER_REAL_VELOCITY_UNIT_DEFAULT = 1;
 
   const static uint16_t CLOCK_FREQUENCY_TO_DURATION_SCALER = 1000;
   const static uint32_t MILLISECONDS_PER_SECOND = 1000000;
@@ -84,7 +84,7 @@ private:
 
   void setClockFrequencyMHz(uint8_t clock_frequency_mhz);
   void setMicrostepsPerRealPositionUnit(int32_t microsteps_per_real_position_unit);
-  void setHzPerRealVelocityUnit(int32_t hz_per_real_velocity_unit);
+  void setSecondsPerRealVelocityUnit(int32_t seconds_per_real_velocity_unit);
 
   int32_t velocityChipToHz(int32_t velocity_chip);
   int32_t velocityHzToChip(int32_t velocity_hz);
@@ -96,6 +96,8 @@ private:
 
   int32_t accelerationChipToHzPerS(int32_t acceleration_chip);
   int32_t accelerationHzPerSToChip(int32_t acceleration_hz_per_s);
+  int32_t accelerationRealToHzPerS(int32_t acceleration_real);
+  int32_t accelerationHzPerSToReal(int32_t acceleration_hz_per_s);
 
   uint32_t constrain_(uint32_t value, uint32_t low, uint32_t high);
 };
