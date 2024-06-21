@@ -32,12 +32,14 @@ const int32_t SECONDS_PER_REAL_VELOCITY_UNIT = 60;
 //     rated current: 1.68A
 //     rated voltage: 2.8V
 //     200 steps/rev
-const uint8_t GLOBAL_CURRENT_SCALAR = 128; // 128-255
-const uint8_t RUN_CURRENT = 16; // 0-31
-const uint8_t PWM_OFFSET = 4; // 0-255
-const uint8_t PWM_GRADIENT = 42; // 0-255
+const uint8_t GLOBAL_CURRENT_SCALAR = 128; // 128..255
+const uint8_t RUN_CURRENT = 16; // 0..31
+const uint8_t PWM_OFFSET = 4; // 0..255
+const uint8_t PWM_GRADIENT = 42; // 0..255
 const tmc51x0::Driver::MotorDirection MOTOR_DIRECTION = tmc51x0::Driver::FORWARD;
 const uint16_t STEALTH_CHOP_THRESHOLD = 300; // rotations/min seems to be upper limit
+const bool AUTOGRAD = true; // automatic gradient adaptation
+const uint8_t PWM_REG = 4; // 1..15 -> slowest regulation..fastest regulation
 
 // controller constants
 const uint32_t MIN_TARGET_VELOCITY = 60;  // rotations/min
@@ -78,6 +80,7 @@ void setup()
   tmc5160.driver.writeMotorDirection(MOTOR_DIRECTION);
 
   tmc5160.driver.writeStealthChopThreshold(tmc5160.converter.velocityRealToTstep(STEALTH_CHOP_THRESHOLD));
+  tmc5160.driver.enableStealthChop();
 
   tmc5160.controller.writeMaxAcceleration(tmc5160.converter.accelerationRealToChip(MAX_ACCELERATION));
   tmc5160.controller.writeRampMode(RAMP_MODE);
@@ -90,6 +93,9 @@ void setup()
     Serial.println("Waiting for zero velocity.");
     delay(LOOP_DELAY);
   }
+  delay(LOOP_DELAY);
+
+  tmc5160.driver.enableAutomaticCurrentControl(AUTOGRAD, PWM_REG);
 
   target_velocity = MIN_TARGET_VELOCITY;
   tmc5160.controller.writeMaxVelocity(tmc5160.converter.velocityRealToChip(target_velocity));

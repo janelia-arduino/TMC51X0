@@ -49,15 +49,16 @@ public:
   void enableStealthChop();
   void disableStealthChop();
 
-  void enableAutomaticCurrentScaling();
-  void disableAutomaticCurrentScaling();
-  void enableAutomaticGradientAdaptation();
-  void disableAutomaticGradientAdaptation();
-
   // range 0..255
   void writePwmOffset(uint8_t pwm_amplitude);
   // range 0..255
   void writePwmGradient(uint8_t pwm_amplitude);
+
+  // autograd = automatic gradient adaptation
+  // pwm_reg range 1..15 -> slowest regulation..fastest regulation
+  void enableAutomaticCurrentControl(bool autograd=true,
+    uint8_t pwm_reg=4);
+  void disableAutomaticCurrentControl();
 
   enum StandstillMode
   {

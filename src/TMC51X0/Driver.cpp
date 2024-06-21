@@ -78,38 +78,6 @@ void Driver::disableStealthChop()
   registers_ptr_->write(Registers::GCONF, gconf.bytes);
 }
 
-void Driver::enableAutomaticCurrentScaling()
-{
-  Registers::Pwmconf pwmconf;
-  pwmconf.bytes = registers_ptr_->getStored(Registers::PWMCONF);
-  pwmconf.pwm_autoscale = 1;
-  registers_ptr_->write(Registers::PWMCONF, pwmconf.bytes);
-}
-
-void Driver::disableAutomaticCurrentScaling()
-{
-  Registers::Pwmconf pwmconf;
-  pwmconf.bytes = registers_ptr_->getStored(Registers::PWMCONF);
-  pwmconf.pwm_autoscale = 0;
-  registers_ptr_->write(Registers::PWMCONF, pwmconf.bytes);
-}
-
-void Driver::enableAutomaticGradientAdaptation()
-{
-  Registers::Pwmconf pwmconf;
-  pwmconf.bytes = registers_ptr_->getStored(Registers::PWMCONF);
-  pwmconf.pwm_autograd = 1;
-  registers_ptr_->write(Registers::PWMCONF, pwmconf.bytes);
-}
-
-void Driver::disableAutomaticGradientAdaptation()
-{
-  Registers::Pwmconf pwmconf;
-  pwmconf.bytes = registers_ptr_->getStored(Registers::PWMCONF);
-  pwmconf.pwm_autograd = 0;
-  registers_ptr_->write(Registers::PWMCONF, pwmconf.bytes);
-}
-
 void Driver::writePwmOffset(uint8_t pwm_amplitude)
 {
   Registers::Pwmconf pwmconf;
@@ -123,6 +91,26 @@ void Driver::writePwmGradient(uint8_t pwm_amplitude)
   Registers::Pwmconf pwmconf;
   pwmconf.bytes = registers_ptr_->getStored(Registers::PWMCONF);
   pwmconf.pwm_grad = pwm_amplitude;
+  registers_ptr_->write(Registers::PWMCONF, pwmconf.bytes);
+}
+
+void Driver::enableAutomaticCurrentControl(bool autograd,
+    uint8_t pwm_reg)
+{
+  Registers::Pwmconf pwmconf;
+  pwmconf.bytes = registers_ptr_->getStored(Registers::PWMCONF);
+  pwmconf.pwm_autoscale = 1;
+  pwmconf.pwm_autograd = autograd;
+  pwmconf.pwm_reg = pwm_reg;
+  registers_ptr_->write(Registers::PWMCONF, pwmconf.bytes);
+}
+
+void Driver::disableAutomaticCurrentControl()
+{
+  Registers::Pwmconf pwmconf;
+  pwmconf.bytes = registers_ptr_->getStored(Registers::PWMCONF);
+  pwmconf.pwm_autoscale = 0;
+  pwmconf.pwm_autograd = 0;
   registers_ptr_->write(Registers::PWMCONF, pwmconf.bytes);
 }
 
@@ -258,8 +246,7 @@ void Driver::initialize(Registers & registers,
   disable();
   minimizeMotorCurrent();
   enableStealthChop();
-  disableAutomaticCurrentScaling();
-  disableAutomaticGradientAdaptation();
+  disableAutomaticCurrentControl();
   writePwmOffset(PWM_SETTING_DEFAULT);
   writePwmGradient(PWM_SETTING_DEFAULT);
   writeStandstillMode(STANDSTILL_MODE_DEFAULT);
