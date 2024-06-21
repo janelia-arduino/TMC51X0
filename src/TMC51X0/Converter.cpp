@@ -40,16 +40,14 @@ int32_t Converter::positionRealToChip(int32_t position_real)
 
 int32_t Converter::velocityChipToReal(int32_t velocity_chip)
 {
-  int32_t velocity_real;
-  velocity_real = velocityChipToHz(velocity_chip);
+  int32_t velocity_real = velocityChipToHz(velocity_chip);
   velocity_real = velocityHzToReal(velocity_real);
   return velocity_real;
 }
 
 int32_t Converter::velocityRealToChip(int32_t velocity_real)
 {
-  int32_t velocity_chip;
-  velocity_chip = velocityRealToHz(velocity_chip);
+  int32_t velocity_chip = velocityRealToHz(velocity_real);
   velocity_chip = velocityHzToChip(velocity_chip);
   return velocity_chip;
 }

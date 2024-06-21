@@ -23,8 +23,7 @@ const uint8_t CLOCK_FREQUENCY_MHZ = 12;
 // 200 fullsteps per revolution for many steppers * 256 microsteps per fullstep
 // one "real position unit" in this example is one rotation of the motor shaft
 constexpr int32_t MICROSTEPS_PER_REAL_POSITION_UNIT = 200 * 256; // 51200
-// const int32_t HZ_PER_REAL_VELOCITY_UNIT = 60; // rotations/s -> rotations/min
-const int32_t HZ_PER_REAL_VELOCITY_UNIT = 1; // rotations/s -> rotations/min
+const int32_t HZ_PER_REAL_VELOCITY_UNIT = 60; // rotations/s -> rotations/min
 
 // driver constants @ 24V VM
 //   motor: SY42STH38-1684a
@@ -36,16 +35,12 @@ const uint8_t RUN_CURRENT = 16; // 0-31
 const uint8_t PWM_OFFSET = 4; // 0-255
 const uint8_t PWM_GRADIENT = 42; // 0-255
 const tmc51x0::Driver::MotorDirection MOTOR_DIRECTION = tmc51x0::Driver::FORWARD;
-// const uint16_t STEALTH_CHOP_THRESHOLD = 300; // rotations/min seems to be upper limit
-const uint16_t STEALTH_CHOP_THRESHOLD = 5; // rotations/min seems to be upper limit
+const uint16_t STEALTH_CHOP_THRESHOLD = 300; // rotations/min seems to be upper limit
 
 // controller constants
-// const uint32_t MIN_TARGET_VELOCITY = 60;  // rotations/min
-// const uint32_t MAX_TARGET_VELOCITY = 1500; // rotations/min
-// const uint32_t TARGET_VELOCITY_INC = 60;  // rotations/min
-const uint32_t MIN_TARGET_VELOCITY = 1;  // rotations/min
-const uint32_t MAX_TARGET_VELOCITY = 25; // rotations/min
-const uint32_t TARGET_VELOCITY_INC = 1;  // rotations/min
+const uint32_t MIN_TARGET_VELOCITY = 60;  // rotations/min
+const uint32_t MAX_TARGET_VELOCITY = 1500; // rotations/min
+const uint32_t TARGET_VELOCITY_INC = 60;  // rotations/min
 const uint32_t MAX_ACCELERATION = 1;  // rotations/(s^2)
 const tmc51x0::Controller::RampMode RAMP_MODE = tmc51x0::Controller::VELOCITY_POSITIVE;
 
@@ -103,6 +98,13 @@ void loop()
   tmc5160.printer.getStoredAndPrintPwmconf();
   tmc5160.printer.readAndPrintPwmScale();
   tmc5160.printer.readAndPrintPwmAuto();
+
+  Serial.print("tmc5160.converter.velocityRealToTstep(STEALTH_CHOP_THRESHOLD): ");
+  Serial.println(tmc5160.converter.velocityRealToTstep(STEALTH_CHOP_THRESHOLD));
+  Serial.print("tmc5160.converter.accelerationRealToChip(MAX_ACCELERATION)");
+  Serial.println(tmc5160.converter.accelerationRealToChip(MAX_ACCELERATION));
+  Serial.print("tmc5160.converter.velocityRealToChip(target_velocity)");
+  Serial.println(tmc5160.converter.velocityRealToChip(target_velocity));
 
   uint8_t actual_current_scaling = tmc5160.driver.readActualCurrentScaling();
   Serial.print("actual_current_scaling: ");
