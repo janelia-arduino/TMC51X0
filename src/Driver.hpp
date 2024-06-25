@@ -93,18 +93,20 @@ public:
   void enableHighVelocityChopperSwitch();
   void disableHighVelocityChopperSwitch();
 
+  // minimum: 1..15
+  // maximum: 0..15
+  void enableCoolStep(uint8_t minimum=1,
+    uint8_t maximum=0);
+  void disableCoolStep();
+
   // 0 indifferent value
   // 1..63 less sensitivity
   // -1..-64 higher sensitivity
   void writeStallGuardThreshold(int8_t threshold);
   void enableStallGuardFilter();
   void disableStallGuardFilter();
-
-  // minimum: 1..15
-  // maximum: 0..15
-  void enableCoolStep(uint8_t minimum=1,
-    uint8_t maximum=0);
-  void disableCoolStep();
+  bool stalled();
+  uint16_t readStallGuardResult();
 
   uint8_t readActualCurrentScaling();
 

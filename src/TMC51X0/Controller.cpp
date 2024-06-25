@@ -16,7 +16,6 @@ void Controller::writeRampMode(RampMode ramp_mode)
 
 void Controller::writeStopMode(StopMode stop_mode)
 {
-  stop_mode_ = stop_mode;
   Registers::SwMode sw_mode;
   sw_mode.bytes = registers_ptr_->getStored(Registers::SW_MODE);
   sw_mode.en_softstop = stop_mode;
@@ -148,7 +147,6 @@ void Controller::disableStallStop()
 {
   Registers::SwMode sw_mode;
   sw_mode.bytes = registers_ptr_->getStored(Registers::SW_MODE);
-  sw_mode.en_softstop = stop_mode_;
   sw_mode.sg_stop = 0;
   registers_ptr_->write(Registers::SW_MODE, sw_mode.bytes);
 }

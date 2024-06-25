@@ -26,7 +26,6 @@ constexpr uint32_t MICROSTEPS_PER_REAL_UNIT = 4881;
 
 // driver constants
 const uint8_t GLOBAL_CURRENT_SCALAR = 50; // percent
-// const uint8_t HOME_GLOBAL_CURRENT_SCALAR = 20; // percent
 const uint8_t RUN_CURRENT = 20; // percent
 const uint8_t PWM_OFFSET = 20; // percent
 const uint8_t PWM_GRADIENT = 5; // percent
@@ -39,6 +38,7 @@ const uint8_t MAX_COOL_STEP = 0;
 const uint8_t HIGH_VELOCITY_THRESHOLD = 90; // millimeters/s
 const int8_t STALL_GUARD_THRESHOLD = 1;
 
+// controller constants
 const uint32_t START_VELOCITY = 1; // millimeters/s
 const uint32_t FIRST_ACCELERATION = 10;  // millimeters/(s^2)
 const uint32_t FIRST_VELOCITY = 10; // millimeters/s
@@ -50,7 +50,6 @@ const uint32_t STOP_VELOCITY = 5; // millimeters/s
 
 const int32_t MAX_TARGET_POSITION = 20;  // millimeters
 const int32_t MIN_TARGET_POSITION = 180;  // millimeters
-const int32_t HOME_TARGET_POSITION = -150;  // millimeters
 const tmc51x0::Controller::RampMode RAMP_MODE = tmc51x0::Controller::POSITION;
 const int32_t INITIAL_POSITION = 0;
 
@@ -108,11 +107,6 @@ void setup()
   tmc5160.controller.writeStartVelocity(tmc5160.converter.velocityRealToChip(START_VELOCITY));
   tmc5160.controller.writeMaxVelocity(tmc5160.converter.velocityRealToChip(MAX_VELOCITY));
 
-  // home
-  // tmc5160.driver.writeGlobalCurrentScaler(tmc5160.converter.percentToGlobalCurrentScaler(HOME_GLOBAL_CURRENT_SCALAR));
-  // tmc5160.controller.writeTargetPosition(tmc5160.converter.positionRealToChip(HOME_TARGET_POSITION));
-
-  tmc5160.driver.writeGlobalCurrentScaler(tmc5160.converter.percentToGlobalCurrentScaler(GLOBAL_CURRENT_SCALAR));
   randomSeed(analogRead(A0));
   long random_delay = random(5000);
   delay(random_delay);
@@ -124,12 +118,8 @@ void setup()
 
 void loop()
 {
-  tmc51x0::Registers::RampStat ramp_stat;
-  ramp_stat.bytes = tmc5160.registers.read(tmc51x0::Registers::RAMP_STAT);
-  tmc5160.printer.printRampStat(ramp_stat);
-  tmc51x0::Registers::DrvStatus drv_status;
-  drv_status.bytes = tmc5160.registers.read(tmc51x0::Registers::DRV_STATUS);
-  tmc5160.printer.printDrvStatus(drv_status);
+  tmc5160.printer.readAndPrintRampStat();
+  tmc5160.printer.readAndPrintDrvStatus();
 
   Serial.print("max_velocity (millimeters per second): ");
   Serial.println(MAX_VELOCITY);

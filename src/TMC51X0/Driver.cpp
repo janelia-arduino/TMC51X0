@@ -185,6 +185,24 @@ void Driver::disableHighVelocityChopperSwitch()
   registers_ptr_->write(Registers::CHOPCONF, chopconf.bytes);
 }
 
+void Driver::enableCoolStep(uint8_t minimum,
+    uint8_t maximum)
+{
+  Registers::Coolconf coolconf;
+  coolconf.bytes = registers_ptr_->getStored(Registers::COOLCONF);
+  coolconf.semin = minimum;
+  coolconf.semax = maximum;
+  registers_ptr_->write(Registers::COOLCONF, coolconf.bytes);
+}
+
+void Driver::disableCoolStep()
+{
+  Registers::Coolconf coolconf;
+  coolconf.bytes = registers_ptr_->getStored(Registers::COOLCONF);
+  coolconf.semin = SEMIN_OFF;
+  registers_ptr_->write(Registers::COOLCONF, coolconf.bytes);
+}
+
 void Driver::writeStallGuardThreshold(int8_t threshold)
 {
   Registers::Coolconf coolconf;
@@ -209,22 +227,18 @@ void Driver::disableStallGuardFilter()
   registers_ptr_->write(Registers::COOLCONF, coolconf.bytes);
 }
 
-void Driver::enableCoolStep(uint8_t minimum,
-    uint8_t maximum)
+bool Driver::stalled()
 {
-  Registers::Coolconf coolconf;
-  coolconf.bytes = registers_ptr_->getStored(Registers::COOLCONF);
-  coolconf.semin = minimum;
-  coolconf.semax = maximum;
-  registers_ptr_->write(Registers::COOLCONF, coolconf.bytes);
+  Registers::RampStat ramp_stat;
+  ramp_stat.bytes = registers_ptr_->read(Registers::RAMP_STAT);
+  return ramp_stat.status_sg;
 }
 
-void Driver::disableCoolStep()
+uint16_t Driver::readStallGuardResult()
 {
-  Registers::Coolconf coolconf;
-  coolconf.bytes = registers_ptr_->getStored(Registers::COOLCONF);
-  coolconf.semin = SEMIN_OFF;
-  registers_ptr_->write(Registers::COOLCONF, coolconf.bytes);
+  Registers::DrvStatus drv_status;
+  drv_status.bytes = registers_ptr_->read(Registers::DRV_STATUS);
+  return drv_status.sg_result;
 }
 
 uint8_t Driver::readActualCurrentScaling()

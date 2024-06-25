@@ -49,12 +49,12 @@ const uint32_t FIRST_DECELERATION = 20;  // millimeters/(s^2)
 const uint32_t MAX_VELOCITY = 20; // millimeters/s
 const uint32_t STOP_VELOCITY = 5; // millimeters/s
 
-const int32_t MAX_TARGET_POSITION = 20;  // millimeters
-const int32_t MIN_TARGET_POSITION = 180;  // millimeters
+const int32_t MIN_TARGET_POSITION = 20;  // millimeters
+const int32_t MAX_TARGET_POSITION = 180;  // millimeters
 const tmc51x0::Controller::RampMode RAMP_MODE = tmc51x0::Controller::POSITION;
 
 // home constants
-const uint8_t HOME_GLOBAL_CURRENT_SCALAR = 20; // percent
+const uint8_t HOME_GLOBAL_CURRENT_SCALAR = 50; // percent
 const uint8_t HOME_COOL_STEP_THRESHOLD = 5; // millimeters/s
 const uint32_t HOME_START_VELOCITY = 1; // millimeters/s
 const uint32_t HOME_MAX_VELOCITY = 10; // millimeters/s
@@ -131,14 +131,22 @@ void loop()
   }
   Serial.println("Enabling stall stop.");
   tmc5160.controller.enableStallStop();
-  while (!tmc5160.controller.stalled() && !tmc5160.controller.zeroVelocity() && !tmc5160.controller.positionReached())
+  uint16_t stall_guard_result;
+  while (!tmc5160.driver.stalled() && !tmc5160.controller.zeroVelocity() && !tmc5160.controller.positionReached())
   {
     Serial.println("Waiting to stall, reach zero velocity, or reach home position.");
+    stall_guard_result = tmc5160.driver.readStallGuardResult();
+    Serial.print("stall guard result: ");
+    Serial.println(stall_guard_result);
     delay(LOOP_DELAY);
   }
   if (!tmc5160.controller.positionReached())
   {
-    Serial.println("Homed successfully.");
+    Serial.println("Homed successfully!");
+  }
+  else
+  {
+    Serial.println("Home Failed!! Try adjusting stallguard threshold or global current scalar.");
   }
   Serial.println("Setting zero velocity.");
   tmc5160.controller.writeStartVelocity(0);

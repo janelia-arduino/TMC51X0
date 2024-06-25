@@ -94,13 +94,14 @@ public:
   // -2^31..(2^31)-1 microsteps
   void writeComparePosition(int32_t position);
 
+  // enabling stall stop sets stop mode to hard
   void enableStallStop();
+  // set stop mode after disabling stall stop if desired
   void disableStallStop();
 
 private:
   Registers * registers_ptr_;
   Converter * converter_ptr_;
-  StopMode stop_mode_;
 
   const static RampMode RAMP_MODE_DEFAULT = VELOCITY_POSITIVE;
   const static StopMode STOP_MODE_DEFAULT = SOFT;
