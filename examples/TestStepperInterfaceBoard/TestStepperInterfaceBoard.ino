@@ -12,6 +12,7 @@ SPIClass & spi = SPI;
 
 const uint8_t CHIP_SELECT_PIN = 29;
 const uint8_t VIO_ENABLE_PIN = 21;
+const uint8_t FAN_ENABLE_PIN = 28;
 
 const long SERIAL_BAUD_RATE = 115200;
 const int LOOP_DELAY = 500;
@@ -60,6 +61,10 @@ void setup()
 
   pinMode(VIO_ENABLE_PIN, OUTPUT);
   digitalWrite(VIO_ENABLE_PIN, HIGH);
+
+  pinMode(FAN_ENABLE_PIN, OUTPUT);
+  digitalWrite(FAN_ENABLE_PIN, HIGH);
+
   delay(LOOP_DELAY);
 
   tmc5160.printer.setup(Serial);
