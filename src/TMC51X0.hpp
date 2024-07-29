@@ -11,6 +11,7 @@
 #include <SPI.h>
 
 #include "InterfaceSPI.hpp"
+#include "InterfaceUART.hpp"
 #include "Registers.hpp"
 #include "Converter.hpp"
 #include "Driver.hpp"
@@ -39,6 +40,7 @@ struct TMC51X0
 
 private:
   tmc51x0::InterfaceSPI interface_spi_;
+  tmc51x0::InterfaceUART interface_uart_;
   void initialize();
 };
 

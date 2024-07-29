@@ -23,6 +23,8 @@ void TMC51X0::setupUART(HardwareSerial & uart,
   size_t enable_tx_polarity,
   size_t enable_rx_polarity)
 {
+  interface_uart_.setup(uart, enable_tx_pin, enable_rx_pin, enable_tx_polarity, enable_rx_polarity);
+  registers.initialize(interface_uart_);
   initialize();
 }
 
