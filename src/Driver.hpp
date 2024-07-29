@@ -24,7 +24,7 @@ public:
   Driver();
 
   // driver must be enabled before use it is disabled by default
-  void setHardwareEnablePin(size_t hardware_enable_pin);
+  void setEnableHardwarePin(size_t hardware_enable_pin);
   void enable();
   void disable();
 

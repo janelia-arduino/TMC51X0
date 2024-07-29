@@ -11,7 +11,7 @@ SPIClass & spi = SPI;
 #endif
 
 const uint8_t CHIP_SELECT_PIN = 10;
-const uint8_t HARDWARE_ENABLE_PIN = 4;
+const uint8_t ENABLE_HARDWARE_PIN = 4;
 
 const long SERIAL_BAUD_RATE = 115200;
 const int LOOP_DELAY = 500;
@@ -72,7 +72,7 @@ void setup()
     };
   tmc5160.converter.setup(converter_settings);
 
-  tmc5160.driver.setHardwareEnablePin(HARDWARE_ENABLE_PIN);
+  tmc5160.driver.setEnableHardwarePin(ENABLE_HARDWARE_PIN);
   tmc5160.driver.writeGlobalCurrentScaler(GLOBAL_CURRENT_SCALAR);
   tmc5160.driver.writeRunCurrent(RUN_CURRENT);
   tmc5160.driver.writePwmOffset(PWM_OFFSET);

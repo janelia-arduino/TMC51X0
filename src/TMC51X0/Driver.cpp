@@ -14,7 +14,7 @@ Driver::Driver()
   hardware_enable_pin_ = -1;
 }
 
-void Driver::setHardwareEnablePin(size_t hardware_enable_pin)
+void Driver::setEnableHardwarePin(size_t hardware_enable_pin)
 {
   hardware_enable_pin_ = hardware_enable_pin;
   pinMode(hardware_enable_pin_, OUTPUT);

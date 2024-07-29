@@ -11,7 +11,7 @@ SPIClass & spi = SPI;
 #endif
 
 const uint8_t CHIP_SELECT_PIN = 10;
-const uint8_t HARDWARE_ENABLE_PIN = 4;
+const uint8_t ENABLE_HARDWARE_PIN = 4;
 
 const long SERIAL_BAUD_RATE = 115200;
 const int DELAY = 1000;
@@ -30,7 +30,7 @@ void setup()
 #endif
 
   tmc5160.setup(spi, CHIP_SELECT_PIN);
-  tmc5160.driver.setHardwareEnablePin(HARDWARE_ENABLE_PIN);
+  tmc5160.driver.setEnableHardwarePin(ENABLE_HARDWARE_PIN);
 
   enabled = false;
 }

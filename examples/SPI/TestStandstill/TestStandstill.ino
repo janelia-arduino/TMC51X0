@@ -11,7 +11,7 @@ SPIClass & spi = SPI;
 #endif
 
 const uint8_t CHIP_SELECT_PIN = 10;
-const uint8_t HARDWARE_ENABLE_PIN = 4;
+const uint8_t ENABLE_HARDWARE_PIN = 4;
 
 const long SERIAL_BAUD_RATE = 115200;
 const int DELAY = 4000;
@@ -32,7 +32,7 @@ void setup()
   spi.setRX(RX_PIN);
 #endif
   stepper.setup(spi, CHIP_SELECT_PIN);
-  stepper.driver.setHardwareEnablePin(HARDWARE_ENABLE_PIN);
+  stepper.driver.setEnableHardwarePin(ENABLE_HARDWARE_PIN);
 
   stepper.driver.enableStealthChop();
   stepper.driver.writeHoldCurrent(HOLD_CURRENT);
