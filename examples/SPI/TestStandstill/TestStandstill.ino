@@ -31,7 +31,7 @@ void setup()
   spi.setTX(TX_PIN);
   spi.setRX(RX_PIN);
 #endif
-  stepper.setup(spi, CHIP_SELECT_PIN);
+  stepper.setupSPI(spi, CHIP_SELECT_PIN);
   stepper.driver.setEnableHardwarePin(ENABLE_HARDWARE_PIN);
 
   stepper.driver.enableStealthChop();

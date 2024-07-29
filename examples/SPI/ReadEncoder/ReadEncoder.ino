@@ -38,7 +38,7 @@ void setup()
   spi.setTX(TX_PIN);
   spi.setRX(RX_PIN);
 #endif
-  tmc5160.setup(spi, CHIP_SELECT_PIN);
+  tmc5160.setupSPI(spi, CHIP_SELECT_PIN);
 
   tmc5160.encoder.writeFractionalMode(FRACTIONAL_MODE);
   tmc5160.encoder.writeMicrostepsPerPulse(MICROSTEPS_PER_PULSE_INTEGER, MICROSTEPS_PER_PULSE_FRACTIONAL);

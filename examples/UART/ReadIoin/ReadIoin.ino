@@ -30,8 +30,7 @@ void setup()
   uart.setRX(RX_PIN);
 #endif
 
-  tmc5160.setup(uart, ENABLE_TX_PIN, ENABLE_RX_PIN, ENABLE_TX_POLARITY, ENABLE_RX_POLARITY);
-  tmc5160.driver.setEnableHardwarePin(ENABLE_HARDWARE_PIN);
+  tmc5160.setupUART(uart, ENABLE_TX_PIN, ENABLE_RX_PIN, ENABLE_TX_POLARITY, ENABLE_RX_POLARITY);
 
   enabled = false;
 }

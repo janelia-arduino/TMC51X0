@@ -1,21 +1,21 @@
 // ----------------------------------------------------------------------------
-// Interface.cpp
+// InterfaceSPI.cpp
 //
 // Authors:
 // Peter Polidoro peter@polidoro.io
 // ----------------------------------------------------------------------------
-#include "Interface.hpp"
+#include "InterfaceSPI.hpp"
 
 
 using namespace tmc51x0;
 
-Interface::Interface() :
+InterfaceSPI::InterfaceSPI() :
 spi_settings_(SPISettings(constants::spi_clock, constants::spi_bit_order, constants::spi_data_mode))
 {
   chip_select_pin_ = -1;
 }
 
-void Interface::setup(SPIClass & spi,
+void InterfaceSPI::setup(SPIClass & spi,
   size_t chip_select_pin)
 {
   spi_ptr_ = &spi;
@@ -27,7 +27,7 @@ void Interface::setup(SPIClass & spi,
   spi_ptr_->begin();
 }
 
-void Interface::writeRegister(uint8_t register_address,
+void InterfaceSPI::writeRegister(uint8_t register_address,
   uint32_t data)
 {
   MosiDatagram mosi_datagram;
@@ -37,7 +37,7 @@ void Interface::writeRegister(uint8_t register_address,
   writeRead(mosi_datagram);
 }
 
-uint32_t Interface::readRegister(uint8_t register_address)
+uint32_t InterfaceSPI::readRegister(uint8_t register_address)
 {
   MosiDatagram mosi_datagram;
   mosi_datagram.register_address = register_address;
@@ -51,7 +51,7 @@ uint32_t Interface::readRegister(uint8_t register_address)
 
 // private
 
-Interface::MisoDatagram Interface::writeRead(MosiDatagram mosi_datagram)
+InterfaceSPI::MisoDatagram InterfaceSPI::writeRead(MosiDatagram mosi_datagram)
 {
   uint8_t byte_write, byte_read;
   MisoDatagram miso_datagram;
@@ -70,23 +70,23 @@ Interface::MisoDatagram Interface::writeRead(MosiDatagram mosi_datagram)
   return miso_datagram;
 }
 
-void Interface::enableChipSelect()
+void InterfaceSPI::enableChipSelect()
 {
   digitalWrite(chip_select_pin_, LOW);
 }
 
-void Interface::disableChipSelect()
+void InterfaceSPI::disableChipSelect()
 {
   digitalWrite(chip_select_pin_, HIGH);
 }
 
-void Interface::beginTransaction()
+void InterfaceSPI::beginTransaction()
 {
   spi_ptr_->beginTransaction(spi_settings_);
   enableChipSelect();
 }
 
-void Interface::endTransaction()
+void InterfaceSPI::endTransaction()
 {
   disableChipSelect();
   spi_ptr_->endTransaction();

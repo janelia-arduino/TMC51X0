@@ -14,7 +14,7 @@ void Registers::write(RegisterAddress register_address,
 {
   if ((register_address < ADDRESS_COUNT) && (writeable_[register_address]))
   {
-    interface_.writeRegister(register_address, data);
+    interface_ptr_->writeRegister(register_address, data);
     stored_[register_address] = data;
   }
 }
@@ -23,7 +23,7 @@ uint32_t Registers::read(RegisterAddress register_address)
 {
   if ((register_address < ADDRESS_COUNT) && (readable_[register_address]))
   {
-    uint32_t data = interface_.readRegister(register_address);
+    uint32_t data = interface_ptr_->readRegister(register_address);
     stored_[register_address] = data;
     return data;
   }
@@ -82,9 +82,10 @@ Registers::Gstat Registers::readAndClearGstat()
 }
 
 // private
-void Registers::initialize(SPIClass & spi,
-  size_t chip_select_pin)
+void Registers::initialize(Interface & interface)
 {
+  interface_ptr_ = &interface;
+
   for (uint8_t register_address=0; register_address<ADDRESS_COUNT; ++register_address)
   {
     stored_[register_address] = 0;
@@ -231,7 +232,4 @@ void Registers::initialize(SPIClass & spi,
   readable_[PWM_AUTO] = true;
 
   readable_[LOST_STEPS] = true;
-
-  interface_.setup(spi, chip_select_pin);
-
 }

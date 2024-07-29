@@ -437,17 +437,16 @@ struct Registers
   };
 
 private:
-  const static uint8_t VERSION_TMC5130 = 0x11;
-  const static uint8_t VERSION_TMC5160 = 0x30;
-
-  Interface interface_;
+  Interface * interface_ptr_;
 
   uint32_t stored_[ADDRESS_COUNT] = {0};
   bool writeable_[ADDRESS_COUNT] = {false};
   bool readable_[ADDRESS_COUNT] = {false};
 
-  void initialize(SPIClass & spi,
-    size_t chip_select_pin);
+  const static uint8_t VERSION_TMC5130 = 0x11;
+  const static uint8_t VERSION_TMC5160 = 0x30;
+
+  void initialize(Interface & interface);
 
   friend class ::TMC51X0;
 };
