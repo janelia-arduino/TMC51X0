@@ -16,20 +16,28 @@
 
 namespace tmc51x0
 {
-class SPIParameters
+struct SPIParameters
 {
-public:
+  SPIClass * spi_ptr;
+  size_t chip_select_pin;
+
   SPIParameters(SPIClass & spi,
     size_t chip_select_pin)
   {
-    spi_ptr_ = &spi;
-    chip_select_pin_ = chip_select_pin;
+    spi_ptr = &spi;
+    chip_select_pin = chip_select_pin;
+  };
+
+  SPIParameters()
+  {
+    spi_ptr = nullptr;
+    chip_select_pin = 255;
   };
 
   bool operator==(const SPIParameters & rhs) const
   {
-    if ((this->spi_ptr_ == rhs.spi_ptr_) &&
-        (this->chip_select_pin_ == rhs.chip_select_pin_))
+    if ((this->spi_ptr == rhs.spi_ptr) &&
+        (this->chip_select_pin == rhs.chip_select_pin))
     {
       return true;
     }
@@ -39,18 +47,6 @@ public:
   {
     return !(*this == rhs);
   }
-
-  SPIClass * getSPIPointer() const
-  {
-    return spi_ptr_;
-  }
-  uint8_t getChipSelectPin() const
-  {
-    return chip_select_pin_;
-  }
-private:
-  SPIClass * spi_ptr_;
-  uint8_t chip_select_pin_;
 };
 
 class InterfaceSPI : public Interface
@@ -58,7 +54,7 @@ class InterfaceSPI : public Interface
 public:
   InterfaceSPI();
 
-  void setup(SPIParameters parameters);
+  void setup(SPIParameters spi_parameters);
 
   void writeRegister(uint8_t register_address,
     uint32_t data);
@@ -66,9 +62,7 @@ public:
 
 private:
   // SPI
-  SPIClass * spi_ptr_;
-  int16_t chip_select_pin_;
-
+  SPIParameters spi_parameters_;
   const SPISettings spi_settings_;
 
   struct SpiStatus

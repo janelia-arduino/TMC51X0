@@ -12,18 +12,16 @@ using namespace tmc51x0;
 InterfaceSPI::InterfaceSPI() :
 spi_settings_(SPISettings(constants::spi_clock, constants::spi_bit_order, constants::spi_data_mode))
 {
-  chip_select_pin_ = -1;
 }
 
-void InterfaceSPI::setup(tmc51x0::SPIParameters parameters)
+void InterfaceSPI::setup(tmc51x0::SPIParameters spi_parameters)
 {
-  spi_ptr_ = parameters.getSPIPointer();
-  chip_select_pin_ = parameters.getChipSelectPin();
+  spi_parameters_ = spi_parameters;
 
-  pinMode(chip_select_pin_,OUTPUT);
+  pinMode(spi_parameters_.chip_select_pin,OUTPUT);
   disableChipSelect();
 
-  spi_ptr_->begin();
+  spi_parameters_.spi_ptr->begin();
 }
 
 void InterfaceSPI::writeRegister(uint8_t register_address,
@@ -59,7 +57,7 @@ InterfaceSPI::MisoDatagram InterfaceSPI::writeRead(MosiDatagram mosi_datagram)
   for (int i=(SPI_DATAGRAM_SIZE - 1); i>=0; --i)
   {
     byte_write = (mosi_datagram.bytes >> (8*i)) & 0xff;
-    byte_read = spi_ptr_->transfer(byte_write);
+    byte_read = spi_parameters_.spi_ptr->transfer(byte_write);
     miso_datagram.bytes |= ((uint32_t)byte_read) << (8*i);
   }
   endTransaction();
@@ -71,22 +69,22 @@ InterfaceSPI::MisoDatagram InterfaceSPI::writeRead(MosiDatagram mosi_datagram)
 
 void InterfaceSPI::enableChipSelect()
 {
-  digitalWrite(chip_select_pin_, LOW);
+  digitalWrite(spi_parameters_.chip_select_pin, LOW);
 }
 
 void InterfaceSPI::disableChipSelect()
 {
-  digitalWrite(chip_select_pin_, HIGH);
+  digitalWrite(spi_parameters_.chip_select_pin, HIGH);
 }
 
 void InterfaceSPI::beginTransaction()
 {
-  spi_ptr_->beginTransaction(spi_settings_);
+  spi_parameters_.spi_ptr->beginTransaction(spi_settings_);
   enableChipSelect();
 }
 
 void InterfaceSPI::endTransaction()
 {
   disableChipSelect();
-  spi_ptr_->endTransaction();
+  spi_parameters_.spi_ptr->endTransaction();
 }
