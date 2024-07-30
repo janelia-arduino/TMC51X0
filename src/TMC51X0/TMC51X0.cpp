@@ -9,10 +9,9 @@
 
 using namespace tmc51x0;
 
-void TMC51X0::setupSPI(SPIClass & spi,
-  size_t chip_select_pin)
+void TMC51X0::setupSPI(SPIParameters parameters)
 {
-  interface_spi_.setup(spi, chip_select_pin);
+  interface_spi_.setup(parameters);
   registers.initialize(interface_spi_);
   initialize();
 }

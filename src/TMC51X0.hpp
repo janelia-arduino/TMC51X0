@@ -22,8 +22,7 @@
 
 struct TMC51X0
 {
-  void setupSPI(SPIClass & spi,
-    size_t chip_select_pin);
+  void setupSPI(tmc51x0::SPIParameters parameters);
 
   void setupUART(HardwareSerial & uart,
     size_t enable_tx_pin,

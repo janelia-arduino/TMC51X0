@@ -65,7 +65,8 @@ void setup()
   spi.setTX(TX_PIN);
   spi.setRX(RX_PIN);
 #endif
-  tmc5160.setupSPI(spi, CHIP_SELECT_PIN);
+  tmc51x0::SPIParameters spi_parameters(spi, CHIP_SELECT_PIN);
+  tmc5160.setupSPI(spi_parameters);
 
   tmc51x0::Converter::Settings converter_settings =
     {

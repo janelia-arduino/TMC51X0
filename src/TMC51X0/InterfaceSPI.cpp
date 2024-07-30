@@ -15,11 +15,10 @@ spi_settings_(SPISettings(constants::spi_clock, constants::spi_bit_order, consta
   chip_select_pin_ = -1;
 }
 
-void InterfaceSPI::setup(SPIClass & spi,
-  size_t chip_select_pin)
+void InterfaceSPI::setup(tmc51x0::SPIParameters parameters)
 {
-  spi_ptr_ = &spi;
-  chip_select_pin_ = chip_select_pin;
+  spi_ptr_ = parameters.getSPIPointer();
+  chip_select_pin_ = parameters.getChipSelectPin();
 
   pinMode(chip_select_pin_,OUTPUT);
   disableChipSelect();

@@ -16,13 +16,49 @@
 
 namespace tmc51x0
 {
+class SPIParameters
+{
+public:
+  SPIParameters(SPIClass & spi,
+    size_t chip_select_pin)
+  {
+    spi_ptr_ = &spi;
+    chip_select_pin_ = chip_select_pin;
+  };
+
+  bool operator==(const SPIParameters & rhs) const
+  {
+    if ((this->spi_ptr_ == rhs.spi_ptr_) &&
+        (this->chip_select_pin_ == rhs.chip_select_pin_))
+    {
+      return true;
+    }
+    return false;
+  }
+  bool operator!=(const SPIParameters & rhs) const
+  {
+    return !(*this == rhs);
+  }
+
+  SPIClass * getSPIPointer() const
+  {
+    return spi_ptr_;
+  }
+  uint8_t getChipSelectPin() const
+  {
+    return chip_select_pin_;
+  }
+private:
+  SPIClass * spi_ptr_;
+  uint8_t chip_select_pin_;
+};
+
 class InterfaceSPI : public Interface
 {
 public:
   InterfaceSPI();
 
-  void setup(SPIClass & spi,
-    size_t chip_select_pin);
+  void setup(SPIParameters parameters);
 
   void writeRegister(uint8_t register_address,
     uint32_t data);
@@ -31,7 +67,7 @@ public:
 private:
   // SPI
   SPIClass * spi_ptr_;
-  int8_t chip_select_pin_;
+  int16_t chip_select_pin_;
 
   const SPISettings spi_settings_;
 
