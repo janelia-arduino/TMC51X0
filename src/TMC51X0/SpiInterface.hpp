@@ -1,5 +1,5 @@
 // ----------------------------------------------------------------------------
-// SPIInterface.hpp
+// SpiInterface.hpp
 //
 // Authors:
 // Peter Polidoro peter@polidoro.io
@@ -16,25 +16,25 @@
 
 namespace tmc51x0
 {
-struct SPIParameters
+struct SpiParameters
 {
   SPIClass * spi_ptr;
   size_t chip_select_pin;
 
-  SPIParameters(SPIClass & spi_,
+  SpiParameters(SPIClass & spi_,
     size_t chip_select_pin_)
   {
     spi_ptr = &spi_;
     chip_select_pin = chip_select_pin_;
   };
 
-  SPIParameters()
+  SpiParameters()
   {
-    spi_ptr = SPI_PTR_DEFAULT;
+    spi_ptr = nullptr;
     chip_select_pin = PIN_DEFAULT;
   };
 
-  bool operator==(const SPIParameters & rhs) const
+  bool operator==(const SpiParameters & rhs) const
   {
     if ((this->spi_ptr == rhs.spi_ptr) &&
       (this->chip_select_pin == rhs.chip_select_pin))
@@ -43,30 +43,29 @@ struct SPIParameters
     }
     return false;
   }
-  bool operator!=(const SPIParameters & rhs) const
+  bool operator!=(const SpiParameters & rhs) const
   {
     return !(*this == rhs);
   }
 
 private:
-  const static SPIClass * SPI_PTR_DEFAULT = nullptr;
   const static size_t PIN_DEFAULT = 255;
 
 };
 
-class SPIInterface : public Interface
+class SpiInterface : public Interface
 {
 public:
-  SPIInterface();
+  SpiInterface();
 
-  void setup(SPIParameters spi_parameters);
+  void setup(SpiParameters spi_parameters);
 
   void writeRegister(uint8_t register_address,
     uint32_t data);
   uint32_t readRegister(uint8_t register_address);
 
 private:
-  SPIParameters spi_parameters_;
+  SpiParameters spi_parameters_;
   const SPISettings spi_settings_;
 
   struct SpiStatus
@@ -82,7 +81,7 @@ private:
   };
   SpiStatus spi_status_;
 
-  const static uint8_t SPI_DATAGRAM_SIZE = 5;
+  const static uint8_t DATAGRAM_SIZE = 5;
 
   // PICO Datagrams
   union PicoDatagram
@@ -96,11 +95,11 @@ private:
     };
     uint64_t bytes;
   };
-  const static uint8_t SPI_RW_READ = 0;
-  const static uint8_t SPI_RW_WRITE = 1;
+  const static uint8_t RW_READ = 0;
+  const static uint8_t RW_WRITE = 1;
 
-  // MISO Datagrams
-  union MisoDatagram
+  // POCI Datagrams
+  union PociDatagram
   {
     struct
     {
@@ -111,9 +110,9 @@ private:
     uint64_t bytes;
   };
 
-  uint8_t spi_buffer_[SPI_DATAGRAM_SIZE];
+  uint8_t spi_buffer_[DATAGRAM_SIZE];
 
-  MisoDatagram writeRead(PicoDatagram pico_datagram);
+  PociDatagram writeRead(PicoDatagram pico_datagram);
 
   void enableChipSelect();
   void disableChipSelect();

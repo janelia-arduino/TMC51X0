@@ -31,8 +31,8 @@ void setup()
   spi.setTX(TX_PIN);
   spi.setRX(RX_PIN);
 #endif
-  tmc51x0::SPIParameters spi_parameters(spi, CHIP_SELECT_PIN);
-  tmc5160.setupSPI(spi_parameters);
+  tmc51x0::SpiParameters spi_parameters(spi, CHIP_SELECT_PIN);
+  tmc5160.setupSpi(spi_parameters);
   stepper.driver.setEnableHardwarePin(ENABLE_HARDWARE_PIN);
 
   stepper.driver.enableStealthChop();

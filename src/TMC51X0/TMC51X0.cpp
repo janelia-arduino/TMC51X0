@@ -9,19 +9,19 @@
 
 using namespace tmc51x0;
 
-void TMC51X0::setupSPI(SPIParameters spi_parameters)
+void TMC51X0::setupSpi(SpiParameters spi_parameters)
 {
   interface_spi_.setup(spi_parameters);
   registers.initialize(interface_spi_);
   initialize();
 }
 
-void TMC51X0::setupUART(UARTParameters uart_parameters)
-{
-  interface_uart_.setup(uart_parameters);
-  registers.initialize(interface_uart_);
-  initialize();
-}
+// void TMC51X0::setupUart(UartParameters uart_parameters)
+// {
+//   interface_uart_.setup(uart_parameters);
+//   registers.initialize(interface_uart_);
+//   initialize();
+// }
 
 // private
 void TMC51X0::initialize()

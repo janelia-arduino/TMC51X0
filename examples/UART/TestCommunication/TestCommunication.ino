@@ -32,14 +32,14 @@ void setup()
   uart.setRX(RX_PIN);
 #endif
 
-  tmc51x0::UARTParameters uart_parameters(uart,
+  tmc51x0::UartParameters uart_parameters(uart,
     UART_BAUD_RATE,
     NODE_ADDRESS,
     ENABLE_TX_PIN,
     ENABLE_RX_PIN,
     ENABLE_TX_POLARITY,
     ENABLE_RX_POLARITY);
-  tmc5160.setupUART(uart_parameters);
+  tmc5160.setupUart(uart_parameters);
 
   enabled = false;
 }

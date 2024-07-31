@@ -1,5 +1,5 @@
 // ----------------------------------------------------------------------------
-// UARTInterface.hpp
+// UartInterface.hpp
 //
 // Authors:
 // Peter Polidoro peter@polidoro.io
@@ -15,7 +15,7 @@
 
 namespace tmc51x0
 {
-struct UARTParameters
+struct UartParameters
 {
   HardwareSerial * hs_uart_ptr;
   uint32_t baud_rate;
@@ -25,9 +25,9 @@ struct UARTParameters
   uint8_t enable_tx_polarity;
   uint8_t enable_rx_polarity;
 
-  UARTParameters(HardwareSerial & hs_uart_,
-    uint32_t baud_rate_;
-    uint8_t node_address_;
+  UartParameters(HardwareSerial & hs_uart_,
+    uint32_t baud_rate_,
+    uint8_t node_address_,
     size_t enable_tx_pin_,
     size_t enable_rx_pin_,
     size_t enable_tx_polarity_,
@@ -42,18 +42,18 @@ struct UARTParameters
     enable_rx_polarity = enable_rx_polarity_;
   };
 
-  UARTParameters()
+  UartParameters()
   {
-    hs_uart_ptr = HS_UART_PTR_DEFAULT;
+    hs_uart_ptr = nullptr;
     baud_rate = BAUD_RATE_DEFAULT;
     node_address = NODE_ADDRESS_DEFAULT;
-    enable_tx_pin = enable_tx_pin_;
-    enable_rx_pin = enable_rx_pin_;
-    enable_tx_polarity = enable_tx_polarity_;
-    enable_rx_polarity = enable_rx_polarity_;
+    enable_tx_pin = PIN_DEFAULT;
+    enable_rx_pin = PIN_DEFAULT;
+    enable_tx_polarity = ENABLE_TX_POLARITY_DEFAULT;
+    enable_rx_polarity = ENABLE_RX_POLARITY_DEFAULT;
   };
 
-  bool operator==(const UARTParameters & rhs) const
+  bool operator==(const UartParameters & rhs) const
   {
     if ((this->hs_uart_ptr == rhs.hs_uart_ptr) &&
       (this->baud_rate == rhs.baud_rate) &&
@@ -67,13 +67,12 @@ struct UARTParameters
     }
     return false;
   }
-  bool operator!=(const UARTParameters & rhs) const
+  bool operator!=(const UartParameters & rhs) const
   {
     return !(*this == rhs);
   }
 
 private:
-  const static HardwareSerial * HS_UART_PTR_DEFAULT = nullptr;
   const static uint32_t BAUD_RATE_DEFAULT = 115200;
   const static uint8_t NODE_ADDRESS_DEFAULT = 0;
   const static size_t PIN_DEFAULT = 255;
@@ -82,40 +81,57 @@ private:
 
 };
 
-class UARTInterface : public Interface
+class UartInterface : public Interface
 {
 public:
-  UARTInterface();
+  UartInterface();
 
-  void setup(UARTParameters uart_parameters);
+  void setup(UartParameters uart_parameters);
 
   void writeRegister(uint8_t register_address,
     uint32_t data);
   uint32_t readRegister(uint8_t register_address);
 
 private:
-  UARTParameters uart_parameters_;
+  UartParameters uart_parameters_;
 
-  const static uint8_t UART_WRITE_DATAGRAM_SIZE = 8;
-  const static uint8_t UART_READ_DATAGRAM_SIZE = 4;
+  const static uint8_t WRITE_PICO_DATAGRAM_SIZE = 8;
+  const static uint8_t READ_PICO_DATAGRAM_SIZE = 4;
 
-  // // PICO Datagrams
-  // union PicoDatagram
-  // {
-  //   struct
-  //   {
-  //     uint64_t data : 32;
-  //     uint64_t register_address : 7;
-  //     uint64_t rw : 1;
-  //     uint64_t reserved : 24;
-  //   };
-  //   uint64_t bytes;
-  // };
-  // const static uint8_t UART_RW_READ = 0;
-  // const static uint8_t UART_RW_WRITE = 1;
+  // PICO Datagrams
+  union PicoWriteDatagram
+  {
+    struct
+    {
+      uint64_t sync : 4;
+      uint64_t reserved : 4;
+      uint64_t node_address : 8;
+      uint64_t register_address : 7;
+      uint64_t rw : 1;
+      uint64_t data : 32;
+      uint64_t crc : 8;
+    };
+    uint64_t bytes;
+  };
+  union PicoReadDatagram
+  {
+    struct
+    {
+      uint32_t sync : 4;
+      uint32_t reserved : 4;
+      uint32_t node_address : 8;
+      uint32_t register_address : 7;
+      uint32_t rw : 1;
+      uint32_t crc : 8;
+    };
+    uint32_t bytes;
+  };
+  const static uint8_t RW_READ = 0;
+  const static uint8_t RW_WRITE = 1;
 
-  // // MISO Datagrams
-  // union MisoDatagram
+  const static uint8_t POCI_DATAGRAM_SIZE = 8;
+  // // POCI Datagrams
+  // union PociDatagram
   // {
   //   struct
   //   {
@@ -128,7 +144,7 @@ private:
 
   // uint8_t uart_buffer_[UART_DATAGRAM_SIZE];
 
-  // MisoDatagram writeRead(PicoDatagram pico_datagram);
+  // PociDatagram writeRead(PicoDatagram pico_datagram);
 
   // void enableChipSelect();
   // void disableChipSelect();

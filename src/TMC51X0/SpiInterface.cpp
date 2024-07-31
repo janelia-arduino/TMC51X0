@@ -1,20 +1,20 @@
 // ----------------------------------------------------------------------------
-// SPIInterface.cpp
+// SpiInterface.cpp
 //
 // Authors:
 // Peter Polidoro peter@polidoro.io
 // ----------------------------------------------------------------------------
-#include "SPIInterface.hpp"
+#include "SpiInterface.hpp"
 
 
 using namespace tmc51x0;
 
-SPIInterface::SPIInterface() :
+SpiInterface::SpiInterface() :
 spi_settings_(SPISettings(constants::spi_clock, constants::spi_bit_order, constants::spi_data_mode))
 {
 }
 
-void SPIInterface::setup(tmc51x0::SPIParameters spi_parameters)
+void SpiInterface::setup(tmc51x0::SpiParameters spi_parameters)
 {
   spi_parameters_ = spi_parameters;
 
@@ -24,21 +24,21 @@ void SPIInterface::setup(tmc51x0::SPIParameters spi_parameters)
   spi_parameters_.spi_ptr->begin();
 }
 
-void SPIInterface::writeRegister(uint8_t register_address,
+void SpiInterface::writeRegister(uint8_t register_address,
   uint32_t data)
 {
   PicoDatagram pico_datagram;
   pico_datagram.register_address = register_address;
-  pico_datagram.rw = SPI_RW_WRITE;
+  pico_datagram.rw = RW_WRITE;
   pico_datagram.data = data;
   writeRead(pico_datagram);
 }
 
-uint32_t SPIInterface::readRegister(uint8_t register_address)
+uint32_t SpiInterface::readRegister(uint8_t register_address)
 {
   PicoDatagram pico_datagram;
   pico_datagram.register_address = register_address;
-  pico_datagram.rw = SPI_RW_READ;
+  pico_datagram.rw = RW_READ;
   pico_datagram.data = 0;
   PociDatagram poci_datagram = writeRead(pico_datagram);
   // poci data is returned on second read
@@ -48,13 +48,13 @@ uint32_t SPIInterface::readRegister(uint8_t register_address)
 
 // private
 
-SPIInterface::PociDatagram SPIInterface::writeRead(PicoDatagram pico_datagram)
+SpiInterface::PociDatagram SpiInterface::writeRead(PicoDatagram pico_datagram)
 {
   uint8_t byte_write, byte_read;
   PociDatagram poci_datagram;
   poci_datagram.bytes = 0x0;
   beginTransaction();
-  for (int i=(SPI_DATAGRAM_SIZE - 1); i>=0; --i)
+  for (int i=(DATAGRAM_SIZE - 1); i>=0; --i)
   {
     byte_write = (pico_datagram.bytes >> (8*i)) & 0xff;
     byte_read = spi_parameters_.spi_ptr->transfer(byte_write);
@@ -67,23 +67,23 @@ SPIInterface::PociDatagram SPIInterface::writeRead(PicoDatagram pico_datagram)
   return poci_datagram;
 }
 
-void SPIInterface::enableChipSelect()
+void SpiInterface::enableChipSelect()
 {
   digitalWrite(spi_parameters_.chip_select_pin, LOW);
 }
 
-void SPIInterface::disableChipSelect()
+void SpiInterface::disableChipSelect()
 {
   digitalWrite(spi_parameters_.chip_select_pin, HIGH);
 }
 
-void SPIInterface::beginTransaction()
+void SpiInterface::beginTransaction()
 {
   spi_parameters_.spi_ptr->beginTransaction(spi_settings_);
   enableChipSelect();
 }
 
-void SPIInterface::endTransaction()
+void SpiInterface::endTransaction()
 {
   disableChipSelect();
   spi_parameters_.spi_ptr->endTransaction();

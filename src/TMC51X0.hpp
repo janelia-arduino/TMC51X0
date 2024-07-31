@@ -10,8 +10,8 @@
 #include <Arduino.h>
 #include <SPI.h>
 
-#include "SPIInterface.hpp"
-#include "UARTInterface.hpp"
+#include "SpiInterface.hpp"
+#include "UartInterface.hpp"
 #include "Registers.hpp"
 #include "Converter.hpp"
 #include "Driver.hpp"
@@ -22,8 +22,8 @@
 
 struct TMC51X0
 {
-  void setupSPI(tmc51x0::SPIParameters spi_parameters);
-  void setupUART(tmc51x0::UARTParameters uart_parameters);
+  void setupSpi(tmc51x0::SpiParameters spi_parameters);
+  // void setupUart(tmc51x0::UartParameters uart_parameters);
 
   tmc51x0::Registers registers;
   tmc51x0::Converter converter;
@@ -33,8 +33,8 @@ struct TMC51X0
   tmc51x0::Printer printer;
 
 private:
-  tmc51x0::SPIInterface interface_spi_;
-  tmc51x0::UARTInterface interface_uart_;
+  tmc51x0::SpiInterface interface_spi_;
+  tmc51x0::UartInterface interface_uart_;
   void initialize();
 };
 
