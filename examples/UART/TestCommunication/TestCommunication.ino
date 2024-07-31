@@ -10,13 +10,15 @@ pin_size_t RX_PIN = 5;
 #endif
 
 // ENABLE_TX_PIN and ENABLE_RX_PIN may be the same pin
+const uint32_t UART_BAUD_RATE = 115200;
+const uint8_t NODE_ADDRESS = 0;
 const uint8_t ENABLE_TX_PIN = 15;
 const uint8_t ENABLE_RX_PIN = 14;
 const uint8_t ENABLE_TX_POLARITY = HIGH;
 const uint8_t ENABLE_RX_POLARITY = LOW;
 
-const long SERIAL_BAUD_RATE = 115200;
-const int DELAY = 1000;
+const uint32_t SERIAL_BAUD_RATE = 115200;
+const uint16_t DELAY = 1000;
 
 // Instantiate TMC51X0
 TMC51X0 tmc5160;
@@ -30,7 +32,13 @@ void setup()
   uart.setRX(RX_PIN);
 #endif
 
-  tmc51x0::UARTParameters uart_parameters(uart, ENABLE_TX_PIN, ENABLE_RX_PIN, ENABLE_TX_POLARITY, ENABLE_RX_POLARITY);
+  tmc51x0::UARTParameters uart_parameters(uart,
+    UART_BAUD_RATE,
+    NODE_ADDRESS,
+    ENABLE_TX_PIN,
+    ENABLE_RX_PIN,
+    ENABLE_TX_POLARITY,
+    ENABLE_RX_POLARITY);
   tmc5160.setupUART(uart_parameters);
 
   enabled = false;

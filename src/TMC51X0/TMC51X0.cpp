@@ -16,12 +16,12 @@ void TMC51X0::setupSPI(SPIParameters spi_parameters)
   initialize();
 }
 
-// void TMC51X0::setupUART(UARTParameters uart_parameters)
-// {
-//   interface_uart_.setup(uart_parameters);
-//   registers.initialize(interface_uart_);
-//   initialize();
-// }
+void TMC51X0::setupUART(UARTParameters uart_parameters)
+{
+  interface_uart_.setup(uart_parameters);
+  registers.initialize(interface_uart_);
+  initialize();
+}
 
 // private
 void TMC51X0::initialize()

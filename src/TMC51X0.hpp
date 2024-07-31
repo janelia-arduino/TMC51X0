@@ -23,7 +23,7 @@
 struct TMC51X0
 {
   void setupSPI(tmc51x0::SPIParameters spi_parameters);
-  // void setupUART(tmc51x0::UARTParameters uart_parameters);
+  void setupUART(tmc51x0::UARTParameters uart_parameters);
 
   tmc51x0::Registers registers;
   tmc51x0::Converter converter;
