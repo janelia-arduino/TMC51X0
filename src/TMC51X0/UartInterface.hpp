@@ -95,11 +95,11 @@ public:
 private:
   UartParameters uart_parameters_;
 
-  const static uint8_t WRITE_PICO_DATAGRAM_SIZE = 8;
-  const static uint8_t READ_PICO_DATAGRAM_SIZE = 4;
+  const static uint8_t WRITE_COPI_DATAGRAM_SIZE = 8;
+  const static uint8_t READ_COPI_DATAGRAM_SIZE = 4;
 
-  // Pico Datagrams
-  union PicoWriteDatagram
+  // Copi Datagrams
+  union CopiWriteDatagram
   {
     struct
     {
@@ -113,7 +113,7 @@ private:
     };
     uint64_t bytes;
   };
-  union PicoReadDatagram
+  union CopiReadDatagram
   {
     struct
     {
@@ -144,7 +144,7 @@ private:
 
   // uint8_t uart_buffer_[UART_DATAGRAM_SIZE];
 
-  // PociDatagram writeRead(PicoDatagram pico_datagram);
+  // PociDatagram writeRead(CopiDatagram copi_datagram);
 
   // void enableChipSelect();
   // void disableChipSelect();

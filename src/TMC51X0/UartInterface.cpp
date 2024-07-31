@@ -31,23 +31,23 @@ uint32_t UartInterface::readRegister(uint8_t register_address)
 
 // private
 
-// UartInterface::PociDatagram UartInterface::writeRead(PicoDatagram pico_datagram)
+// UartInterface::CipoDatagram UartInterface::writeRead(CopiDatagram copi_datagram)
 // {
 //   uint8_t byte_write, byte_read;
-//   PociDatagram poci_datagram;
-//   poci_datagram.bytes = 0x0;
+//   CipoDatagram cipo_datagram;
+//   cipo_datagram.bytes = 0x0;
 //   beginTransaction();
 //   for (int i=(UART_DATAGRAM_SIZE - 1); i>=0; --i)
 //   {
-//     byte_write = (pico_datagram.bytes >> (8*i)) & 0xff;
+//     byte_write = (copi_datagram.bytes >> (8*i)) & 0xff;
 //     byte_read = uart_ptr_->transfer(byte_write);
-//     poci_datagram.bytes |= ((uint32_t)byte_read) << (8*i);
+//     cipo_datagram.bytes |= ((uint32_t)byte_read) << (8*i);
 //   }
 //   endTransaction();
 //   noInterrupts();
-//   uart_status_ = poci_datagram.uart_status;
+//   uart_status_ = cipo_datagram.uart_status;
 //   interrupts();
-//   return poci_datagram;
+//   return cipo_datagram;
 // }
 
 // void UartInterface::enableChipSelect()

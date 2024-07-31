@@ -83,8 +83,8 @@ private:
 
   const static uint8_t DATAGRAM_SIZE = 5;
 
-  // Pico Datagrams
-  union PicoDatagram
+  // Copi Datagrams
+  union CopiDatagram
   {
     struct
     {
@@ -98,8 +98,8 @@ private:
   const static uint8_t RW_READ = 0;
   const static uint8_t RW_WRITE = 1;
 
-  // Poci Datagrams
-  union PociDatagram
+  // Cipo Datagrams
+  union CipoDatagram
   {
     struct
     {
@@ -112,7 +112,7 @@ private:
 
   uint8_t spi_buffer_[DATAGRAM_SIZE];
 
-  PociDatagram writeRead(PicoDatagram pico_datagram);
+  CipoDatagram writeRead(CopiDatagram copi_datagram);
 
   void enableChipSelect();
   void disableChipSelect();
