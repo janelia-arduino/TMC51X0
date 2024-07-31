@@ -36,7 +36,7 @@ size for driving motors up to 1.64A RMS per coil.
 The TMC5160 uses external MOSFETs to drive higher current motors from 1A to
 several 10A per coil.
 
-#+html: <img src="./images/trinamic_wiring-TMC51X0-description.svg" width="1920px">
+#+html: <img src="./images/trinamic-wiring-TMC51X0-description.svg" width="1920px">
 
 * Stepper Motors
 
@@ -74,19 +74,29 @@ stepper motor controller.
 
 ** Wiring
 
+*** Microcontroller
+
+#+html: <img src="./images/trinamic-wiring-TMC51X0-microcontroller.svg" width="1920px">
+
 *** TMC51X0-BOB
 
 **** Teensy 4.0
 
-#+html: <img src="./images/trinamic_wiring-TMC51X0-tmc51x0-bob-teensy40.svg" width="1920px">
+#+html: <img src="./images/trinamic-wiring-TMC51X0-tmc51x0-bob-teensy40.svg" width="1920px">
 
 **** Pico
 
-#+html: <img src="./images/trinamic_wiring-TMC51X0-tmc51x0-bob-pico.svg" width="1920px">
+#+html: <img src="./images/trinamic-wiring-TMC51X0-tmc51x0-bob-pico.svg" width="1920px">
+
+*** TMC51X0-EVAL
+
+**** Pico
+
+#+html: <img src="./images/trinamic-wiring-TMC51X0-tmc51x0-eval-pico.svg" width="1920px">
 
 *** Wiring Documentation Source
 
-[[https://github.com/janelia-kicad/trinamic_wiring]]
+[[https://github.com/janelia-kicad/trinamic-wiring]]
 
 * Hardware Documentation
 
