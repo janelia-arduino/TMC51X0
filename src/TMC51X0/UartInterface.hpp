@@ -98,7 +98,7 @@ private:
   const static uint8_t WRITE_PICO_DATAGRAM_SIZE = 8;
   const static uint8_t READ_PICO_DATAGRAM_SIZE = 4;
 
-  // PICO Datagrams
+  // Pico Datagrams
   union PicoWriteDatagram
   {
     struct
@@ -130,7 +130,7 @@ private:
   const static uint8_t RW_WRITE = 1;
 
   const static uint8_t POCI_DATAGRAM_SIZE = 8;
-  // // POCI Datagrams
+  // // Poci Datagrams
   // union PociDatagram
   // {
   //   struct
