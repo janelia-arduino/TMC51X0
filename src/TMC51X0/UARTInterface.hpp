@@ -1,5 +1,5 @@
 // ----------------------------------------------------------------------------
-// InterfaceUART.hpp
+// UARTInterface.hpp
 //
 // Authors:
 // Peter Polidoro peter@polidoro.io
@@ -15,10 +15,10 @@
 
 namespace tmc51x0
 {
-class InterfaceUART : public Interface
+class UARTInterface : public Interface
 {
 public:
-  InterfaceUART();
+  UARTInterface();
 
   void setup(HardwareSerial & uart,
     size_t enable_tx_pin,

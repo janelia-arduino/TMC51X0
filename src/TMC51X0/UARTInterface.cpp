@@ -1,21 +1,21 @@
 // ----------------------------------------------------------------------------
-// InterfaceUART.cpp
+// UARTInterface.cpp
 //
 // Authors:
 // Peter Polidoro peter@polidoro.io
 // ----------------------------------------------------------------------------
-#include "InterfaceUART.hpp"
+#include "UARTInterface.hpp"
 
 
 using namespace tmc51x0;
 
-InterfaceUART::InterfaceUART()
+UARTInterface::UARTInterface()
 {
   // enable_tx_pin_ = -1;
   // enable_rx_pin_ = -1;
 }
 
-void InterfaceUART::setup(HardwareSerial & uart,
+void UARTInterface::setup(HardwareSerial & uart,
   size_t enable_tx_pin,
   size_t enable_rx_pin,
   size_t enable_tx_polarity,
@@ -23,19 +23,19 @@ void InterfaceUART::setup(HardwareSerial & uart,
 {
 }
 
-void InterfaceUART::writeRegister(uint8_t register_address,
+void UARTInterface::writeRegister(uint8_t register_address,
   uint32_t data)
 {
 }
 
-uint32_t InterfaceUART::readRegister(uint8_t register_address)
+uint32_t UARTInterface::readRegister(uint8_t register_address)
 {
   return 0;
 }
 
 // private
 
-// InterfaceUART::MisoDatagram InterfaceUART::writeRead(MosiDatagram mosi_datagram)
+// UARTInterface::MisoDatagram UARTInterface::writeRead(MosiDatagram mosi_datagram)
 // {
 //   uint8_t byte_write, byte_read;
 //   MisoDatagram miso_datagram;
@@ -54,23 +54,23 @@ uint32_t InterfaceUART::readRegister(uint8_t register_address)
 //   return miso_datagram;
 // }
 
-// void InterfaceUART::enableChipSelect()
+// void UARTInterface::enableChipSelect()
 // {
 //   digitalWrite(chip_select_pin_, LOW);
 // }
 
-// void InterfaceUART::disableChipSelect()
+// void UARTInterface::disableChipSelect()
 // {
 //   digitalWrite(chip_select_pin_, HIGH);
 // }
 
-// void InterfaceUART::beginTransaction()
+// void UARTInterface::beginTransaction()
 // {
 //   uart_ptr_->beginTransaction(uart_settings_);
 //   enableChipSelect();
 // }
 
-// void InterfaceUART::endTransaction()
+// void UARTInterface::endTransaction()
 // {
 //   disableChipSelect();
 //   uart_ptr_->endTransaction();

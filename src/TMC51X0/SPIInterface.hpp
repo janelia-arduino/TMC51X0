@@ -1,5 +1,5 @@
 // ----------------------------------------------------------------------------
-// InterfaceSPI.hpp
+// SPIInterface.hpp
 //
 // Authors:
 // Peter Polidoro peter@polidoro.io
@@ -49,10 +49,10 @@ struct SPIParameters
   }
 };
 
-class InterfaceSPI : public Interface
+class SPIInterface : public Interface
 {
 public:
-  InterfaceSPI();
+  SPIInterface();
 
   void setup(SPIParameters spi_parameters);
 
