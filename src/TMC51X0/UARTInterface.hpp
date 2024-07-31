@@ -96,23 +96,11 @@ public:
 private:
   UARTParameters uart_parameters_;
 
-  // struct UartStatus
-  // {
-  //   uint8_t reset_flag : 1;
-  //   uint8_t driver_error : 1;
-  //   uint8_t sg2 : 1;
-  //   uint8_t standstill : 1;
-  //   uint8_t velocity_reached : 1;
-  //   uint8_t position_reached : 1;
-  //   uint8_t status_stop_l : 1;
-  //   uint8_t status_stop_r : 1;
-  // };
-  // UartStatus uart_status_;
+  const static uint8_t UART_WRITE_DATAGRAM_SIZE = 8;
+  const static uint8_t UART_READ_DATAGRAM_SIZE = 4;
 
-  // const static uint8_t UART_DATAGRAM_SIZE = 5;
-
-  // // MOSI Datagrams
-  // union MosiDatagram
+  // // PICO Datagrams
+  // union PicoDatagram
   // {
   //   struct
   //   {
@@ -140,7 +128,7 @@ private:
 
   // uint8_t uart_buffer_[UART_DATAGRAM_SIZE];
 
-  // MisoDatagram writeRead(MosiDatagram mosi_datagram);
+  // MisoDatagram writeRead(PicoDatagram pico_datagram);
 
   // void enableChipSelect();
   // void disableChipSelect();

@@ -27,44 +27,44 @@ void SPIInterface::setup(tmc51x0::SPIParameters spi_parameters)
 void SPIInterface::writeRegister(uint8_t register_address,
   uint32_t data)
 {
-  MosiDatagram mosi_datagram;
-  mosi_datagram.register_address = register_address;
-  mosi_datagram.rw = SPI_RW_WRITE;
-  mosi_datagram.data = data;
-  writeRead(mosi_datagram);
+  PicoDatagram pico_datagram;
+  pico_datagram.register_address = register_address;
+  pico_datagram.rw = SPI_RW_WRITE;
+  pico_datagram.data = data;
+  writeRead(pico_datagram);
 }
 
 uint32_t SPIInterface::readRegister(uint8_t register_address)
 {
-  MosiDatagram mosi_datagram;
-  mosi_datagram.register_address = register_address;
-  mosi_datagram.rw = SPI_RW_READ;
-  mosi_datagram.data = 0;
-  MisoDatagram miso_datagram = writeRead(mosi_datagram);
-  // miso data is returned on second read
-  miso_datagram = writeRead(mosi_datagram);
-  return miso_datagram.data;
+  PicoDatagram pico_datagram;
+  pico_datagram.register_address = register_address;
+  pico_datagram.rw = SPI_RW_READ;
+  pico_datagram.data = 0;
+  PociDatagram poci_datagram = writeRead(pico_datagram);
+  // poci data is returned on second read
+  poci_datagram = writeRead(pico_datagram);
+  return poci_datagram.data;
 }
 
 // private
 
-SPIInterface::MisoDatagram SPIInterface::writeRead(MosiDatagram mosi_datagram)
+SPIInterface::PociDatagram SPIInterface::writeRead(PicoDatagram pico_datagram)
 {
   uint8_t byte_write, byte_read;
-  MisoDatagram miso_datagram;
-  miso_datagram.bytes = 0x0;
+  PociDatagram poci_datagram;
+  poci_datagram.bytes = 0x0;
   beginTransaction();
   for (int i=(SPI_DATAGRAM_SIZE - 1); i>=0; --i)
   {
-    byte_write = (mosi_datagram.bytes >> (8*i)) & 0xff;
+    byte_write = (pico_datagram.bytes >> (8*i)) & 0xff;
     byte_read = spi_parameters_.spi_ptr->transfer(byte_write);
-    miso_datagram.bytes |= ((uint32_t)byte_read) << (8*i);
+    poci_datagram.bytes |= ((uint32_t)byte_read) << (8*i);
   }
   endTransaction();
   noInterrupts();
-  spi_status_ = miso_datagram.spi_status;
+  spi_status_ = poci_datagram.spi_status;
   interrupts();
-  return miso_datagram;
+  return poci_datagram;
 }
 
 void SPIInterface::enableChipSelect()

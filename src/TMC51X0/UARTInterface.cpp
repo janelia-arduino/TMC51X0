@@ -35,23 +35,23 @@ uint32_t UARTInterface::readRegister(uint8_t register_address)
 
 // private
 
-// UARTInterface::MisoDatagram UARTInterface::writeRead(MosiDatagram mosi_datagram)
+// UARTInterface::PociDatagram UARTInterface::writeRead(PicoDatagram pico_datagram)
 // {
 //   uint8_t byte_write, byte_read;
-//   MisoDatagram miso_datagram;
-//   miso_datagram.bytes = 0x0;
+//   PociDatagram poci_datagram;
+//   poci_datagram.bytes = 0x0;
 //   beginTransaction();
 //   for (int i=(UART_DATAGRAM_SIZE - 1); i>=0; --i)
 //   {
-//     byte_write = (mosi_datagram.bytes >> (8*i)) & 0xff;
+//     byte_write = (pico_datagram.bytes >> (8*i)) & 0xff;
 //     byte_read = uart_ptr_->transfer(byte_write);
-//     miso_datagram.bytes |= ((uint32_t)byte_read) << (8*i);
+//     poci_datagram.bytes |= ((uint32_t)byte_read) << (8*i);
 //   }
 //   endTransaction();
 //   noInterrupts();
-//   uart_status_ = miso_datagram.uart_status;
+//   uart_status_ = poci_datagram.uart_status;
 //   interrupts();
-//   return miso_datagram;
+//   return poci_datagram;
 // }
 
 // void UARTInterface::enableChipSelect()

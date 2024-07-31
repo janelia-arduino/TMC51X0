@@ -84,8 +84,8 @@ private:
 
   const static uint8_t SPI_DATAGRAM_SIZE = 5;
 
-  // MOSI Datagrams
-  union MosiDatagram
+  // PICO Datagrams
+  union PicoDatagram
   {
     struct
     {
@@ -113,7 +113,7 @@ private:
 
   uint8_t spi_buffer_[SPI_DATAGRAM_SIZE];
 
-  MisoDatagram writeRead(MosiDatagram mosi_datagram);
+  MisoDatagram writeRead(PicoDatagram pico_datagram);
 
   void enableChipSelect();
   void disableChipSelect();
