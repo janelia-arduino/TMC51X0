@@ -74,27 +74,27 @@ stepper motor controller.
 
 ** Wiring
 
+*** Microcontroller
+
+#+html: <img src="./images/trinamic-wiring-TMC51X0-microcontroller.svg" width="1920px">
+
 *** SPI
-
-**** Microcontroller
-
-#+html: <img src="./images/trinamic-wiring-TMC51X0-spi-microcontroller.svg" width="1920px">
 
 **** TMC51X0-BOB
 
 ***** Teensy 4.0
 
-#+html: <img src="./images/trinamic-wiring-TMC51X0-spi-tmc51x0-bob-teensy40.svg" width="1920px">
+#+html: <img src="./images/trinamic-wiring-TMC51X0-tmc51x0-spi-tmc51x0-bob-teensy40.svg" width="1920px">
 
 ***** Pico
 
-#+html: <img src="./images/trinamic-wiring-TMC51X0-spi-tmc51x0-bob-pico.svg" width="1920px">
+#+html: <img src="./images/trinamic-wiring-TMC51X0-tmc51x0-spi-tmc51x0-bob-pico.svg" width="1920px">
 
 **** TMC51X0-EVAL
 
 ***** Pico
 
-#+html: <img src="./images/trinamic-wiring-TMC51X0-spi-tmc51x0-eval-pico.svg" width="1920px">
+#+html: <img src="./images/trinamic-wiring-TMC51X0-tmc51x0-spi-tmc51x0-eval-pico.svg" width="1920px">
 
 **** Wiring Documentation Source
 

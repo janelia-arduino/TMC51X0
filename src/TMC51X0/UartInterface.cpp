@@ -9,14 +9,17 @@
 
 using namespace tmc51x0;
 
-UartInterface::UartInterface()
-{
-  // enable_tx_pin_ = -1;
-  // enable_rx_pin_ = -1;
-}
-
 void UartInterface::setup(UartParameters uart_parameters)
 {
+  uart_parameters_ = uart_parameters;
+
+  pinMode(uart_parameters_.enable_tx_pin, OUTPUT);
+  disableTx();
+
+  pinMode(uart_parameters_.enable_rx_pin, OUTPUT);
+  disableRx();
+
+  uart_parameters_.uart_ptr->begin();
 }
 
 void UartInterface::writeRegister(uint8_t register_address,
@@ -50,24 +53,34 @@ uint32_t UartInterface::readRegister(uint8_t register_address)
 //   return cipo_datagram;
 // }
 
-// void UartInterface::enableChipSelect()
-// {
-//   digitalWrite(chip_select_pin_, LOW);
-// }
+void UartInterface::enableTx()
+{
+  digitalWrite(uart_parameters_.enable_tx_pin, uart_parameters_.enable_tx_polarity);
+}
 
-// void UartInterface::disableChipSelect()
-// {
-//   digitalWrite(chip_select_pin_, HIGH);
-// }
+void UartInterface::disableTx()
+{
+  digitalWrite(uart_parameters_.enable_tx_pin, !uart_parameters_.enable_tx_polarity);
+}
 
-// void UartInterface::beginTransaction()
-// {
-//   uart_ptr_->beginTransaction(uart_settings_);
-//   enableChipSelect();
-// }
+void UartInterface::enableRx()
+{
+  digitalWrite(uart_parameters_.enable_rx_pin, uart_parameters_.enable_rx_polarity);
+}
 
-// void UartInterface::endTransaction()
-// {
-//   disableChipSelect();
-//   uart_ptr_->endTransaction();
-// }
+void UartInterface::disableRx()
+{
+  digitalWrite(uart_parameters_.enable_rx_pin, !uart_parameters_.enable_rx_polarity);
+}
+
+void UartInterface::beginTransaction()
+{
+  uart_ptr_->beginTransaction(uart_settings_);
+  enableChipSelect();
+}
+
+void UartInterface::endTransaction()
+{
+  disableChipSelect();
+  uart_ptr_->endTransaction();
+}

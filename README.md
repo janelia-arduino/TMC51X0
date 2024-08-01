@@ -1,15 +1,15 @@
-- [Library Information](#org9d94029)
-- [Stepper Motors](#org815e3b3)
-- [Stepper Motor Controllers and Drivers](#orgd3e79d9)
-- [Examples](#org2ac760c)
-- [Hardware Documentation](#orgce21ee0)
-- [Host Computer Setup](#org9b8cc71)
+- [Library Information](#org93bd722)
+- [Stepper Motors](#org3d7afaf)
+- [Stepper Motor Controllers and Drivers](#orgc0e28a9)
+- [Examples](#orgf0d2eb5)
+- [Hardware Documentation](#org5b394b1)
+- [Host Computer Setup](#org3f39ffa)
 
     <!-- This file is generated automatically from metadata -->
     <!-- File edits may be overwritten! -->
 
 
-<a id="org9d94029"></a>
+<a id="org93bd722"></a>
 
 # Library Information
 
@@ -36,7 +36,7 @@ The TMC5160 uses external MOSFETs to drive higher current motors from 1A to seve
 <img src="./images/trinamic-wiring-TMC51X0-description.svg" width="1920px">
 
 
-<a id="org815e3b3"></a>
+<a id="org3d7afaf"></a>
 
 # Stepper Motors
 
@@ -47,7 +47,7 @@ A stepper motor, also known as step motor or stepping motor, is a brushless DC e
 [Wikipedia - Stepper Motor](https://en.wikipedia.org/wiki/Stepper_motor)
 
 
-<a id="orgd3e79d9"></a>
+<a id="orgc0e28a9"></a>
 
 # Stepper Motor Controllers and Drivers
 
@@ -64,7 +64,7 @@ A stepper motor controller is responsible for the commanding either the motor ki
 A stepper motor driver is responsible for commanding the electrical current through the motor coils as it changes with time to meet the requirements of the stepper motor controller.
 
 
-<a id="org2ac760c"></a>
+<a id="orgf0d2eb5"></a>
 
 # Examples
 
@@ -72,34 +72,35 @@ A stepper motor driver is responsible for commanding the electrical current thro
 ## Wiring
 
 
+### Microcontroller
+
+<img src="./images/trinamic-wiring-TMC51X0-microcontroller.svg" width="1920px">
+
+
 ### SPI
 
-1.  Microcontroller
-
-    <img src="./images/trinamic-wiring-TMC51X0-spi-microcontroller.svg" width="1920px">
-
-2.  TMC51X0-BOB
+1.  TMC51X0-BOB
 
     1.  Teensy 4.0
     
-        <img src="./images/trinamic-wiring-TMC51X0-spi-tmc51x0-bob-teensy40.svg" width="1920px">
+        <img src="./images/trinamic-wiring-TMC51X0-tmc51x0-spi-tmc51x0-bob-teensy40.svg" width="1920px">
     
     2.  Pico
     
-        <img src="./images/trinamic-wiring-TMC51X0-spi-tmc51x0-bob-pico.svg" width="1920px">
+        <img src="./images/trinamic-wiring-TMC51X0-tmc51x0-spi-tmc51x0-bob-pico.svg" width="1920px">
 
-3.  TMC51X0-EVAL
+2.  TMC51X0-EVAL
 
     1.  Pico
     
-        <img src="./images/trinamic-wiring-TMC51X0-spi-tmc51x0-eval-pico.svg" width="1920px">
+        <img src="./images/trinamic-wiring-TMC51X0-tmc51x0-spi-tmc51x0-eval-pico.svg" width="1920px">
 
-4.  Wiring Documentation Source
+3.  Wiring Documentation Source
 
     <https://github.com/janelia-kicad/trinamic-wiring>
 
 
-<a id="orgce21ee0"></a>
+<a id="org5b394b1"></a>
 
 # Hardware Documentation
 
@@ -109,7 +110,7 @@ A stepper motor driver is responsible for commanding the electrical current thro
 [Datasheets](./datasheet)
 
 
-<a id="org9b8cc71"></a>
+<a id="org3f39ffa"></a>
 
 # Host Computer Setup
 

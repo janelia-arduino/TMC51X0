@@ -84,8 +84,6 @@ private:
 class UartInterface : public Interface
 {
 public:
-  UartInterface();
-
   void setup(UartParameters uart_parameters);
 
   void writeRegister(uint8_t register_address,
@@ -95,10 +93,10 @@ public:
 private:
   UartParameters uart_parameters_;
 
+  // Copi Datagrams
   const static uint8_t WRITE_COPI_DATAGRAM_SIZE = 8;
   const static uint8_t READ_COPI_DATAGRAM_SIZE = 4;
 
-  // Copi Datagrams
   union CopiWriteDatagram
   {
     struct
@@ -129,27 +127,35 @@ private:
   const static uint8_t RW_READ = 0;
   const static uint8_t RW_WRITE = 1;
 
+  // Poci Datagrams
   const static uint8_t POCI_DATAGRAM_SIZE = 8;
-  // // Poci Datagrams
-  // union PociDatagram
-  // {
-  //   struct
-  //   {
-  //     uint64_t data : 32;
-  //     UartStatus uart_status;
-  //     uint64_t reserved : 24;
-  //   };
-  //   uint64_t bytes;
-  // };
+
+  union PociDatagram
+  {
+    struct
+    {
+      uint64_t sync : 4;
+      uint64_t reserved : 4;
+      uint64_t node_address : 8;
+      uint64_t register_address : 7;
+      uint64_t rw : 1;
+      uint64_t data : 32;
+      uint64_t crc : 8;
+    };
+    uint64_t bytes;
+  };
 
   // uint8_t uart_buffer_[UART_DATAGRAM_SIZE];
 
-  // PociDatagram writeRead(CopiDatagram copi_datagram);
+  void write(CopiWriteDatagram copi_write_datagram);
+  PociDatagram writeRead(CopiReadDatagram copi_read_datagram);
 
-  // void enableChipSelect();
-  // void disableChipSelect();
-  // void beginTransaction();
-  // void endTransaction();
+  void enableTx();
+  void disableTx();
+  void enableRx();
+  void disableRx();
+  void beginTransaction();
+  void endTransaction();
 };
 }
 #endif
