@@ -93,9 +93,15 @@ public:
 private:
   UartParameters uart_parameters_;
 
+  const static uint8_t BYTE_MAX_VALUE = 0xFF;
+  const static uint8_t BITS_PER_BYTE = 8;
+
+  const static uint8_t SYNC = 0b101;
+  const static uint8_t DATA_SIZE = 4;
+
   // Copi Datagrams
-  const static uint8_t WRITE_COPI_DATAGRAM_SIZE = 8;
-  const static uint8_t READ_COPI_DATAGRAM_SIZE = 4;
+  const static uint8_t COPI_WRITE_DATAGRAM_SIZE = 8;
+  const static uint8_t COPI_READ_DATAGRAM_SIZE = 4;
 
   union CopiWriteDatagram
   {
@@ -150,12 +156,20 @@ private:
   void write(CopiWriteDatagram copi_write_datagram);
   PociDatagram writeRead(CopiReadDatagram copi_read_datagram);
 
+  int serialAvailable();
+  size_t serialWrite(uint8_t c);
+  int serialRead();
+  void serialFlush();
+
+  uint32_t reverseData(uint32_t data);
+  template<typename Datagram>
+  uint8_t calculateCrc(Datagram & datagram,
+    uint8_t datagram_size);
+
   void enableTx();
   void disableTx();
   void enableRx();
   void disableRx();
-  void beginTransaction();
-  void endTransaction();
 };
 }
 #endif

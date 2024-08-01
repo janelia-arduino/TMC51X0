@@ -21,6 +21,7 @@ void SpiInterface::setup(tmc51x0::SpiParameters spi_parameters)
   pinMode(spi_parameters_.chip_select_pin, OUTPUT);
   disableChipSelect();
 
+  spi_parameters_.spi_ptr->end();
   spi_parameters_.spi_ptr->begin();
 }
 
@@ -50,15 +51,15 @@ uint32_t SpiInterface::readRegister(uint8_t register_address)
 
 SpiInterface::CipoDatagram SpiInterface::writeRead(CopiDatagram copi_datagram)
 {
-  uint8_t byte_write, byte_read;
+  uint8_t write_byte, read_byte;
   CipoDatagram cipo_datagram;
   cipo_datagram.bytes = 0x0;
   beginTransaction();
   for (int i=(DATAGRAM_SIZE - 1); i>=0; --i)
   {
-    byte_write = (copi_datagram.bytes >> (8*i)) & 0xff;
-    byte_read = spi_parameters_.spi_ptr->transfer(byte_write);
-    cipo_datagram.bytes |= ((uint32_t)byte_read) << (8*i);
+    write_byte = (copi_datagram.bytes >> (8*i)) & 0xff;
+    read_byte = spi_parameters_.spi_ptr->transfer(write_byte);
+    cipo_datagram.bytes |= ((uint32_t)read_byte) << (8*i);
   }
   endTransaction();
   noInterrupts();
