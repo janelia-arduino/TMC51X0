@@ -19,68 +19,91 @@ void UartInterface::setup(UartParameters uart_parameters)
   pinMode(uart_parameters_.enable_rx_pin, OUTPUT);
   disableRx();
 
-  uart_parameters_.uart_ptr->end();
-  uart_parameters_.uart_ptr->begin(uart_parameters_.baud_rate);
+  if (uart_parameters_.hs_uart_ptr)
+  {
+    uart_parameters_.hs_uart_ptr->end();
+    uart_parameters_.hs_uart_ptr->begin(uart_parameters_.baud_rate);
+  }
 }
 
 void UartInterface::writeRegister(uint8_t register_address,
   uint32_t data)
 {
   CopiWriteDatagram copi_write_datagram;
-  copy_write_datagram.bytes = 0;
-  copy_write_datagram.sync = SYNC;
+  copi_write_datagram.bytes = 0;
+  copi_write_datagram.sync = SYNC;
   copi_write_datagram.node_address = uart_parameters_.node_address;
   copi_write_datagram.register_address = register_address;
   copi_write_datagram.rw = RW_WRITE;
   copi_write_datagram.data = reverseData(data);
   copi_write_datagram.crc = calculateCrc(copi_write_datagram, COPI_WRITE_DATAGRAM_SIZE);
-  write(copi_write_datagram);
+  write(copi_write_datagram, COPI_WRITE_DATAGRAM_SIZE);
 }
 
 uint32_t UartInterface::readRegister(uint8_t register_address)
 {
   CopiReadDatagram copi_read_datagram;
-  copi_write_datagram.node_address = uart_parameters_.node_address;
-  copi_datagram.register_address = register_address;
-  copi_datagram.rw = RW_READ;
-  CipoDatagram cipo_datagram = writeRead(copi_datagram);
-  // cipo data is returned on second read
-  cipo_datagram = writeRead(copi_datagram);
-  return cipo_datagram.data;
+  copi_read_datagram.bytes = 0;
+  copi_read_datagram.sync = SYNC;
+  copi_read_datagram.node_address = uart_parameters_.node_address;
+  copi_read_datagram.register_address = register_address;
+  copi_read_datagram.rw = RW_READ;
+  copi_read_datagram.crc = calculateCrc(copi_read_datagram, COPI_READ_DATAGRAM_SIZE);
+  write(copi_read_datagram, COPI_READ_DATAGRAM_SIZE);
+  CipoDatagram cipo_datagram = blockingRead();
+  return reverseData(cipo_datagram.data);
 }
 
 // private
 
-void UartInterface::write(CopiWriteDatagram copi_write_datagram)
+template<typename Datagram>
+void UartInterface::write(Datagram & datagram,
+  uint8_t datagram_size)
 {
-  uint8_t write_byte;
   enableTx();
-  for (uint8_t i=0; i<COPI_WRITE_DATAGRAM_SIZE; ++i)
+
+  uint8_t write_byte;
+  for (uint8_t i=0; i<datagram_size; ++i)
   {
-    write_byte = (copi_write_datagram.bytes >> (i * BITS_PER_BYTE)) & BYTE_MAX_VALUE;
+    write_byte = (datagram.bytes >> (i * BITS_PER_BYTE)) & BYTE_MAX_VALUE;
     serialWrite(write_byte);
   }
+
   disableTx();
 }
 
-// UartInterface::CipoDatagram UartInterface::writeRead(CopiDatagram copi_datagram)
-// {
-//   uint8_t write_byte, read_byte;
-//   CipoDatagram cipo_datagram;
-//   cipo_datagram.bytes = 0x0;
-//   beginTransaction();
-//   for (int i=(UART_DATAGRAM_SIZE - 1); i>=0; --i)
-//   {
-//     write_byte = (copi_datagram.bytes >> (8*i)) & 0xff;
-//     read_byte = uart_ptr_->transfer(write_byte);
-//     cipo_datagram.bytes |= ((uint32_t)read_byte) << (8*i);
-//   }
-//   endTransaction();
-//   noInterrupts();
-//   uart_status_ = cipo_datagram.uart_status;
-//   interrupts();
-//   return cipo_datagram;
-// }
+UartInterface::CipoDatagram UartInterface::blockingRead()
+{
+  CipoDatagram cipo_datagram;
+  cipo_datagram.bytes = 0;
+
+  enableRx();
+
+  uint32_t reply_delay = 0;
+  while ((serialAvailable() < CIPO_DATAGRAM_SIZE) and
+    (reply_delay < REPLY_DELAY_MAX_MICROSECONDS))
+  {
+    delayMicroseconds(REPLY_DELAY_INC_MICROSECONDS);
+    reply_delay += REPLY_DELAY_INC_MICROSECONDS;
+  }
+
+  if (reply_delay >= REPLY_DELAY_MAX_MICROSECONDS)
+  {
+    return cipo_datagram;
+  }
+
+  uint8_t read_byte;
+  uint8_t byte_count = 0;
+  for (uint8_t i=0; i<CIPO_DATAGRAM_SIZE; ++i)
+  {
+    read_byte = serialRead();
+    cipo_datagram.bytes |= (read_byte << (byte_count++ * BITS_PER_BYTE));
+  }
+
+  disableRx();
+
+  return cipo_datagram;
+}
 
 int UartInterface::serialAvailable()
 {
@@ -88,12 +111,6 @@ int UartInterface::serialAvailable()
   {
     return uart_parameters_.hs_uart_ptr->available();
   }
-// #if SOFTWARE_SERIAL_INCLUDED
-//   else if (software_serial_ptr_ != nullptr)
-//   {
-//     return software_serial_ptr_->available();
-//   }
-// #endif
   return 0;
 }
 
@@ -103,12 +120,6 @@ size_t UartInterface::serialWrite(uint8_t c)
   {
     return uart_parameters_.hs_uart_ptr->write(c);
   }
-// #if SOFTWARE_SERIAL_INCLUDED
-//   else if (software_serial_ptr_ != nullptr)
-//   {
-//     return software_serial_ptr_->write(c);
-//   }
-// #endif
   return 0;
 }
 
@@ -118,12 +129,6 @@ int UartInterface::serialRead()
   {
     return uart_parameters_.hs_uart_ptr->read();
   }
-// #if SOFTWARE_SERIAL_INCLUDED
-//   else if (software_serial_ptr_ != nullptr)
-//   {
-//     return software_serial_ptr_->read();
-//   }
-// #endif
   return 0;
 }
 

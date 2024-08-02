@@ -101,8 +101,6 @@ private:
 
   // Copi Datagrams
   const static uint8_t COPI_WRITE_DATAGRAM_SIZE = 8;
-  const static uint8_t COPI_READ_DATAGRAM_SIZE = 4;
-
   union CopiWriteDatagram
   {
     struct
@@ -117,6 +115,8 @@ private:
     };
     uint64_t bytes;
   };
+
+  const static uint8_t COPI_READ_DATAGRAM_SIZE = 4;
   union CopiReadDatagram
   {
     struct
@@ -130,13 +130,13 @@ private:
     };
     uint32_t bytes;
   };
+
   const static uint8_t RW_READ = 0;
   const static uint8_t RW_WRITE = 1;
 
-  // Poci Datagrams
-  const static uint8_t POCI_DATAGRAM_SIZE = 8;
-
-  union PociDatagram
+  // Cipo Datagrams
+  const static uint8_t CIPO_DATAGRAM_SIZE = 8;
+  union CipoDatagram
   {
     struct
     {
@@ -151,10 +151,13 @@ private:
     uint64_t bytes;
   };
 
-  // uint8_t uart_buffer_[UART_DATAGRAM_SIZE];
+  const static uint32_t REPLY_DELAY_INC_MICROSECONDS = 1;
+  const static uint32_t REPLY_DELAY_MAX_MICROSECONDS = 10000;
 
-  void write(CopiWriteDatagram copi_write_datagram);
-  PociDatagram writeRead(CopiReadDatagram copi_read_datagram);
+  template<typename Datagram>
+  void write(Datagram & datagram,
+    uint8_t datagram_size);
+  CipoDatagram blockingRead();
 
   int serialAvailable();
   size_t serialWrite(uint8_t c);
