@@ -22,11 +22,13 @@ uint32_t register_data;
 void setup()
 {
   Serial.begin(SERIAL_BAUD_RATE);
+
 #if defined(ARDUINO_ARCH_RP2040)
   spi.setSCK(SCK_PIN);
   spi.setTX(TX_PIN);
   spi.setRX(RX_PIN);
 #endif
+  spi.begin();
   tmc51x0::SpiParameters spi_parameters(spi, CHIP_SELECT_PIN);
   tmc5160.setupSpi(spi_parameters);
 }

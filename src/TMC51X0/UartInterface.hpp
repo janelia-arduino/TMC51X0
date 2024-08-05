@@ -17,24 +17,21 @@ namespace tmc51x0
 {
 struct UartParameters
 {
-  HardwareSerial * hs_uart_ptr;
-  uint32_t baud_rate;
+  Stream * stream_ptr;
   uint8_t node_address;
   int8_t enable_tx_pin;
   int8_t enable_rx_pin;
   uint8_t enable_tx_polarity;
   uint8_t enable_rx_polarity;
 
-  UartParameters(HardwareSerial & hs_uart_,
-    uint32_t baud_rate_,
+  UartParameters(Stream & uart_,
     uint8_t node_address_,
     size_t enable_tx_pin_,
     size_t enable_rx_pin_,
     size_t enable_tx_polarity_,
     size_t enable_rx_polarity_)
   {
-    hs_uart_ptr = &hs_uart_;
-    baud_rate = baud_rate_;
+    stream_ptr = &uart_;
     node_address = node_address_;
     enable_tx_pin = enable_tx_pin_;
     enable_rx_pin = enable_rx_pin_;
@@ -44,8 +41,7 @@ struct UartParameters
 
   UartParameters()
   {
-    hs_uart_ptr = nullptr;
-    baud_rate = BAUD_RATE_DEFAULT;
+    stream_ptr = nullptr;
     node_address = NODE_ADDRESS_DEFAULT;
     enable_tx_pin = PIN_DEFAULT;
     enable_rx_pin = PIN_DEFAULT;
@@ -55,8 +51,7 @@ struct UartParameters
 
   bool operator==(const UartParameters & rhs) const
   {
-    if ((this->hs_uart_ptr == rhs.hs_uart_ptr) &&
-      (this->baud_rate == rhs.baud_rate) &&
+    if ((this->stream_ptr == rhs.stream_ptr) &&
       (this->node_address == rhs.node_address) &&
       (this->enable_tx_pin == rhs.enable_tx_pin) &&
       (this->enable_rx_pin == rhs.enable_rx_pin) &&
@@ -73,7 +68,6 @@ struct UartParameters
   }
 
 private:
-  const static uint32_t BAUD_RATE_DEFAULT = 115200;
   const static uint8_t NODE_ADDRESS_DEFAULT = 0;
   const static size_t PIN_DEFAULT = 255;
   const static uint8_t ENABLE_TX_POLARITY_DEFAULT = HIGH;

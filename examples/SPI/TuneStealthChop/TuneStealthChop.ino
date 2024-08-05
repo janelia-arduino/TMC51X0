@@ -62,6 +62,7 @@ void setup()
   spi.setTX(TX_PIN);
   spi.setRX(RX_PIN);
 #endif
+  spi.begin();
   tmc51x0::SpiParameters spi_parameters(spi, CHIP_SELECT_PIN);
   tmc5160.setupSpi(spi_parameters);
 

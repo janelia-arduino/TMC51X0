@@ -27,13 +27,13 @@ bool enabled;
 void setup()
 {
   Serial.begin(SERIAL_BAUD_RATE);
+
 #if defined(ARDUINO_ARCH_RP2040)
   uart.setTX(TX_PIN);
   uart.setRX(RX_PIN);
 #endif
-
+  uart.begin(UART_BAUD_RATE);
   tmc51x0::UartParameters uart_parameters(uart,
-    UART_BAUD_RATE,
     NODE_ADDRESS,
     ENABLE_TX_PIN,
     ENABLE_RX_PIN,

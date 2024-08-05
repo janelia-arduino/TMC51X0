@@ -18,12 +18,6 @@ void UartInterface::setup(UartParameters uart_parameters)
 
   pinMode(uart_parameters_.enable_rx_pin, OUTPUT);
   disableRx();
-
-  if (uart_parameters_.hs_uart_ptr)
-  {
-    uart_parameters_.hs_uart_ptr->end();
-    uart_parameters_.hs_uart_ptr->begin(uart_parameters_.baud_rate);
-  }
 }
 
 void UartInterface::writeRegister(uint8_t register_address,
@@ -107,36 +101,36 @@ UartInterface::CipoDatagram UartInterface::blockingRead()
 
 int UartInterface::serialAvailable()
 {
-  if (uart_parameters_.hs_uart_ptr != nullptr)
+  if (uart_parameters_.stream_ptr != nullptr)
   {
-    return uart_parameters_.hs_uart_ptr->available();
+    return uart_parameters_.stream_ptr->available();
   }
   return 0;
 }
 
 size_t UartInterface::serialWrite(uint8_t c)
 {
-  if (uart_parameters_.hs_uart_ptr != nullptr)
+  if (uart_parameters_.stream_ptr != nullptr)
   {
-    return uart_parameters_.hs_uart_ptr->write(c);
+    return uart_parameters_.stream_ptr->write(c);
   }
   return 0;
 }
 
 int UartInterface::serialRead()
 {
-  if (uart_parameters_.hs_uart_ptr != nullptr)
+  if (uart_parameters_.stream_ptr != nullptr)
   {
-    return uart_parameters_.hs_uart_ptr->read();
+    return uart_parameters_.stream_ptr->read();
   }
   return 0;
 }
 
 void UartInterface::serialFlush()
 {
-  if (uart_parameters_.hs_uart_ptr != nullptr)
+  if (uart_parameters_.stream_ptr != nullptr)
   {
-    return uart_parameters_.hs_uart_ptr->flush();
+    return uart_parameters_.stream_ptr->flush();
   }
 }
 
