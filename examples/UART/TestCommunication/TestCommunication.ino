@@ -2,9 +2,9 @@
 
 
 #if !defined(ARDUINO_ARCH_RP2040)
-HardwareSerial & uart = Serial1;
+HardwareSerial & uart = Serial2;
 #else
-SerialUART & uart = Serial1;
+SerialUART & uart = Serial2;
 pin_size_t TX_PIN = 4;
 pin_size_t RX_PIN = 5;
 #endif
