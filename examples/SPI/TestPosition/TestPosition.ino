@@ -42,14 +42,15 @@ const int8_t STALL_GUARD_THRESHOLD = 1;
 const uint32_t START_VELOCITY = 1; // millimeters/s
 const uint32_t FIRST_ACCELERATION = 10;  // millimeters/(s^2)
 const uint32_t FIRST_VELOCITY = 10; // millimeters/s
-const uint32_t MAX_ACCELERATION = 2;  // millimeters/(s^2)
+const uint32_t MAX_ACCELERATION = 2; // millimeters/(s^2)
 const uint32_t MAX_DECELERATION = 25;  // millimeters/(s^2)
 const uint32_t FIRST_DECELERATION = 20;  // millimeters/(s^2)
 const uint32_t MAX_VELOCITY = 20; // millimeters/s
 const uint32_t STOP_VELOCITY = 5; // millimeters/s
 
-const int32_t MAX_TARGET_POSITION = 20;  // millimeters
-const int32_t MIN_TARGET_POSITION = 180;  // millimeters
+const int32_t MIN_TARGET_POSITION = 20;  // millimeters
+// const int32_t MAX_TARGET_POSITION = 180;  // millimeters
+const int32_t MAX_TARGET_POSITION = 600;  // millimeters
 const tmc51x0::Controller::RampMode RAMP_MODE = tmc51x0::Controller::POSITION;
 const int32_t INITIAL_POSITION = 0;
 

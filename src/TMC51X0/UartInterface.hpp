@@ -149,7 +149,7 @@ private:
   const static uint32_t REPLY_DELAY_MAX_MICROSECONDS = 10000;
 
   template<typename Datagram>
-  void write(Datagram & datagram,
+  void blockingWrite(Datagram & datagram,
     uint8_t datagram_size);
   CipoDatagram blockingRead();
 

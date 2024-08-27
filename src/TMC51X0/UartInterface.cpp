@@ -31,7 +31,7 @@ void UartInterface::writeRegister(uint8_t register_address,
   copi_write_datagram.rw = RW_WRITE;
   copi_write_datagram.data = reverseData(data);
   copi_write_datagram.crc = calculateCrc(copi_write_datagram, COPI_WRITE_DATAGRAM_SIZE);
-  write(copi_write_datagram, COPI_WRITE_DATAGRAM_SIZE);
+  blockingWrite(copi_write_datagram, COPI_WRITE_DATAGRAM_SIZE);
 }
 
 uint32_t UartInterface::readRegister(uint8_t register_address)
@@ -43,15 +43,17 @@ uint32_t UartInterface::readRegister(uint8_t register_address)
   copi_read_datagram.register_address = register_address;
   copi_read_datagram.rw = RW_READ;
   copi_read_datagram.crc = calculateCrc(copi_read_datagram, COPI_READ_DATAGRAM_SIZE);
-  write(copi_read_datagram, COPI_READ_DATAGRAM_SIZE);
-  CipoDatagram cipo_datagram = blockingRead();
+  blockingWrite(copi_read_datagram, COPI_READ_DATAGRAM_SIZE);
+  CipoDatagram cipo_datagram;
+  cipo_datagram.bytes = 0;
+  cipo_datagram = blockingRead();
   return reverseData(cipo_datagram.data);
 }
 
 // private
 
 template<typename Datagram>
-void UartInterface::write(Datagram & datagram,
+void UartInterface::blockingWrite(Datagram & datagram,
   uint8_t datagram_size)
 {
   enableTx();
@@ -62,6 +64,7 @@ void UartInterface::write(Datagram & datagram,
     write_byte = (datagram.bytes >> (i * BITS_PER_BYTE)) & BYTE_MAX_VALUE;
     serialWrite(write_byte);
   }
+  serialFlush();
 
   disableTx();
 }
@@ -70,6 +73,15 @@ UartInterface::CipoDatagram UartInterface::blockingRead()
 {
   CipoDatagram cipo_datagram;
   cipo_datagram.bytes = 0;
+
+  uint8_t read_byte;
+
+
+  // clear the serial receive buffer if necessary
+  while (serialAvailable() > 0)
+  {
+    read_byte = serialRead();
+  }
 
   enableRx();
 
@@ -83,16 +95,19 @@ UartInterface::CipoDatagram UartInterface::blockingRead()
 
   if (reply_delay >= REPLY_DELAY_MAX_MICROSECONDS)
   {
+    Serial.println("Read timeout!");
+    disableRx();
     return cipo_datagram;
   }
 
-  uint8_t read_byte;
   uint8_t byte_count = 0;
   for (uint8_t i=0; i<CIPO_DATAGRAM_SIZE; ++i)
   {
     read_byte = serialRead();
     cipo_datagram.bytes |= (read_byte << (byte_count++ * BITS_PER_BYTE));
   }
+
+  // delayMicroseconds(500);
 
   disableRx();
 

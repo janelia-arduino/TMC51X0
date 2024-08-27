@@ -23,7 +23,7 @@ const uint8_t ENABLE_TX_PINS[PRISM_COUNT] = {15, 13, 11, 9, 7, 3, 1};
 const uint8_t ENABLE_RX_PINS[PRISM_COUNT] = {14, 12, 10, 8, 6, 2, 0};
 
 const uint32_t SERIAL_BAUD_RATE = 115200;
-const uint16_t DELAY = 1000;
+const uint16_t DELAY = 2000;
 
 // Instantiate TMC51X0
 TMC51X0 prisms[PRISM_COUNT];
@@ -58,25 +58,26 @@ void setup()
 
 void loop()
 {
-  for (size_t i=0; i<PRISM_COUNT; ++i)
+  // for (size_t i=0; i<PRISM_COUNT; ++i)
+  for (size_t i=0; i<1; ++i)
   {
     Serial.print("prism ");
     Serial.print(i);
     Serial.println(":");
     TMC51X0 & prism = prisms[i];
-    if (enabled)
-    {
-      prism.driver.disable();
-    }
-    else
-    {
-      prism.driver.enable();
-    }
+    // if (enabled)
+    // {
+    //   prism.driver.disable();
+    // }
+    // else
+    // {
+    //   prism.driver.enable();
+    // }
     prism.printer.readAndPrintIoin();
+    delay(DELAY);
   }
   Serial.println("--------------------------");
 
   enabled = not enabled;
 
-  delay(DELAY);
 }
