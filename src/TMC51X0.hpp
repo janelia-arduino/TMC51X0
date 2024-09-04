@@ -10,8 +10,9 @@
 #include <Arduino.h>
 #include <SPI.h>
 
-#include "SpiInterface.hpp"
-#include "UartInterface.hpp"
+#include "./TMC51X0/SpiInterface.hpp"
+#include "./TMC51X0/UartInterface.hpp"
+
 #include "Registers.hpp"
 #include "Converter.hpp"
 #include "Driver.hpp"
