@@ -32,6 +32,8 @@ void UartInterface::writeRegister(uint8_t register_address,
   copi_write_datagram.data = reverseData(data);
   copi_write_datagram.crc = calculateCrc(copi_write_datagram, COPI_WRITE_DATAGRAM_SIZE);
   blockingWrite(copi_write_datagram, COPI_WRITE_DATAGRAM_SIZE);
+
+ //  delayMicroseconds(700);
 }
 
 uint32_t UartInterface::readRegister(uint8_t register_address)
@@ -190,20 +192,20 @@ uint8_t UartInterface::calculateCrc(Datagram & datagram,
 
 void UartInterface::enableTx()
 {
-  digitalWrite(uart_parameters_.enable_tx_pin, uart_parameters_.enable_tx_polarity);
+  digitalWriteFast(uart_parameters_.enable_tx_pin, uart_parameters_.enable_tx_polarity);
 }
 
 void UartInterface::disableTx()
 {
-  digitalWrite(uart_parameters_.enable_tx_pin, !uart_parameters_.enable_tx_polarity);
+  digitalWriteFast(uart_parameters_.enable_tx_pin, !uart_parameters_.enable_tx_polarity);
 }
 
 void UartInterface::enableRx()
 {
-  digitalWrite(uart_parameters_.enable_rx_pin, uart_parameters_.enable_rx_polarity);
+  digitalWriteFast(uart_parameters_.enable_rx_pin, uart_parameters_.enable_rx_polarity);
 }
 
 void UartInterface::disableRx()
 {
-  digitalWrite(uart_parameters_.enable_rx_pin, !uart_parameters_.enable_rx_polarity);
+  digitalWriteFast(uart_parameters_.enable_rx_pin, !uart_parameters_.enable_rx_polarity);
 }
