@@ -58,6 +58,8 @@ void UartInterface::blockingWrite(Datagram & datagram,
 {
   enableTx();
 
+  delayMicroseconds(ENABLE_DELAY_MICROSECONDS);
+
   uint8_t write_byte;
   for (uint8_t i=0; i<datagram_size; ++i)
   {
@@ -106,8 +108,6 @@ UartInterface::CipoDatagram UartInterface::blockingRead()
     read_byte = serialRead();
     cipo_datagram.bytes |= (read_byte << (byte_count++ * BITS_PER_BYTE));
   }
-
-  // delayMicroseconds(500);
 
   disableRx();
 

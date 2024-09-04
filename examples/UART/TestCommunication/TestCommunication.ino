@@ -33,6 +33,7 @@ void setup()
   uart.setRX(RX_PIN);
 #endif
   uart.begin(UART_BAUD_RATE);
+
   tmc51x0::UartParameters uart_parameters(uart,
     NODE_ADDRESS,
     ENABLE_TX_PIN,

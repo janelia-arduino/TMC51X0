@@ -147,6 +147,7 @@ private:
 
   const static uint32_t REPLY_DELAY_INC_MICROSECONDS = 1;
   const static uint32_t REPLY_DELAY_MAX_MICROSECONDS = 10000;
+  const static uint32_t ENABLE_DELAY_MICROSECONDS = 10;
 
   template<typename Datagram>
   void blockingWrite(Datagram & datagram,
