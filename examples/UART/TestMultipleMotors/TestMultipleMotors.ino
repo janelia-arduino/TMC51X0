@@ -73,7 +73,7 @@ void loop()
     {
       prism.driver.enable();
     }
-    prism.printer.readAndPrintIoin();
+    prism.printer.readAndPrintChopconf();
     delay(DELAY);
   }
   Serial.println("--------------------------");

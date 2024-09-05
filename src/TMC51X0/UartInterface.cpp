@@ -33,7 +33,7 @@ void UartInterface::writeRegister(uint8_t register_address,
   copi_write_datagram.crc = calculateCrc(copi_write_datagram, COPI_WRITE_DATAGRAM_SIZE);
   blockingWrite(copi_write_datagram, COPI_WRITE_DATAGRAM_SIZE);
 
- //  delayMicroseconds(700);
+  // delayMicroseconds(700);
 }
 
 uint32_t UartInterface::readRegister(uint8_t register_address)
@@ -78,7 +78,7 @@ UartInterface::CipoDatagram UartInterface::blockingRead()
   CipoDatagram cipo_datagram;
   cipo_datagram.bytes = 0;
 
-  uint8_t read_byte;
+  uint64_t read_byte;
 
 
   // clear the serial receive buffer if necessary
@@ -104,11 +104,10 @@ UartInterface::CipoDatagram UartInterface::blockingRead()
     return cipo_datagram;
   }
 
-  uint8_t byte_count = 0;
   for (uint8_t i=0; i<CIPO_DATAGRAM_SIZE; ++i)
   {
     read_byte = serialRead();
-    cipo_datagram.bytes |= (read_byte << (byte_count++ * BITS_PER_BYTE));
+    cipo_datagram.bytes |= (read_byte << (i * BITS_PER_BYTE));
   }
 
   disableRx();
