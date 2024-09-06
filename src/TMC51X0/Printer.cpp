@@ -24,10 +24,10 @@ void Printer::readAndPrintGconf()
 void Printer::printRegister(Registers::Gconf gconf)
 {
   printRegisterPortion("gconf", gconf.bytes, HEX);
-  printRegisterPortion("recalibrate", gconf.recalibrate, BIN);
-  printRegisterPortion("faststandstill", gconf.faststandstill, BIN);
+  printRegisterPortion("recalibrate_i_scale_analog", gconf.recalibrate_i_scale_analog, BIN);
+  printRegisterPortion("faststandstill_internal_rsense", gconf.faststandstill_internal_rsense, BIN);
   printRegisterPortion("en_pwm_mode", gconf.en_pwm_mode, BIN);
-  printRegisterPortion("multistep_filt", gconf.multistep_filt, BIN);
+  printRegisterPortion("multistep_filt_enc_commutation", gconf.multistep_filt_enc_commutation, BIN);
   printRegisterPortion("shaft", gconf.shaft, BIN);
   printRegisterPortion("diag0_error", gconf.diag0_error, BIN);
   printRegisterPortion("diag0_otpw", gconf.diag0_otpw, BIN);

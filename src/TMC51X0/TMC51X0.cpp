@@ -23,6 +23,13 @@ void TMC51X0::setupUart(UartParameters uart_parameters)
   initialize();
 }
 
+uint8_t TMC51X0::readVersion()
+{
+  Registers::Ioin ioin;
+  ioin.bytes = registers.read(Registers::IOIN);
+  return ioin.version;
+}
+
 // private
 void TMC51X0::initialize()
 {

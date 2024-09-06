@@ -91,7 +91,7 @@ void Registers::initialize(Interface & interface)
     stored_[register_address] = 0;
   }
 
-  stored_[GCONF] = 0x9;
+  stored_[GCONF] = 0x0;
   writeable_[GCONF] = true;
   readable_[GCONF] = true;
 

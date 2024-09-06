@@ -18,15 +18,18 @@ const uint8_t NODE_ADDRESS = 1;
 const uint8_t ENABLE_TX_POLARITY = HIGH;
 const uint8_t ENABLE_RX_POLARITY = LOW;
 
-const uint8_t ENABLE_TX_PIN = 15;
-const uint8_t ENABLE_RX_PIN = 14;
+// const uint8_t ENABLE_TX_PIN = 15;
+// const uint8_t ENABLE_RX_PIN = 14;
+const uint8_t ENABLE_TX_PIN = 13;
+const uint8_t ENABLE_RX_PIN = 12;
 
 const long SERIAL_BAUD_RATE = 115200;
 const int LOOP_DELAY = 2000;
+const int RESET_DELAY = 5000;
 
 // converter constants
 // external clock is 16MHz
-const uint8_t CLOCK_FREQUENCY_MHZ = 12;
+const uint8_t CLOCK_FREQUENCY_MHZ = 16;
 // 200 fullsteps per revolution for many steppers * 256 microsteps per fullstep
 // 10.49 millimeters per revolution leadscrew -> 51200 / 10.49
 // one "real unit" in this example is one millimeters of linear travel
@@ -34,13 +37,13 @@ constexpr uint32_t MICROSTEPS_PER_REAL_UNIT = 4881;
 
 // driver constants
 const uint8_t GLOBAL_CURRENT_SCALAR = 100; // percent
-const uint8_t RUN_CURRENT = 100; // percent
-const uint8_t PWM_OFFSET = 100; // percent
-const uint8_t PWM_GRADIENT = 50; // percent
-const tmc51x0::Driver::MotorDirection MOTOR_DIRECTION = tmc51x0::Driver::REVERSE;
+const uint8_t RUN_CURRENT = 50; // percent
+const uint8_t PWM_OFFSET = 20; // percent
+const uint8_t PWM_GRADIENT = 5; // percent
+const tmc51x0::Driver::MotorDirection MOTOR_DIRECTION = tmc51x0::Driver::FORWARD;
 
-const uint8_t STEALTH_CHOP_THRESHOLD = 100; // millimeters/s
-const uint8_t COOL_STEP_THRESHOLD = 100; // millimeters/s
+const uint8_t STEALTH_CHOP_THRESHOLD = 10; // millimeters/s
+const uint8_t COOL_STEP_THRESHOLD = 50; // millimeters/s
 const uint8_t MIN_COOL_STEP = 1;
 const uint8_t MAX_COOL_STEP = 0;
 const uint8_t HIGH_VELOCITY_THRESHOLD = 90; // millimeters/s
@@ -71,7 +74,14 @@ void setup()
   Serial.begin(SERIAL_BAUD_RATE);
 
   pinMode(ENABLE_VCC_PIN, OUTPUT);
+  digitalWrite(ENABLE_VCC_PIN, !ENABLE_VCC_POLARITY);
+
+  delay(RESET_DELAY);
+
+  pinMode(ENABLE_VCC_PIN, OUTPUT);
   digitalWrite(ENABLE_VCC_PIN, ENABLE_VCC_POLARITY);
+
+  delay(RESET_DELAY);
 
 #if defined(ARDUINO_ARCH_RP2040)
   uart.setTX(TX_PIN);
@@ -138,6 +148,7 @@ void setup()
 
 void loop()
 {
+  tmc5130.printer.readAndPrintGconf();
   tmc5130.printer.readAndPrintRampStat();
   tmc5130.printer.readAndPrintDrvStatus();
 

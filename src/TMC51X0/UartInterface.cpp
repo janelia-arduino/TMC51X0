@@ -32,8 +32,6 @@ void UartInterface::writeRegister(uint8_t register_address,
   copi_write_datagram.data = reverseData(data);
   copi_write_datagram.crc = calculateCrc(copi_write_datagram, COPI_WRITE_DATAGRAM_SIZE);
   blockingWrite(copi_write_datagram, COPI_WRITE_DATAGRAM_SIZE);
-
-  // delayMicroseconds(700);
 }
 
 uint32_t UartInterface::readRegister(uint8_t register_address)

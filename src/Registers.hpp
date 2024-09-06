@@ -96,10 +96,10 @@ struct Registers
   {
     struct
     {
-      uint32_t recalibrate : 1;
-      uint32_t faststandstill : 1;
+      uint32_t recalibrate_i_scale_analog : 1;
+      uint32_t faststandstill_internal_rsense : 1;
       uint32_t en_pwm_mode : 1;
-      uint32_t multistep_filt : 1;
+      uint32_t multistep_filt_enc_commutation : 1;
       uint32_t shaft : 1;
       uint32_t diag0_error : 1;
       uint32_t diag0_otpw : 1;

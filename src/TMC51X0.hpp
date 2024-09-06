@@ -26,6 +26,8 @@ struct TMC51X0
   void setupSpi(tmc51x0::SpiParameters spi_parameters);
   void setupUart(tmc51x0::UartParameters uart_parameters);
 
+  uint8_t readVersion();
+
   tmc51x0::Registers registers;
   tmc51x0::Converter converter;
   tmc51x0::Driver driver;
