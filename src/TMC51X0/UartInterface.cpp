@@ -187,6 +187,13 @@ uint8_t UartInterface::calculateCrc(Datagram & datagram,
   return crc;
 }
 
+#if defined(ARDUINO_ARCH_ESP32)
+void digitalWriteFast(uint8_t pin, uint8_t val)
+{
+  val ? GPIO.out_w1ts = (1 << pin) : GPIO.out_w1tc = (1 << pin);
+}
+#endif
+
 void UartInterface::enableTx()
 {
   digitalWriteFast(uart_parameters_.enable_tx_pin, uart_parameters_.enable_tx_polarity);

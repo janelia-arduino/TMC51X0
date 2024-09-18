@@ -22,6 +22,15 @@ public:
     uint8_t clock_frequency_mhz = CLOCK_FREQUENCY_MHZ_DEFAULT;
     int32_t microsteps_per_real_position_unit = MICROSTEPS_PER_REAL_POSITION_UNIT_DEFAULT;
     int32_t seconds_per_real_velocity_unit = SECONDS_PER_REAL_VELOCITY_UNIT_DEFAULT;
+
+    Settings(uint8_t clock_frequency_mhz_ = CLOCK_FREQUENCY_MHZ_DEFAULT,
+      int32_t microsteps_per_real_position_unit_ = MICROSTEPS_PER_REAL_POSITION_UNIT_DEFAULT,
+      int32_t seconds_per_real_velocity_unit_ = SECONDS_PER_REAL_VELOCITY_UNIT_DEFAULT)
+    {
+      clock_frequency_mhz = clock_frequency_mhz_;
+      microsteps_per_real_position_unit = microsteps_per_real_position_unit_;
+      seconds_per_real_velocity_unit = seconds_per_real_velocity_unit_;
+    };
   };
   void setup(Settings settings);
 
