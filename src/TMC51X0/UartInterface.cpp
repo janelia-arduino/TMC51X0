@@ -13,11 +13,8 @@ void UartInterface::setup(UartParameters uart_parameters)
 {
   uart_parameters_ = uart_parameters;
 
-  pinMode(uart_parameters_.enable_tx_pin, OUTPUT);
-  disableTx();
-
-  pinMode(uart_parameters_.enable_rx_pin, OUTPUT);
-  disableRx();
+  pinMode(uart_parameters_.enable_txrx_pin, OUTPUT);
+  disableTxEnableRx();
 }
 
 void UartInterface::writeRegister(uint8_t register_address,
@@ -56,7 +53,7 @@ template<typename Datagram>
 void UartInterface::blockingWrite(Datagram & datagram,
   uint8_t datagram_size)
 {
-  enableTx();
+  enableTxDisableRx();
 
   delayMicroseconds(ENABLE_DELAY_MICROSECONDS);
 
@@ -68,7 +65,7 @@ void UartInterface::blockingWrite(Datagram & datagram,
   }
   serialFlush();
 
-  disableTx();
+  disableTxEnableRx();
 }
 
 UartInterface::CipoDatagram UartInterface::blockingRead()
@@ -84,8 +81,6 @@ UartInterface::CipoDatagram UartInterface::blockingRead()
   {
     read_byte = serialRead();
   }
-
-  enableRx();
 
   uint32_t reply_delay = 0;
   while ((serialAvailable() < CIPO_DATAGRAM_SIZE) and
@@ -107,8 +102,6 @@ UartInterface::CipoDatagram UartInterface::blockingRead()
     read_byte = serialRead();
     cipo_datagram.bytes |= (read_byte << (i * BITS_PER_BYTE));
   }
-
-  disableRx();
 
   return cipo_datagram;
 }
@@ -194,22 +187,12 @@ void digitalWriteFast(uint8_t pin, uint8_t val)
 }
 #endif
 
-void UartInterface::enableTx()
+void UartInterface::enableTxDisableRx()
 {
-  digitalWriteFast(uart_parameters_.enable_tx_pin, uart_parameters_.enable_tx_polarity);
+  digitalWriteFast(uart_parameters_.enable_tx_pin, ENABLE_TX_DISABLE_RX_PIN_VALUE);
 }
 
-void UartInterface::disableTx()
+void UartInterface::disableTxEnableRx()
 {
-  digitalWriteFast(uart_parameters_.enable_tx_pin, !uart_parameters_.enable_tx_polarity);
-}
-
-void UartInterface::enableRx()
-{
-  digitalWriteFast(uart_parameters_.enable_rx_pin, uart_parameters_.enable_rx_polarity);
-}
-
-void UartInterface::disableRx()
-{
-  digitalWriteFast(uart_parameters_.enable_rx_pin, !uart_parameters_.enable_rx_polarity);
+  digitalWriteFast(uart_parameters_.enable_tx_pin, DISABLE_TX_ENABLE_RX_PIN_VALUE);
 }

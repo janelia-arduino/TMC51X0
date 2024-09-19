@@ -9,22 +9,25 @@ pin_size_t TX_PIN = 4;
 pin_size_t RX_PIN = 5;
 #endif
 
-const uint8_t ENABLE_VCC_PIN = 22;
-const uint8_t ENABLE_VCC_POLARITY = HIGH;
+// Optional power enable
+const uint8_t ENABLE_POWER_PIN = 15;
+const uint8_t ENABLE_POWER_POLARITY = HIGH;
 
-// ENABLE_TX_PIN and ENABLE_RX_PIN may be the same pin
+// UART Parameters
 const uint32_t UART_BAUD_RATE = 115200;
-const uint8_t NODE_ADDRESS = 1;
-const uint8_t ENABLE_TX_POLARITY = HIGH;
-const uint8_t ENABLE_RX_POLARITY = LOW;
+const uint8_t NODE_ADDRESS = 0;
 
-const uint8_t PRISM_COUNT = 7;
-const uint8_t ENABLE_TX_PINS[PRISM_COUNT] = {15, 13, 11, 9, 7, 3, 1};
-const uint8_t ENABLE_RX_PINS[PRISM_COUNT] = {14, 12, 10, 8, 6, 2, 0};
+const uint8_t MOTOR_COUNT = 7;
+const uint8_t ENABLE_TX_PINS[MOTOR_COUNT] = {14, 13, 12, 11, 10, 9, 8};
+const uint8_t MUX_ADDRESS_0_PIN = 6;
+const uint8_t MUX_ADDRESS_1_PIN = 3;
+const uint8_t MUX_ADDRESS_2_PIN = 2;
+const uint8_t MUX_ADDRESS_0_VALUES[MOTOR_COUNT] = {0, 1, 0, 1, 0, 1, 0};
+const uint8_t MUX_ADDRESS_1_VALUES[MOTOR_COUNT] = {0, 0, 1, 1, 0, 0, 1};
+const uint8_t MUX_ADDRESS_2_VALUES[MOTOR_COUNT] = {0, 0, 0, 0, 1, 1, 1};
 
 const uint32_t SERIAL_BAUD_RATE = 115200;
 const int LOOP_DELAY = 2000;
-const int RESET_DELAY = 10000;
 
 // converter constants
 // external clock is 16MHz
@@ -64,7 +67,7 @@ const tmc51x0::Controller::RampMode RAMP_MODE = tmc51x0::Controller::POSITION;
 const int32_t INITIAL_POSITION = 0;
 
 // Instantiate TMC51X0
-TMC51X0 prisms[PRISM_COUNT];
+TMC51X0 motors[MOTOR_COUNT];
 uint32_t target_position;
 
 void setup()
@@ -75,17 +78,11 @@ void setup()
 
   Serial.println("Disabling VCC");
 
-  pinMode(ENABLE_VCC_PIN, OUTPUT);
-  digitalWrite(ENABLE_VCC_PIN, !ENABLE_VCC_POLARITY);
-
-  delay(RESET_DELAY);
-
-  Serial.println("Enabling VCC");
-
-  pinMode(ENABLE_VCC_PIN, OUTPUT);
-  digitalWrite(ENABLE_VCC_PIN, ENABLE_VCC_POLARITY);
-
-  delay(RESET_DELAY);
+  pinMode(ENABLE_POWER_PIN, OUTPUT);
+  digitalWrite(ENABLE_POWER_PIN, ENABLE_POWER_VALUE);
+  pinMode(MUX_ADDRESS_0_PIN, OUTPUT);
+  pinMode(MUX_ADDRESS_1_PIN, OUTPUT);
+  pinMode(MUX_ADDRESS_2_PIN, OUTPUT);
 
 #if defined(ARDUINO_ARCH_RP2040)
   uart.setTX(TX_PIN);
@@ -101,71 +98,77 @@ void setup()
 
   randomSeed(analogRead(A0));
 
-  // for (size_t i=0; i<PRISM_COUNT; ++i)
+  // for (size_t i=0; i<MOTOR_COUNT; ++i)
   for (size_t i=1; i<2; ++i)
   {
-    TMC51X0 & prism = prisms[i];
+    TMC51X0 & motor = motors[i];
     tmc51x0::UartParameters uart_parameters(uart,
       NODE_ADDRESS,
-      ENABLE_TX_PINS[i],
-      ENABLE_RX_PINS[i],
-      ENABLE_TX_POLARITY,
-      ENABLE_RX_POLARITY);
-    prism.setupUart(uart_parameters);
-    prism.driver.writeGlobalCurrentScaler(prism.converter.percentToGlobalCurrentScaler(GLOBAL_CURRENT_SCALAR));
-    prism.driver.writeRunCurrent(prism.converter.percentToCurrentSetting(RUN_CURRENT));
-    prism.driver.writePwmOffset(prism.converter.percentToPwmSetting(PWM_OFFSET));
-    prism.driver.writePwmGradient(prism.converter.percentToPwmSetting(PWM_GRADIENT));
-    prism.driver.writeMotorDirection(MOTOR_DIRECTION);
-    prism.driver.writeStealthChopThreshold(prism.converter.velocityRealToTstep(STEALTH_CHOP_THRESHOLD));
-    // prism.driver.writeCoolStepThreshold(prism.converter.velocityRealToTstep(COOL_STEP_THRESHOLD));
-    // prism.driver.enableCoolStep(MIN_COOL_STEP, MAX_COOL_STEP);
-    // prism.driver.writeHighVelocityThreshold(prism.converter.velocityRealToTstep(HIGH_VELOCITY_THRESHOLD));
-    // prism.driver.writeStallGuardThreshold(STALL_GUARD_THRESHOLD);
+      ENABLE_TXRX_PINS[i]);
+    motor.setupUart(uart_parameters);
 
-    prism.controller.writeFirstAcceleration(prism.converter.accelerationRealToChip(FIRST_ACCELERATION));
-    prism.controller.writeFirstVelocity(prism.converter.velocityRealToChip(FIRST_VELOCITY));
-    prism.controller.writeMaxAcceleration(prism.converter.accelerationRealToChip(MAX_ACCELERATION));
-    prism.controller.writeMaxDeceleration(prism.converter.accelerationRealToChip(MAX_DECELERATION));
-    prism.controller.writeFirstDeceleration(prism.converter.accelerationRealToChip(FIRST_DECELERATION));
-    prism.controller.writeStopVelocity(prism.converter.velocityRealToChip(STOP_VELOCITY));
-    prism.controller.writeRampMode(RAMP_MODE);
-    prism.controller.writeActualPosition(prism.converter.positionRealToChip(INITIAL_POSITION));
+    digitalWrite(MUX_ADDRESS_0_PINS[i], MUX_ADDRESS_0_VALUES[i]);
+    digitalWrite(MUX_ADDRESS_1_PINS[i], MUX_ADDRESS_1_VALUES[i]);
+    digitalWrite(MUX_ADDRESS_2_PINS[i], MUX_ADDRESS_2_VALUES[i]);
 
-    prism.driver.enable();
+    motor.driver.writeGlobalCurrentScaler(motor.converter.percentToGlobalCurrentScaler(GLOBAL_CURRENT_SCALAR));
+    motor.driver.writeRunCurrent(motor.converter.percentToCurrentSetting(RUN_CURRENT));
+    motor.driver.writePwmOffset(motor.converter.percentToPwmSetting(PWM_OFFSET));
+    motor.driver.writePwmGradient(motor.converter.percentToPwmSetting(PWM_GRADIENT));
+    motor.driver.writeMotorDirection(MOTOR_DIRECTION);
+    motor.driver.writeStealthChopThreshold(motor.converter.velocityRealToTstep(STEALTH_CHOP_THRESHOLD));
+    // motor.driver.writeCoolStepThreshold(motor.converter.velocityRealToTstep(COOL_STEP_THRESHOLD));
+    // motor.driver.enableCoolStep(MIN_COOL_STEP, MAX_COOL_STEP);
+    // motor.driver.writeHighVelocityThreshold(motor.converter.velocityRealToTstep(HIGH_VELOCITY_THRESHOLD));
+    // motor.driver.writeStallGuardThreshold(STALL_GUARD_THRESHOLD);
 
-    prism.controller.writeStartVelocity(prism.converter.velocityRealToChip(START_VELOCITY));
-    prism.controller.writeMaxVelocity(prism.converter.velocityRealToChip(MAX_VELOCITY));
+    motor.controller.writeFirstAcceleration(motor.converter.accelerationRealToChip(FIRST_ACCELERATION));
+    motor.controller.writeFirstVelocity(motor.converter.velocityRealToChip(FIRST_VELOCITY));
+    motor.controller.writeMaxAcceleration(motor.converter.accelerationRealToChip(MAX_ACCELERATION));
+    motor.controller.writeMaxDeceleration(motor.converter.accelerationRealToChip(MAX_DECELERATION));
+    motor.controller.writeFirstDeceleration(motor.converter.accelerationRealToChip(FIRST_DECELERATION));
+    motor.controller.writeStopVelocity(motor.converter.velocityRealToChip(STOP_VELOCITY));
+    motor.controller.writeRampMode(RAMP_MODE);
+    motor.controller.writeActualPosition(motor.converter.positionRealToChip(INITIAL_POSITION));
+
+    motor.driver.enable();
+
+    motor.controller.writeStartVelocity(motor.converter.velocityRealToChip(START_VELOCITY));
+    motor.controller.writeMaxVelocity(motor.converter.velocityRealToChip(MAX_VELOCITY));
 
     target_position = random(MIN_TARGET_POSITION, MAX_TARGET_POSITION);
-    Serial.print("prism ");
+    Serial.print("motor ");
     Serial.print(i);
     Serial.print(" target position: ");
     Serial.println(target_position);
-    prism.controller.writeTargetPosition(prism.converter.positionRealToChip(target_position));
+    motor.controller.writeTargetPosition(motor.converter.positionRealToChip(target_position));
   }
 }
 
 void loop()
 {
-  // for (size_t i=0; i<PRISM_COUNT; ++i)
+  // for (size_t i=0; i<MOTOR_COUNT; ++i)
   for (size_t i=1; i<2; ++i)
   {
-    TMC51X0 & prism = prisms[i];
-    // uint8_t version = prism.readVersion();
+    digitalWrite(MUX_ADDRESS_0_PINS[i], MUX_ADDRESS_0_VALUES[i]);
+    digitalWrite(MUX_ADDRESS_1_PINS[i], MUX_ADDRESS_1_VALUES[i]);
+    digitalWrite(MUX_ADDRESS_2_PINS[i], MUX_ADDRESS_2_VALUES[i]);
+
+    TMC51X0 & motor = motors[i];
+    // uint8_t version = motor.readVersion();
     // Serial.print("version: 0x");
     // Serial.println(version, HEX);
-    prism.printer.readAndPrintRampStat();
-    if (prism.controller.positionReached())
+    motor.printer.readAndPrintRampStat();
+    if (motor.controller.positionReached())
     {
-      Serial.print("prism ");
+      Serial.print("motor ");
       Serial.print(i);
       Serial.println(":");
       Serial.println("reached target position!");
       target_position = random(MIN_TARGET_POSITION, MAX_TARGET_POSITION);
       Serial.print("new target position: ");
       Serial.println(target_position);
-      prism.controller.writeTargetPosition(prism.converter.positionRealToChip(target_position));
+      motor.controller.writeTargetPosition(motor.converter.positionRealToChip(target_position));
       Serial.println("--------------------------");
     }
   }
