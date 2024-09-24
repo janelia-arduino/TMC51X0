@@ -14,7 +14,7 @@ const uint8_t CHIP_SELECT_PIN = 10;
 const uint8_t ENABLE_HARDWARE_PIN = 4;
 
 const long SERIAL_BAUD_RATE = 115200;
-const int DELAY = 1000;
+const uint16_t DELAY = 1000;
 
 // Instantiate TMC51X0
 TMC51X0 tmc5160;

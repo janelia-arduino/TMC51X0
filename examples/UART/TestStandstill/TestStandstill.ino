@@ -25,7 +25,7 @@ const uint8_t NODE_ADDRESS = 0;
 const uint8_t ENABLE_TXRX_PIN = 14;
 
 const long SERIAL_BAUD_RATE = 115200;
-const int DELAY = 4000;
+const uint16_t DELAY = 4000;
 
 // driver constants
 const uint8_t HOLD_CURRENT = 0;

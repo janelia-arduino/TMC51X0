@@ -16,7 +16,7 @@ const uint8_t ENABLE_FAN_PIN = 28;
 
 const long SERIAL_BAUD_RATE = 115200;
 const int LOOP_DELAY = 500;
-const int DELAY = 4000;
+const uint16_t DELAY = 4000;
 
 // converter constants
 // internal clock is ~12MHz

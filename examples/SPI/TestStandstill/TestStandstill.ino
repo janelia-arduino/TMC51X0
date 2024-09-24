@@ -14,7 +14,7 @@ const uint8_t CHIP_SELECT_PIN = 10;
 const uint8_t ENABLE_HARDWARE_PIN = 4;
 
 const long SERIAL_BAUD_RATE = 115200;
-const int DELAY = 4000;
+const uint16_t DELAY = 4000;
 
 // driver constants
 const uint8_t HOLD_CURRENT = 0;

@@ -13,7 +13,7 @@ SPIClass & spi = SPI;
 const uint8_t CHIP_SELECT_PIN = 10;
 
 const long SERIAL_BAUD_RATE = 115200;
-const int DELAY = 100;
+const uint16_t DELAY = 100;
 
 const tmc51x0::Encoder::FractionalMode FRACTIONAL_MODE = tmc51x0::Encoder::BINARY;
 // 256 encoder single signal pulses per revolution

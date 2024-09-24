@@ -18,6 +18,7 @@ const uint8_t MUX_ADDRESS_1_PIN = 3;
 const uint8_t MUX_ADDRESS_1_VALUE = LOW;
 const uint8_t MUX_ADDRESS_2_PIN = 2;
 const uint8_t MUX_ADDRESS_2_VALUE = LOW;
+const uint16_t POWER_UP_DELAY = 5000;
 
 // UART Parameters
 const uint32_t UART_BAUD_RATE = 115200;
@@ -25,7 +26,7 @@ const uint8_t NODE_ADDRESS = 0;
 const uint8_t ENABLE_TXRX_PIN = 14;
 
 const long SERIAL_BAUD_RATE = 115200;
-const int DELAY = 4000;
+const uint16_t DELAY = 1000;
 
 // converter constants
 // external clock is ~16MHz
@@ -72,6 +73,7 @@ void setup()
   digitalWrite(MUX_ADDRESS_1_PIN, MUX_ADDRESS_1_VALUE);
   pinMode(MUX_ADDRESS_2_PIN, OUTPUT);
   digitalWrite(MUX_ADDRESS_2_PIN, MUX_ADDRESS_2_VALUE);
+  delay(POWER_UP_DELAY);
 
 #if defined(ARDUINO_ARCH_RP2040)
   uart.setTX(TX_PIN);
@@ -124,81 +126,32 @@ void setup()
 
 void loop()
 {
-  tmc5130.printer.readAndPrintGconf();
-  tmc5130.printer.readClearAndPrintGstat();
-  tmc5130.printer.readAndPrintRampStat();
-  tmc5130.printer.readAndPrintDrvStatus();
-  tmc5130.printer.readAndPrintPwmScale();
-
-  // Serial.print("acceleration (fullsteps per second per second): ");
-  // Serial.println(MAX_ACCELERATION);
-  // Serial.print("acceleration (chip units): ");
-  // Serial.println(tmc5130.converter.accelerationRealToChip(MAX_ACCELERATION));
-  // Serial.println("--------------------------");
-
-    if (ramp_mode == tmc51x0::Controller::VELOCITY_POSITIVE)
-    {
-      Serial.println("velocity: positive");
-    }
-    else
-    {
-      Serial.println("velocity: negative");
-    }
-  // Serial.print("target_velocity (fullsteps per second): ");
-  // Serial.println(target_velocity);
-  // int32_t actual_velocity_chip = tmc5130.controller.readActualVelocity();
-  // Serial.print("actual_velocity (chip units): ");
-  // Serial.println(actual_velocity_chip);
-  // int32_t actual_velocity_real = tmc5130.converter.velocityChipToReal(actual_velocity_chip);
-  // int32_t actual_velocity_real = 12345;
-  // Serial.print("actual_velocity (fullsteps per second): ");
-  // Serial.println(actual_velocity_real);
-  // uint32_t tstep = tmc5130.controller.readTstep();
-  // Serial.print("tstep (chip units): ");
-  // Serial.println(tstep);
-  // uint32_t velocity_real = tmc5130.converter.tstepToVelocityReal(tstep);
-  // Serial.print("tstepToVelocityReal (fullsteps per second): ");
-  // Serial.println(velocity_real);
-  // tstep = tmc5130.converter.velocityRealToTstep(velocity_real);
-  // Serial.print("velocityRealToTstep (chip_units): ");
-  // Serial.println(tstep);
-  // Serial.print("STEALTH_CHOP_THRESHOLD (fullsteps per second): ");
-  // Serial.println(STEALTH_CHOP_THRESHOLD);
-  // Serial.print("STEALTH_CHOP_THRESHOLD (chip units): ");
-  // Serial.println(tmc5130.converter.velocityRealToTstep(STEALTH_CHOP_THRESHOLD));
-  Serial.println("--------------------------");
-
-  // int32_t actual_position_chip = tmc5130.controller.readActualPosition();
-  // Serial.print("actual position (chip units): ");
-  // Serial.println(actual_position_chip);
-  // int32_t actual_position_real = tmc5130.converter.positionChipToReal(actual_position_chip);
-  // Serial.print("actual position (fullsteps): ");
-  // Serial.println(actual_position_real);
-  // Serial.println("--------------------------");
-
-  Serial.println("--------------------------");
-
-  delay(DELAY);
-
-  target_velocity += TARGET_VELOCITY_INC;
-  if (target_velocity > MAX_TARGET_VELOCITY)
+  if (tmc5130.controller.velocityReached())
   {
-    target_velocity = MIN_TARGET_VELOCITY;
-    if (ramp_mode == tmc51x0::Controller::VELOCITY_POSITIVE)
-    {
-      ramp_mode = tmc51x0::Controller::VELOCITY_NEGATIVE;
-    }
-    else
-    {
-      ramp_mode = tmc51x0::Controller::VELOCITY_POSITIVE;
-    }
-    tmc5130.controller.writeRampMode(ramp_mode);
-  }
-  tmc5130.controller.writeMaxVelocity(tmc5130.converter.velocityRealToChip(target_velocity));
-  Serial.print("target_velocity (fullsteps per second): ");
-  Serial.println(target_velocity);
-  Serial.print("target_velocity (chip units per second): ");
-  Serial.println(tmc5130.converter.velocityRealToChip(target_velocity));
+    Serial.print("Target velocity ");
+    Serial.print(target_velocity);
+    Serial.println(" reached!");
 
+    target_velocity += TARGET_VELOCITY_INC;
+    if (target_velocity > MAX_TARGET_VELOCITY)
+    {
+      target_velocity = MIN_TARGET_VELOCITY;
+      if (ramp_mode == tmc51x0::Controller::VELOCITY_POSITIVE)
+      {
+        ramp_mode = tmc51x0::Controller::VELOCITY_NEGATIVE;
+      }
+      else
+      {
+        ramp_mode = tmc51x0::Controller::VELOCITY_POSITIVE;
+      }
+      tmc5130.controller.writeRampMode(ramp_mode);
+    }
+    tmc5130.controller.writeMaxVelocity(tmc5130.converter.velocityRealToChip(target_velocity));
+  }
+  else
+  {
+    Serial.println("Target velocity not reached yet.");
+  }
+  Serial.println("--------------------------");
   delay(DELAY);
 }

@@ -141,9 +141,17 @@ void Registers::initialize(Interface & interface)
   readable_[RAMPMODE] = true;
 
   writeable_[XACTUAL] = true;
-  readable_[XACTUAL] = true;
+  // Refer to datasheet "Errata in Read Access"
+  if (interface_ptr_->interface_mode == Interface::SPI)
+  {
+    readable_[XACTUAL] = true;
+  }
 
-  readable_[VACTUAL] = true;
+  // Refer to datasheet "Errata in Read Access"
+  if (interface_ptr_->interface_mode == Interface::SPI)
+  {
+    readable_[VACTUAL] = true;
+  }
 
   writeable_[VSTART] = true;
 
@@ -181,7 +189,11 @@ void Registers::initialize(Interface & interface)
   readable_[ENCMODE] = true;
 
   writeable_[X_ENC] = true;
-  readable_[X_ENC] = true;
+  // Refer to datasheet "Errata in Read Access"
+  if (interface_ptr_->interface_mode == Interface::SPI)
+  {
+    readable_[X_ENC] = true;
+  }
 
   writeable_[ENC_CONST] = true;
 
@@ -212,7 +224,11 @@ void Registers::initialize(Interface & interface)
 
   writeable_[MSLUTSTART] = true;
 
-  readable_[MSCNT] = true;
+  // Refer to datasheet "Errata in Read Access"
+  if (interface_ptr_->interface_mode == Interface::SPI)
+  {
+    readable_[MSCNT] = true;
+  }
 
   readable_[MSCURACT] = true;
 
