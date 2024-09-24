@@ -16,6 +16,7 @@ spi_settings_(SPISettings(constants::spi_clock, constants::spi_bit_order, consta
 
 void SpiInterface::setup(tmc51x0::SpiParameters spi_parameters)
 {
+  interface_mode = SPI;
   spi_parameters_ = spi_parameters;
 
   pinMode(spi_parameters_.chip_select_pin, OUTPUT);

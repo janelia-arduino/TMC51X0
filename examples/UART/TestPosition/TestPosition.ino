@@ -13,11 +13,11 @@ pin_size_t RX_PIN = 5;
 const uint8_t ENABLE_POWER_PIN = 15;
 const uint8_t ENABLE_POWER_VALUE = HIGH;
 const uint8_t MUX_ADDRESS_0_PIN = 6;
-const uint8_t MUX_ADDRESS_0_PIN_VALUE = LOW;
+const uint8_t MUX_ADDRESS_0_VALUE = LOW;
 const uint8_t MUX_ADDRESS_1_PIN = 3;
-const uint8_t MUX_ADDRESS_1_PIN_VALUE = LOW;
+const uint8_t MUX_ADDRESS_1_VALUE = LOW;
 const uint8_t MUX_ADDRESS_2_PIN = 2;
-const uint8_t MUX_ADDRESS_2_PIN_VALUE = LOW;
+const uint8_t MUX_ADDRESS_2_VALUE = LOW;
 
 // UART Parameters
 const uint32_t UART_BAUD_RATE = 115200;
@@ -94,12 +94,12 @@ void setup()
     ENABLE_TXRX_PIN);
   tmc5130.setupUart(uart_parameters);
 
-  tmc51x0::Converter::Settings converter_settings =
+  tmc51x0::ConverterParameters converter_parameters =
     {
       CLOCK_FREQUENCY_MHZ,
       MICROSTEPS_PER_REAL_UNIT
     };
-  tmc5130.converter.setup(converter_settings);
+  tmc5130.converter.setup(converter_parameters);
 
   // tmc5130.driver.setEnableHardwarePin(ENABLE_HARDWARE_PIN);
   tmc5130.driver.writeGlobalCurrentScaler(tmc5130.converter.percentToGlobalCurrentScaler(GLOBAL_CURRENT_SCALAR));

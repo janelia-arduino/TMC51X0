@@ -66,13 +66,13 @@ void setup()
   tmc51x0::SpiParameters spi_parameters(spi, CHIP_SELECT_PIN);
   tmc5160.setupSpi(spi_parameters);
 
-  tmc51x0::Converter::Settings converter_settings =
+  tmc51x0::ConverterParameters converter_parameters =
     {
       CLOCK_FREQUENCY_MHZ,
       MICROSTEPS_PER_REAL_POSITION_UNIT,
       SECONDS_PER_REAL_VELOCITY_UNIT
     };
-  tmc5160.converter.setup(converter_settings);
+  tmc5160.converter.setup(converter_parameters);
 
   tmc5160.driver.setEnableHardwarePin(ENABLE_HARDWARE_PIN);
   tmc5160.driver.writeGlobalCurrentScaler(GLOBAL_CURRENT_SCALAR);

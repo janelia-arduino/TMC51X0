@@ -90,7 +90,7 @@ void setup()
 #endif
   uart.begin(UART_BAUD_RATE);
 
-  tmc51x0::Converter::Settings converter_settings =
+  tmc51x0::ConverterParameters converter_parameters =
     {
       CLOCK_FREQUENCY_MHZ,
       MICROSTEPS_PER_REAL_UNIT

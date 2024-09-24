@@ -13,11 +13,11 @@ pin_size_t RX_PIN = 5;
 const uint8_t ENABLE_POWER_PIN = 15;
 const uint8_t ENABLE_POWER_VALUE = HIGH;
 const uint8_t MUX_ADDRESS_0_PIN = 6;
-const uint8_t MUX_ADDRESS_0_PIN_VALUE = LOW;
+const uint8_t MUX_ADDRESS_0_VALUE = LOW;
 const uint8_t MUX_ADDRESS_1_PIN = 3;
-const uint8_t MUX_ADDRESS_1_PIN_VALUE = LOW;
+const uint8_t MUX_ADDRESS_1_VALUE = LOW;
 const uint8_t MUX_ADDRESS_2_PIN = 2;
-const uint8_t MUX_ADDRESS_2_PIN_VALUE = LOW;
+const uint8_t MUX_ADDRESS_2_VALUE = LOW;
 
 // UART Parameters
 const uint32_t UART_BAUD_RATE = 115200;
@@ -36,7 +36,7 @@ constexpr uint32_t MICROSTEPS_PER_REAL_UNIT = 256;
 
 // driver constants
 const uint8_t GLOBAL_CURRENT_SCALAR = 100; // percent
-const uint8_t RUN_CURRENT = 20; // percent
+const uint8_t RUN_CURRENT = 50; // percent
 const uint8_t PWM_OFFSET = 20; // percent
 const uint8_t PWM_GRADIENT = 5; // percent
 const tmc51x0::Driver::MotorDirection MOTOR_DIRECTION = tmc51x0::Driver::FORWARD;
@@ -51,7 +51,7 @@ const uint8_t HIGH_VELOCITY_THRESHOLD = 600; // fullsteps/s
 const int32_t MIN_TARGET_VELOCITY = 50;  // fullsteps/s
 const int32_t MAX_TARGET_VELOCITY = 500; // fullsteps/s
 const int32_t TARGET_VELOCITY_INC = 50;  // fullsteps/s
-const uint32_t MAX_ACCELERATION = 100;  // fullsteps/(s^2)
+const uint32_t MAX_ACCELERATION = 50;  // fullsteps/(s^2)
 const int32_t INITIAL_POSITION = 0;
 
 // Instantiate TMC51X0
@@ -83,12 +83,12 @@ void setup()
     NODE_ADDRESS,
     ENABLE_TXRX_PIN);
   tmc5130.setupUart(uart_parameters);
-  tmc51x0::Converter::Settings converter_settings =
+  tmc51x0::ConverterParameters converter_parameters =
     {
       CLOCK_FREQUENCY_MHZ,
       MICROSTEPS_PER_REAL_UNIT
     };
-  tmc5130.converter.setup(converter_settings);
+  tmc5130.converter.setup(converter_parameters);
   tmc5130.driver.writeGlobalCurrentScaler(tmc5130.converter.percentToGlobalCurrentScaler(GLOBAL_CURRENT_SCALAR));
   tmc5130.driver.writeRunCurrent(tmc5130.converter.percentToCurrentSetting(RUN_CURRENT));
   tmc5130.driver.writePwmOffset(tmc5130.converter.percentToPwmSetting(PWM_OFFSET));
@@ -144,14 +144,15 @@ void loop()
     {
       Serial.println("velocity: negative");
     }
-  Serial.print("target_velocity (fullsteps per second): ");
-  Serial.println(target_velocity);
-  int32_t actual_velocity_chip = tmc5130.controller.readActualVelocity();
+  // Serial.print("target_velocity (fullsteps per second): ");
+  // Serial.println(target_velocity);
+  // int32_t actual_velocity_chip = tmc5130.controller.readActualVelocity();
   // Serial.print("actual_velocity (chip units): ");
   // Serial.println(actual_velocity_chip);
-  int32_t actual_velocity_real = tmc5130.converter.velocityChipToReal(actual_velocity_chip);
-  Serial.print("actual_velocity (fullsteps per second): ");
-  Serial.println(actual_velocity_real);
+  // int32_t actual_velocity_real = tmc5130.converter.velocityChipToReal(actual_velocity_chip);
+  // int32_t actual_velocity_real = 12345;
+  // Serial.print("actual_velocity (fullsteps per second): ");
+  // Serial.println(actual_velocity_real);
   // uint32_t tstep = tmc5130.controller.readTstep();
   // Serial.print("tstep (chip units): ");
   // Serial.println(tstep);
@@ -194,6 +195,10 @@ void loop()
     tmc5130.controller.writeRampMode(ramp_mode);
   }
   tmc5130.controller.writeMaxVelocity(tmc5130.converter.velocityRealToChip(target_velocity));
+  Serial.print("target_velocity (fullsteps per second): ");
+  Serial.println(target_velocity);
+  Serial.print("target_velocity (chip units per second): ");
+  Serial.println(tmc5130.converter.velocityRealToChip(target_velocity));
 
   delay(DELAY);
 }

@@ -89,6 +89,8 @@ void Registers::initialize(Interface & interface)
   for (uint8_t register_address=0; register_address<ADDRESS_COUNT; ++register_address)
   {
     stored_[register_address] = 0;
+    writeable_[register_address] = false;
+    readable_[register_address] = false;
   }
 
   stored_[GCONF] = 0x0;

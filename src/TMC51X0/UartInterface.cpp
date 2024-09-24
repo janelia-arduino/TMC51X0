@@ -11,6 +11,7 @@ using namespace tmc51x0;
 
 void UartInterface::setup(UartParameters uart_parameters)
 {
+  interface_mode = UART;
   uart_parameters_ = uart_parameters;
 
   pinMode(uart_parameters_.enable_txrx_pin, OUTPUT);
@@ -93,7 +94,6 @@ UartInterface::CipoDatagram UartInterface::blockingRead()
   if (reply_delay >= REPLY_DELAY_MAX_MICROSECONDS)
   {
     Serial.println("Read timeout!");
-    disableRx();
     return cipo_datagram;
   }
 
@@ -189,10 +189,10 @@ void digitalWriteFast(uint8_t pin, uint8_t val)
 
 void UartInterface::enableTxDisableRx()
 {
-  digitalWriteFast(uart_parameters_.enable_tx_pin, ENABLE_TX_DISABLE_RX_PIN_VALUE);
+  digitalWriteFast(uart_parameters_.enable_txrx_pin, ENABLE_TX_DISABLE_RX_PIN_VALUE);
 }
 
 void UartInterface::disableTxEnableRx()
 {
-  digitalWriteFast(uart_parameters_.enable_tx_pin, DISABLE_TX_ENABLE_RX_PIN_VALUE);
+  digitalWriteFast(uart_parameters_.enable_txrx_pin, DISABLE_TX_ENABLE_RX_PIN_VALUE);
 }

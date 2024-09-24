@@ -13,11 +13,11 @@ pin_size_t RX_PIN = 5;
 const uint8_t ENABLE_POWER_PIN = 15;
 const uint8_t ENABLE_POWER_VALUE = HIGH;
 const uint8_t MUX_ADDRESS_0_PIN = 6;
-const uint8_t MUX_ADDRESS_0_PIN_VALUE = LOW;
+const uint8_t MUX_ADDRESS_0_VALUE = LOW;
 const uint8_t MUX_ADDRESS_1_PIN = 3;
-const uint8_t MUX_ADDRESS_1_PIN_VALUE = LOW;
+const uint8_t MUX_ADDRESS_1_VALUE = LOW;
 const uint8_t MUX_ADDRESS_2_PIN = 2;
-const uint8_t MUX_ADDRESS_2_PIN_VALUE = LOW;
+const uint8_t MUX_ADDRESS_2_VALUE = LOW;
 
 // UART Parameters
 const uint32_t UART_BAUD_RATE = 115200;
