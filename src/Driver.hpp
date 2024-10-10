@@ -9,7 +9,6 @@
 #define TMC51X0_DRIVER_HPP
 #include <Arduino.h>
 
-#include "TMC51X0/Constants.hpp"
 #include "Registers.hpp"
 #include "Converter.hpp"
 

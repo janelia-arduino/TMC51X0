@@ -8,7 +8,6 @@
 #ifndef TMC51X0_CONTROLLER_HPP
 #define TMC51X0_CONTROLLER_HPP
 
-#include "TMC51X0/Constants.hpp"
 #include "Registers.hpp"
 #include "Converter.hpp"
 

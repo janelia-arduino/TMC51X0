@@ -10,7 +10,7 @@ pin_size_t RX_PIN = 5;
 #endif
 
 // Optional power enable
-const uint8_t ENABLE_POWER_PIN = 15;
+const pin_size_t ENABLE_POWER_PIN = 15;
 const uint8_t ENABLE_POWER_POLARITY = HIGH;
 
 // UART Parameters
@@ -27,7 +27,7 @@ const uint8_t MUX_ADDRESS_1_VALUES[MOTOR_COUNT] = {0, 0, 1, 1, 0, 0, 1};
 const uint8_t MUX_ADDRESS_2_VALUES[MOTOR_COUNT] = {0, 0, 0, 0, 1, 1, 1};
 
 const uint32_t SERIAL_BAUD_RATE = 115200;
-const int LOOP_DELAY = 2000;
+const uint16_t LOOP_DELAY = 2000;
 
 // converter constants
 // external clock is 16MHz

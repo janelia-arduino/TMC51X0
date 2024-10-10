@@ -8,7 +8,6 @@
 #ifndef TMC51X0_HPP
 #define TMC51X0_HPP
 #include <Arduino.h>
-#include <SPI.h>
 
 #include "./TMC51X0/SpiInterface.hpp"
 #include "./TMC51X0/UartInterface.hpp"

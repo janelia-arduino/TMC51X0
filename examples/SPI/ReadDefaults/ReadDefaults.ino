@@ -10,9 +10,11 @@ pin_size_t RX_PIN = 20;
 SPIClass & spi = SPI;
 #endif
 
-const uint8_t CHIP_SELECT_PIN = 10;
+// SPI Parameters
+const uint32_t SPI_CLOCK_RATE = 1000000;
+const pin_size_t SPI_CHIP_SELECT_PIN = 10;
 
-const long SERIAL_BAUD_RATE = 115200;
+const uint32_t SERIAL_BAUD_RATE = 115200;
 const uint16_t DELAY = 1000;
 
 // Instantiate TMC51X0
@@ -29,7 +31,7 @@ void setup()
   spi.setRX(RX_PIN);
 #endif
   spi.begin();
-  tmc51x0::SpiParameters spi_parameters(spi, CHIP_SELECT_PIN);
+  tmc51x0::SpiParameters spi_parameters(spi, SPI_CLOCK_RATE, SPI_CHIP_SELECT_PIN);
   tmc5160.setupSpi(spi_parameters);
 }
 

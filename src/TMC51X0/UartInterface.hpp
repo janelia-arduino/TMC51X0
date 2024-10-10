@@ -10,7 +10,6 @@
 #include <Arduino.h>
 
 #include "Interface.hpp"
-#include "Constants.hpp"
 
 
 namespace tmc51x0
@@ -19,11 +18,11 @@ struct UartParameters
 {
   Stream * stream_ptr;
   uint8_t node_address;
-  uint8_t enable_txrx_pin;
+  pin_size_t enable_txrx_pin;
 
   UartParameters(Stream & uart_,
     uint8_t node_address_,
-    uint8_t enable_txrx_pin_)
+    pin_size_t enable_txrx_pin_)
   {
     stream_ptr = &uart_;
     node_address = node_address_;
@@ -54,7 +53,7 @@ struct UartParameters
 
 private:
   const static uint8_t NODE_ADDRESS_DEFAULT = 0;
-  const static size_t PIN_DEFAULT = 255;
+  const static pin_size_t PIN_DEFAULT = 255;
 };
 
 class UartInterface : public Interface

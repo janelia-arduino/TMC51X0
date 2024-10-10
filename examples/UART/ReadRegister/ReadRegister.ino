@@ -22,9 +22,9 @@ const uint8_t MUX_ADDRESS_2_VALUE = LOW;
 // UART Parameters
 const uint32_t UART_BAUD_RATE = 115200;
 const uint8_t NODE_ADDRESS = 0;
-const uint8_t ENABLE_TXRX_PIN = 14;
+const pin_size_t ENABLE_TXRX_PIN = 14;
 
-const long SERIAL_BAUD_RATE = 115200;
+const uint32_t SERIAL_BAUD_RATE = 115200;
 const uint16_t DELAY = 2000;
 
 // Instantiate TMC51X0

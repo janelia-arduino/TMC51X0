@@ -9,15 +9,13 @@
 
 using namespace tmc51x0;
 
-SpiInterface::SpiInterface() :
-spi_settings_(SPISettings(constants::spi_clock, constants::spi_bit_order, constants::spi_data_mode))
-{
-}
-
 void SpiInterface::setup(tmc51x0::SpiParameters spi_parameters)
 {
   interface_mode = SPI;
   spi_parameters_ = spi_parameters;
+  spi_settings_ = SPISettings(spi_parameters.clock_rate,
+    spi_parameters.bit_order,
+    spi_parameters.data_mode);
 
   pinMode(spi_parameters_.chip_select_pin, OUTPUT);
   disableChipSelect();

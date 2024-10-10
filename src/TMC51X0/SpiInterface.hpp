@@ -11,7 +11,6 @@
 #include <SPI.h>
 
 #include "Interface.hpp"
-#include "Constants.hpp"
 
 
 namespace tmc51x0
@@ -19,24 +18,36 @@ namespace tmc51x0
 struct SpiParameters
 {
   SPIClass * spi_ptr;
-  size_t chip_select_pin;
+  uint32_t clock_rate;
+  pin_size_t chip_select_pin;
+
+#if defined(ARDUINO_ARCH_SAMD) || defined(ARDUINO_ARCH_RP2040) || defined(ARDUINO_ARCH_RENESAS)
+  const static BitOrder bit_order = MSBFIRST;
+#else
+  const static uint8_t bit_order = MSBFIRST;
+#endif
+  const static uint8_t data_mode = SPI_MODE3;
 
   SpiParameters(SPIClass & spi_,
-    size_t chip_select_pin_)
+    uint32_t clock_rate_,
+    pin_size_t chip_select_pin_)
   {
     spi_ptr = &spi_;
+    clock_rate = clock_rate_;
     chip_select_pin = chip_select_pin_;
   };
 
   SpiParameters()
   {
     spi_ptr = nullptr;
+    clock_rate = CLOCK_RATE_DEFAULT;
     chip_select_pin = PIN_DEFAULT;
   };
 
   bool operator==(const SpiParameters & rhs) const
   {
     if ((this->spi_ptr == rhs.spi_ptr) &&
+      (this->clock_rate == rhs.clock_rate) &&
       (this->chip_select_pin == rhs.chip_select_pin))
     {
       return true;
@@ -49,15 +60,13 @@ struct SpiParameters
   }
 
 private:
-  const static size_t PIN_DEFAULT = 255;
-
+  const static uint32_t CLOCK_RATE_DEFAULT = 1000000;
+  const static pin_size_t PIN_DEFAULT = 255;
 };
 
 class SpiInterface : public Interface
 {
 public:
-  SpiInterface();
-
   void setup(SpiParameters spi_parameters);
 
   void writeRegister(uint8_t register_address,
@@ -66,7 +75,7 @@ public:
 
 private:
   SpiParameters spi_parameters_;
-  const SPISettings spi_settings_;
+  SPISettings spi_settings_;
 
   struct SpiStatus
   {

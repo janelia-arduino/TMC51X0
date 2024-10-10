@@ -22,7 +22,7 @@ const uint8_t MUX_ADDRESS_2_VALUE = LOW;
 // UART Parameters
 const uint32_t UART_BAUD_RATE = 115200;
 const uint8_t NODE_ADDRESS = 0;
-const uint8_t ENABLE_TXRX_PIN = 14;
+const pin_size_t ENABLE_TXRX_PIN = 14;
 
 const uint32_t SERIAL_BAUD_RATE = 115200;
 const uint16_t DELAY = 1000;
@@ -37,7 +37,11 @@ void setup()
 
   // Remove after testing
   pinMode(ENABLE_POWER_PIN, OUTPUT);
-  digitalWrite(ENABLE_POWER_PIN, ENABLE_POWER_VALUE);
+  digitalWrite(ENABLE_POWER_PIN, LOW);
+  delay(5000);
+  digitalWrite(ENABLE_POWER_PIN, HIGH);
+  delay(5000);
+
   pinMode(MUX_ADDRESS_0_PIN, OUTPUT);
   digitalWrite(MUX_ADDRESS_0_PIN, MUX_ADDRESS_0_VALUE);
   pinMode(MUX_ADDRESS_1_PIN, OUTPUT);

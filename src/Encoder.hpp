@@ -8,7 +8,6 @@
 #ifndef TMC51X0_ENCODER_HPP
 #define TMC51X0_ENCODER_HPP
 
-#include "TMC51X0/Constants.hpp"
 #include "Registers.hpp"
 #include "Converter.hpp"
 

@@ -23,9 +23,9 @@ const uint16_t POWER_UP_DELAY = 5000;
 // UART Parameters
 const uint32_t UART_BAUD_RATE = 115200;
 const uint8_t NODE_ADDRESS = 0;
-const uint8_t ENABLE_TXRX_PIN = 14;
+const pin_size_t ENABLE_TXRX_PIN = 14;
 
-const long SERIAL_BAUD_RATE = 115200;
+const uint32_t SERIAL_BAUD_RATE = 115200;
 const uint16_t DELAY = 1000;
 
 // converter constants
