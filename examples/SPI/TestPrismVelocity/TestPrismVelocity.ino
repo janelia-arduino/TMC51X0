@@ -12,8 +12,7 @@ SPIClass & spi = SPI;
 
 // SPI Parameters
 const uint32_t SPI_CLOCK_RATE = 1000000;
-// const pin_size_t SPI_CHIP_SELECT_PIN = 14;
-const pin_size_t SPI_CHIP_SELECT_PIN = 8;
+const pin_size_t SPI_CHIP_SELECT_PIN = 14;
 
 const pin_size_t ENABLE_POWER_PIN = 15;
 
@@ -28,7 +27,7 @@ const uint8_t CLOCK_FREQUENCY_MHZ = 16;
 constexpr uint32_t MICROSTEPS_PER_REAL_UNIT =  200 * 256; // 51200
 
 // driver constants
-const uint8_t GLOBAL_CURRENT_SCALAR = 50; // percent
+const uint8_t GLOBAL_CURRENT_SCALAR = 100; // percent
 const uint8_t RUN_CURRENT = 100; // percent
 const uint8_t PWM_OFFSET = 50; // percent
 const uint8_t PWM_GRADIENT = 10; // percent
@@ -94,6 +93,7 @@ tmc5160.driver.writeGlobalCurrentScaler(tmc5160.converter.percentToGlobalCurrent
   tmc5160.controller.writeRampMode(RAMP_MODE);
   tmc5160.controller.writeActualPosition(tmc5160.converter.positionRealToChip(INITIAL_POSITION));
 
+  // tmc5160.driver.disableShortToGroundProtection();
   tmc5160.driver.enable();
 
   tmc5160.controller.rampToZeroVelocity();
@@ -105,13 +105,17 @@ tmc5160.driver.writeGlobalCurrentScaler(tmc5160.converter.percentToGlobalCurrent
 
 void loop()
 {
-  // tmc5160.printer.readClearAndPrintGstat();
+  tmc5160.printer.readClearAndPrintGstat();
   // tmc5160.printer.readAndPrintRampStat();
-  // tmc5160.printer.readAndPrintDrvStatus();
+  tmc5160.printer.readAndPrintDrvStatus();
   // tmc5160.printer.readAndPrintPwmScale();
 
-  // Serial.print("target_velocity (rotations per second): ");
-  // Serial.println(target_velocity);
+  Serial.print("target_velocity (rotations per second): ");
+  Serial.println(target_velocity);
+  uint32_t chip_velocity = tmc5160.converter.velocityRealToChip(target_velocity);
+  Serial.print("chip_velocity (chip units): ");
+  Serial.println(chip_velocity);
+
   // uint32_t actual_velocity_chip = tmc5160.controller.readActualVelocity();
   // Serial.print("actual_velocity (chip units): ");
   // Serial.println(actual_velocity_chip);

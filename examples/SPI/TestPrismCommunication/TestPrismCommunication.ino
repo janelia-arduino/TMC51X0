@@ -12,7 +12,7 @@ SPIClass & spi = SPI;
 
 // SPI Parameters
 const uint32_t SPI_CLOCK_RATE = 1000000;
-const pin_size_t SPI_CHIP_SELECT_PIN = 8;
+const pin_size_t SPI_CHIP_SELECT_PIN = 14;
 
 const uint8_t ENABLE_POWER_PIN = 15;
 

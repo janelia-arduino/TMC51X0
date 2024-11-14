@@ -248,6 +248,22 @@ uint8_t Driver::readActualCurrentScaling()
   return drv_status.cs_actual;
 }
 
+void Driver::enableShortToGroundProtection()
+{
+  Registers::Chopconf chopconf;
+  chopconf.bytes = registers_ptr_->getStored(Registers::CHOPCONF);
+  chopconf.diss2g = 0;
+  registers_ptr_->write(Registers::CHOPCONF, chopconf.bytes);
+}
+
+void Driver::disableShortToGroundProtection()
+{
+  Registers::Chopconf chopconf;
+  chopconf.bytes = registers_ptr_->getStored(Registers::CHOPCONF);
+  chopconf.diss2g = 1;
+  registers_ptr_->write(Registers::CHOPCONF, chopconf.bytes);
+}
+
 // private
 
 void Driver::initialize(Registers & registers,

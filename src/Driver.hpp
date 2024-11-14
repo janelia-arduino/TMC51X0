@@ -109,6 +109,9 @@ public:
 
   uint8_t readActualCurrentScaling();
 
+  void enableShortToGroundProtection();
+  void disableShortToGroundProtection();
+
 private:
   Registers * registers_ptr_;
   Converter * converter_ptr_;
