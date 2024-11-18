@@ -30,7 +30,7 @@ struct SpiParameters
 
   SpiParameters(SPIClass & spi_,
     uint32_t clock_rate_,
-    uint16_t chip_select_pin_)
+    uint16_t chip_select_pin_=65535)
   {
     spi_ptr = &spi_;
     clock_rate = clock_rate_;

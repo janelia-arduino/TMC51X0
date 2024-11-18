@@ -11,7 +11,9 @@ SPIClass & spi = SPI;
 #endif
 
 // SPI Parameters
-const uint32_t SPI_CLOCK_RATE = 1000000;
+tmc51x0::SpiParameters spi_parameters(
+  spi,
+  1000000); // clock_rate
 const uint16_t SPI_CHIP_SELECT_PIN = 14;
 
 const uint16_t ENABLE_POWER_PIN = 15;
@@ -66,7 +68,7 @@ void setup()
   spi.setRX(RX_PIN);
 #endif
   spi.begin();
-  tmc51x0::SpiParameters spi_parameters(spi, SPI_CLOCK_RATE, SPI_CHIP_SELECT_PIN);
+  spi_parameters.chip_select_pin = SPI_CHIP_SELECT_PIN;
   tmc5160.setupSpi(spi_parameters);
 
   tmc51x0::ConverterParameters converter_parameters =

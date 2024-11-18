@@ -11,8 +11,10 @@ SPIClass & spi = SPI;
 #endif
 
 // SPI Parameters
-const uint32_t SPI_CLOCK_RATE = 1000000;
-const uint16_t SPI_CHIP_SELECT_PIN = 10;
+const tmc51x0::SpiParameters spi_parameters(
+  spi,
+  1000000, // clock_rate
+  10); // chip_select_pin
 
 const uint16_t ENABLE_HARDWARE_PIN = 4;
 
@@ -36,10 +38,9 @@ void setup()
   spi.setRX(RX_PIN);
 #endif
   spi.begin();
-  tmc51x0::SpiParameters spi_parameters(spi, SPI_CLOCK_RATE, SPI_CHIP_SELECT_PIN);
   tmc5160.setupSpi(spi_parameters);
-  stepper.driver.setEnableHardwarePin(ENABLE_HARDWARE_PIN);
 
+  stepper.driver.setEnableHardwarePin(ENABLE_HARDWARE_PIN);
   stepper.driver.enableStealthChop();
   stepper.driver.writeHoldCurrent(HOLD_CURRENT);
   stepper.driver.writeHoldDelay(HOLD_DELAY);
