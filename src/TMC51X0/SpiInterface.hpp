@@ -19,7 +19,7 @@ struct SpiParameters
 {
   SPIClass * spi_ptr;
   uint32_t clock_rate;
-  pin_size_t chip_select_pin;
+  uint16_t chip_select_pin;
 
 #if defined(ARDUINO_ARCH_SAMD) || defined(ARDUINO_ARCH_RP2040) || defined(ARDUINO_ARCH_RENESAS)
   const static BitOrder bit_order = MSBFIRST;
@@ -30,7 +30,7 @@ struct SpiParameters
 
   SpiParameters(SPIClass & spi_,
     uint32_t clock_rate_,
-    pin_size_t chip_select_pin_)
+    uint16_t chip_select_pin_)
   {
     spi_ptr = &spi_;
     clock_rate = clock_rate_;
@@ -61,7 +61,7 @@ struct SpiParameters
 
 private:
   const static uint32_t CLOCK_RATE_DEFAULT = 1000000;
-  const static pin_size_t PIN_DEFAULT = 255;
+  const static uint16_t PIN_DEFAULT = 255;
 };
 
 class SpiInterface : public Interface

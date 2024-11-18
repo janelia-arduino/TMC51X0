@@ -3,16 +3,16 @@
 
 #if defined(ARDUINO_ARCH_RP2040)
 SPIClassRP2040 & spi = SPI1;
-pin_size_t SCK_PIN = 10;
-pin_size_t TX_PIN = 11;
-pin_size_t RX_PIN = 12;
+uint16_t SCK_PIN = 10;
+uint16_t TX_PIN = 11;
+uint16_t RX_PIN = 12;
 #else
 SPIClass & spi = SPI;
 #endif
 
 // SPI Parameters
 const uint32_t SPI_CLOCK_RATE = 1000000;
-const pin_size_t SPI_CHIP_SELECT_PIN = 14;
+const uint16_t SPI_CHIP_SELECT_PIN = 14;
 
 const uint8_t ENABLE_POWER_PIN = 15;
 

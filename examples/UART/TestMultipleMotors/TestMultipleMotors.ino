@@ -5,12 +5,12 @@
 HardwareSerial & uart = Serial2;
 #else
 SerialUART & uart = Serial2;
-pin_size_t TX_PIN = 4;
-pin_size_t RX_PIN = 5;
+uint16_t TX_PIN = 4;
+uint16_t RX_PIN = 5;
 #endif
 
 // Optional power enable
-const pin_size_t ENABLE_POWER_PIN = 15;
+const uint16_t ENABLE_POWER_PIN = 15;
 const uint8_t ENABLE_POWER_POLARITY = HIGH;
 
 // UART Parameters

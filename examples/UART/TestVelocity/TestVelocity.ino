@@ -5,8 +5,8 @@
 HardwareSerial & uart = Serial2;
 #else
 SerialUART & uart = Serial2;
-pin_size_t TX_PIN = 4;
-pin_size_t RX_PIN = 5;
+uint16_t TX_PIN = 4;
+uint16_t RX_PIN = 5;
 #endif
 
 // Remove after testing
@@ -23,7 +23,7 @@ const uint16_t POWER_UP_DELAY = 5000;
 // UART Parameters
 const uint32_t UART_BAUD_RATE = 115200;
 const uint8_t NODE_ADDRESS = 0;
-const pin_size_t ENABLE_TXRX_PIN = 14;
+const uint16_t ENABLE_TXRX_PIN = 14;
 
 const uint32_t SERIAL_BAUD_RATE = 115200;
 const uint16_t DELAY = 1000;
