@@ -27,10 +27,10 @@ const uint8_t CLOCK_FREQUENCY_MHZ = 16;
 constexpr uint32_t MICROSTEPS_PER_REAL_UNIT =  200 * 256; // 51200
 
 // driver constants
-const uint8_t GLOBAL_CURRENT_SCALAR = 100; // percent
-const uint8_t RUN_CURRENT = 100; // percent
-const uint8_t PWM_OFFSET = 50; // percent
-const uint8_t PWM_GRADIENT = 10; // percent
+const uint8_t GLOBAL_CURRENT_SCALAR = 50; // percent
+const uint8_t RUN_CURRENT = 20; // percent
+const uint8_t PWM_OFFSET = 15; // percent
+const uint8_t PWM_GRADIENT = 5; // percent
 const tmc51x0::Driver::MotorDirection MOTOR_DIRECTION = tmc51x0::Driver::FORWARD;
 const uint8_t STEALTH_CHOP_THRESHOLD = 5; // rotations/s
 const uint8_t COOL_STEP_THRESHOLD = 6; // rotations/s
@@ -45,7 +45,8 @@ const uint32_t MAX_ACCELERATION = 2;  // rotations/(s^2)
 const tmc51x0::Controller::RampMode RAMP_MODE = tmc51x0::Controller::VELOCITY_POSITIVE;
 const int32_t INITIAL_POSITION = 0;
 
-// Instantiate TMC51X0
+
+.02// Instantiate TMC51X0
 TMC51X0 tmc5160;
 uint32_t target_velocity;
 
@@ -93,7 +94,7 @@ tmc5160.driver.writeGlobalCurrentScaler(tmc5160.converter.percentToGlobalCurrent
   tmc5160.controller.writeRampMode(RAMP_MODE);
   tmc5160.controller.writeActualPosition(tmc5160.converter.positionRealToChip(INITIAL_POSITION));
 
-  // tmc5160.driver.disableShortToGroundProtection();
+  tmc5160.driver.disableShortToGroundProtection();
   tmc5160.driver.enable();
 
   tmc5160.controller.rampToZeroVelocity();
@@ -105,6 +106,7 @@ tmc5160.driver.writeGlobalCurrentScaler(tmc5160.converter.percentToGlobalCurrent
 
 void loop()
 {
+  tmc5160.driver.enable();
   tmc5160.printer.readClearAndPrintGstat();
   // tmc5160.printer.readAndPrintRampStat();
   tmc5160.printer.readAndPrintDrvStatus();
