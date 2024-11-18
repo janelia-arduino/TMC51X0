@@ -9,16 +9,6 @@ uint16_t TX_PIN = 4;
 uint16_t RX_PIN = 5;
 #endif
 
-// Remove after testing
-const uint8_t ENABLE_POWER_PIN = 15;
-const uint8_t ENABLE_POWER_VALUE = HIGH;
-const uint8_t MUX_ADDRESS_0_PIN = 6;
-const uint8_t MUX_ADDRESS_0_VALUE = LOW;
-const uint8_t MUX_ADDRESS_1_PIN = 3;
-const uint8_t MUX_ADDRESS_1_VALUE = LOW;
-const uint8_t MUX_ADDRESS_2_PIN = 2;
-const uint8_t MUX_ADDRESS_2_VALUE = LOW;
-
 // UART Parameters
 const uint32_t UART_BAUD_RATE = 115200;
 const uint8_t NODE_ADDRESS = 0;
@@ -72,16 +62,6 @@ uint32_t target_position;
 void setup()
 {
   Serial.begin(SERIAL_BAUD_RATE);
-
-  // Remove after testing
-  pinMode(ENABLE_POWER_PIN, OUTPUT);
-  digitalWrite(ENABLE_POWER_PIN, ENABLE_POWER_VALUE);
-  pinMode(MUX_ADDRESS_0_PIN, OUTPUT);
-  digitalWrite(MUX_ADDRESS_0_PIN, MUX_ADDRESS_0_VALUE);
-  pinMode(MUX_ADDRESS_1_PIN, OUTPUT);
-  digitalWrite(MUX_ADDRESS_1_PIN, MUX_ADDRESS_1_VALUE);
-  pinMode(MUX_ADDRESS_2_PIN, OUTPUT);
-  digitalWrite(MUX_ADDRESS_2_PIN, MUX_ADDRESS_2_VALUE);
 
 #if defined(ARDUINO_ARCH_RP2040)
   uart.setTX(TX_PIN);
