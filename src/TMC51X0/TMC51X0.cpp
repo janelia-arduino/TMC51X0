@@ -30,6 +30,13 @@ uint8_t TMC51X0::readVersion()
   return ioin.version;
 }
 
+bool TMC51X0::communicating()
+{
+  uint8_t version = readVersion();
+  return ((version == Registers::VERSION_TMC5130) ||
+    (version == Registers::VERSION_TMC5160));
+}
+
 // private
 void TMC51X0::initialize()
 {

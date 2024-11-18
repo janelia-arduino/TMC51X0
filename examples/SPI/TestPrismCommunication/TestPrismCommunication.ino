@@ -10,28 +10,28 @@ uint16_t RX_PIN = 12;
 SPIClass & spi = SPI;
 #endif
 
+const uint8_t PRISM_COUNT = 7;
+
 // SPI Parameters
 const uint32_t SPI_CLOCK_RATE = 1000000;
-const uint16_t SPI_CHIP_SELECT_PIN = 14;
+const uint16_t SPI_CHIP_SELECT_PINS[PRISM_COUNT] = {14, 8, 7, 6, 5, 4, 3};
 
-const uint8_t ENABLE_POWER_PIN = 15;
+const uint8_t PRISMS_RESET_PIN = 15;
 
 const uint32_t SERIAL_BAUD_RATE = 115200;
 const uint16_t DELAY = 1000;
 
 // Instantiate TMC51X0
-TMC51X0 tmc5160;
-bool enabled;
+TMC51X0 prisms[PRISM_COUNT];
 
 void setup()
 {
   Serial.begin(SERIAL_BAUD_RATE);
 
-  // Remove after testing
-  pinMode(ENABLE_POWER_PIN, OUTPUT);
-  digitalWrite(ENABLE_POWER_PIN, LOW);
+  pinMode(PRISMS_RESET_PIN, OUTPUT);
+  digitalWrite(PRISMS_RESET_PIN, LOW);
   delay(5000);
-  digitalWrite(ENABLE_POWER_PIN, HIGH);
+  digitalWrite(PRISMS_RESET_PIN, HIGH);
   delay(5000);
 
 #if defined(ARDUINO_ARCH_RP2040)
@@ -40,25 +40,23 @@ void setup()
   spi.setRX(RX_PIN);
 #endif
   spi.begin();
-  tmc51x0::SpiParameters spi_parameters(spi, SPI_CLOCK_RATE, SPI_CHIP_SELECT_PIN);
-  tmc5160.setupSpi(spi_parameters);
 
-  enabled = false;
+  for (uint8_t prism_index=0; prism_index<PRISM_COUNT; ++prism_index)
+  {
+    tmc51x0::SpiParameters spi_parameters(spi, SPI_CLOCK_RATE, SPI_CHIP_SELECT_PINS[prism_index]);
+    prisms[prism_index].setupSpi(spi_parameters);
+  }
 }
 
 void loop()
 {
-  if (enabled)
+  for (uint8_t prism_index=0; prism_index<PRISM_COUNT; ++prism_index)
   {
-    tmc5160.driver.disable();
+    Serial.print("prism ");
+    Serial.print(prism_index);
+    Serial.print(" communicating : ");
+    bool communicating = prisms[prism_index].communicating();
+    Serial.println(communicating);
+    delay(DELAY);
   }
-  else
-  {
-    tmc5160.driver.enable();
-  }
-  enabled = not enabled;
-
-  tmc5160.printer.readAndPrintIoin();
-
-  delay(DELAY);
 }

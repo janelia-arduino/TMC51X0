@@ -46,7 +46,7 @@ const tmc51x0::Controller::RampMode RAMP_MODE = tmc51x0::Controller::VELOCITY_PO
 const int32_t INITIAL_POSITION = 0;
 
 
-.02// Instantiate TMC51X0
+// Instantiate TMC51X0
 TMC51X0 tmc5160;
 uint32_t target_velocity;
 
