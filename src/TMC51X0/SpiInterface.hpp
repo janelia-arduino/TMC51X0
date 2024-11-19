@@ -30,7 +30,7 @@ struct SpiParameters
 
   SpiParameters(SPIClass & spi_,
     uint32_t clock_rate_,
-    uint16_t chip_select_pin_=65535)
+    uint16_t chip_select_pin_=PIN_DEFAULT)
   {
     spi_ptr = &spi_;
     clock_rate = clock_rate_;
@@ -61,7 +61,7 @@ struct SpiParameters
 
 private:
   const static uint32_t CLOCK_RATE_DEFAULT = 1000000;
-  const static uint16_t PIN_DEFAULT = 255;
+  const static uint16_t PIN_DEFAULT = 65535;
 };
 
 class SpiInterface : public Interface

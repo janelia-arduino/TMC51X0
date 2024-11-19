@@ -11,14 +11,17 @@ uint16_t RX_PIN = 5;
 
 // Optional power enable
 const uint16_t ENABLE_POWER_PIN = 15;
-const uint8_t ENABLE_POWER_POLARITY = HIGH;
-
-// UART Parameters
-const uint32_t UART_BAUD_RATE = 115200;
-const uint8_t NODE_ADDRESS = 0;
+const uint8_t ENABLE_POWER_VALUE = HIGH;
 
 const uint8_t MOTOR_COUNT = 7;
-const uint8_t ENABLE_TX_PINS[MOTOR_COUNT] = {14, 13, 12, 11, 10, 9, 8};
+
+// UART Parameters
+tmc51x0::UartParameters uart_parameters(
+  uart,
+  0); // node_address
+const uint8_t ENABLE_TXRX_PINS[MOTOR_COUNT] = {14, 13, 12, 11, 10, 9, 8};
+const uint32_t UART_BAUD_RATE = 115200;
+
 const uint8_t MUX_ADDRESS_0_PIN = 6;
 const uint8_t MUX_ADDRESS_1_PIN = 3;
 const uint8_t MUX_ADDRESS_2_PIN = 2;
@@ -74,7 +77,7 @@ void setup()
 {
   Serial.begin(SERIAL_BAUD_RATE);
 
-  delay(RESET_DELAY);
+  delay(5000);
 
   Serial.println("Disabling VCC");
 
@@ -98,18 +101,16 @@ void setup()
 
   randomSeed(analogRead(A0));
 
-  // for (size_t i=0; i<MOTOR_COUNT; ++i)
-  for (size_t i=1; i<2; ++i)
+  for (size_t i=0; i<MOTOR_COUNT; ++i)
   {
     TMC51X0 & motor = motors[i];
-    tmc51x0::UartParameters uart_parameters(uart,
-      NODE_ADDRESS,
-      ENABLE_TXRX_PINS[i]);
+
+    uart_parameters.enable_txrx_pin = ENABLE_TXRX_PINS[i];
     motor.setupUart(uart_parameters);
 
-    digitalWrite(MUX_ADDRESS_0_PINS[i], MUX_ADDRESS_0_VALUES[i]);
-    digitalWrite(MUX_ADDRESS_1_PINS[i], MUX_ADDRESS_1_VALUES[i]);
-    digitalWrite(MUX_ADDRESS_2_PINS[i], MUX_ADDRESS_2_VALUES[i]);
+    digitalWrite(MUX_ADDRESS_0_PIN, MUX_ADDRESS_0_VALUES[i]);
+    digitalWrite(MUX_ADDRESS_1_PIN, MUX_ADDRESS_1_VALUES[i]);
+    digitalWrite(MUX_ADDRESS_2_PIN, MUX_ADDRESS_2_VALUES[i]);
 
     motor.driver.writeGlobalCurrentScaler(motor.converter.percentToGlobalCurrentScaler(GLOBAL_CURRENT_SCALAR));
     motor.driver.writeRunCurrent(motor.converter.percentToCurrentSetting(RUN_CURRENT));
@@ -147,12 +148,11 @@ void setup()
 
 void loop()
 {
-  // for (size_t i=0; i<MOTOR_COUNT; ++i)
-  for (size_t i=1; i<2; ++i)
+  for (size_t i=0; i<MOTOR_COUNT; ++i)
   {
-    digitalWrite(MUX_ADDRESS_0_PINS[i], MUX_ADDRESS_0_VALUES[i]);
-    digitalWrite(MUX_ADDRESS_1_PINS[i], MUX_ADDRESS_1_VALUES[i]);
-    digitalWrite(MUX_ADDRESS_2_PINS[i], MUX_ADDRESS_2_VALUES[i]);
+    digitalWrite(MUX_ADDRESS_0_PIN, MUX_ADDRESS_0_VALUES[i]);
+    digitalWrite(MUX_ADDRESS_1_PIN, MUX_ADDRESS_1_VALUES[i]);
+    digitalWrite(MUX_ADDRESS_2_PIN, MUX_ADDRESS_2_VALUES[i]);
 
     TMC51X0 & motor = motors[i];
     // uint8_t version = motor.readVersion();
