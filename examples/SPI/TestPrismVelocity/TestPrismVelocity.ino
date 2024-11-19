@@ -3,9 +3,9 @@
 
 #if defined(ARDUINO_ARCH_RP2040)
 SPIClassRP2040 & spi = SPI1;
-uint16_t SCK_PIN = 10;
-uint16_t TX_PIN = 11;
-uint16_t RX_PIN = 12;
+size_t SCK_PIN = 10;
+size_t TX_PIN = 11;
+size_t RX_PIN = 12;
 #else
 SPIClass & spi = SPI;
 #endif
@@ -15,7 +15,7 @@ tmc51x0::SpiParameters spi_parameters =
   spi,
   1000000 // clock_rate
 };
-const uint16_t SPI_CHIP_SELECT_PIN = 14;
+const size_t SPI_CHIP_SELECT_PIN = 14;
 
 const tmc51x0::ConverterParameters converter_parameters =
 {
@@ -26,8 +26,11 @@ const tmc51x0::ConverterParameters converter_parameters =
 // 200 fullsteps per revolution for many steppers * 256 microsteps per fullstep
 // one "real unit" in this example is one rotation of the motor shaft
 
-// driver constants
-const uint8_t GLOBAL_CURRENT_SCALAR = 50; // percent
+const tmc51x0::DriverParameters driver_parameters =
+{
+  50, // global_current_scalar (percent)
+};
+//const uint8_t GLOBAL_CURRENT_SCALAR = 50; // percent
 const uint8_t RUN_CURRENT = 20; // percent
 const uint8_t PWM_OFFSET = 15; // percent
 const uint8_t PWM_GRADIENT = 5; // percent
@@ -45,7 +48,7 @@ const uint32_t MAX_ACCELERATION = 2;  // rotations/(s^2)
 const tmc51x0::Controller::RampMode RAMP_MODE = tmc51x0::Controller::VELOCITY_POSITIVE;
 const int32_t INITIAL_POSITION = 0;
 
-const uint16_t ENABLE_POWER_PIN = 15;
+const size_t ENABLE_POWER_PIN = 15;
 
 const uint32_t SERIAL_BAUD_RATE = 115200;
 const uint16_t DELAY = 4000;
@@ -74,6 +77,9 @@ void setup()
   tmc5160.setupSpi(spi_parameters);
 
   tmc5160.converter.setup(converter_parameters);
+
+  tmc5160.driver.setup(driver_parameters);
+
 
 tmc5160.driver.writeGlobalCurrentScaler(tmc5160.converter.percentToGlobalCurrentScaler(GLOBAL_CURRENT_SCALAR));
   tmc5160.driver.writeRunCurrent(tmc5160.converter.percentToCurrentSetting(RUN_CURRENT));

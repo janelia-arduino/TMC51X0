@@ -5,12 +5,12 @@
 HardwareSerial & uart = Serial2;
 #else
 SerialUART & uart = Serial2;
-uint16_t TX_PIN = 4;
-uint16_t RX_PIN = 5;
+size_t TX_PIN = 4;
+size_t RX_PIN = 5;
 #endif
 
 // Optional power enable
-const uint16_t ENABLE_POWER_PIN = 15;
+const size_t ENABLE_POWER_PIN = 15;
 const uint8_t ENABLE_POWER_VALUE = HIGH;
 
 const uint8_t MOTOR_COUNT = 7;

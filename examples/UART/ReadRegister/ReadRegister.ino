@@ -5,8 +5,8 @@
 HardwareSerial & uart = Serial2;
 #else
 SerialUART & uart = Serial2;
-uint16_t TX_PIN = 4;
-uint16_t RX_PIN = 5;
+size_t TX_PIN = 4;
+size_t RX_PIN = 5;
 #endif
 
 const tmc51x0::UartParameters uart_parameters =

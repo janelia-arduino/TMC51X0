@@ -3,9 +3,9 @@
 
 #if defined(ARDUINO_ARCH_RP2040)
 SPIClassRP2040 & spi = SPI;
-uint16_t SCK_PIN = 18;
-uint16_t TX_PIN = 19;
-uint16_t RX_PIN = 20;
+size_t SCK_PIN = 18;
+size_t TX_PIN = 19;
+size_t RX_PIN = 20;
 #else
 SPIClass & spi = SPI;
 #endif
@@ -52,8 +52,8 @@ const uint32_t TARGET_VELOCITY_INC = 60;  // rotations/min
 const uint32_t MAX_ACCELERATION = 60;  // (rotations/min)/s
 const tmc51x0::Controller::RampMode RAMP_MODE = tmc51x0::Controller::VELOCITY_POSITIVE;
 
-const uint16_t ENABLE_VIO_PIN = 21;
-const uint16_t ENABLE_FAN_PIN = 28;
+const size_t ENABLE_VIO_PIN = 21;
+const size_t ENABLE_FAN_PIN = 28;
 
 const uint32_t SERIAL_BAUD_RATE = 115200;
 const uint16_t LOOP_DELAY = 500;

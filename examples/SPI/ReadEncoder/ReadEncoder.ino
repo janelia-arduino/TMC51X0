@@ -3,9 +3,9 @@
 
 #if defined(ARDUINO_ARCH_RP2040)
 SPIClassRP2040 & spi = SPI;
-uint16_t SCK_PIN = 18;
-uint16_t TX_PIN = 19;
-uint16_t RX_PIN = 20;
+size_t SCK_PIN = 18;
+size_t TX_PIN = 19;
+size_t RX_PIN = 20;
 #else
 SPIClass & spi = SPI;
 #endif

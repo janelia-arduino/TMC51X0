@@ -18,11 +18,11 @@ struct UartParameters
 {
   Stream * stream_ptr;
   uint8_t node_address;
-  uint16_t enable_txrx_pin;
+  size_t enable_txrx_pin;
 
   UartParameters(Stream & uart_,
     uint8_t node_address_,
-    uint16_t enable_txrx_pin_=PIN_DEFAULT)
+    size_t enable_txrx_pin_=PIN_DEFAULT)
   {
     stream_ptr = &uart_;
     node_address = node_address_;
@@ -53,7 +53,7 @@ struct UartParameters
 
 private:
   const static uint8_t NODE_ADDRESS_DEFAULT = 0;
-  const static uint16_t PIN_DEFAULT = 65535;
+  const static size_t PIN_DEFAULT = 255;
 };
 
 class UartInterface : public Interface

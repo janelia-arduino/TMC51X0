@@ -3,9 +3,9 @@
 
 #if defined(ARDUINO_ARCH_RP2040)
 SPIClassRP2040 & spi = SPI1;
-uint16_t SCK_PIN = 10;
-uint16_t TX_PIN = 11;
-uint16_t RX_PIN = 12;
+size_t SCK_PIN = 10;
+size_t TX_PIN = 11;
+size_t RX_PIN = 12;
 #else
 SPIClass & spi = SPI;
 #endif
@@ -17,7 +17,7 @@ tmc51x0::SpiParameters spi_parameters =
   spi,
   1000000 // clock_rate
 };
-const uint16_t SPI_CHIP_SELECT_PINS[PRISM_COUNT] = {14, 8, 7, 6, 5, 4, 3};
+const size_t SPI_CHIP_SELECT_PINS[PRISM_COUNT] = {14, 8, 7, 6, 5, 4, 3};
 
 const uint8_t PRISMS_RESET_PIN = 15;
 

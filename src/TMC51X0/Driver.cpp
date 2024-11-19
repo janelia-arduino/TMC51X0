@@ -14,6 +14,11 @@ Driver::Driver()
   hardware_enable_pin_ = -1;
 }
 
+void Driver::setup(tmc51x0::DriverParameters driver_parameters)
+{
+  writeGlobalCurrentScaler(driver_parameters.global_current_scalar);
+}
+
 void Driver::setEnableHardwarePin(size_t hardware_enable_pin)
 {
   hardware_enable_pin_ = hardware_enable_pin;

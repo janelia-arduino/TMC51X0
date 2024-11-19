@@ -17,10 +17,38 @@ class TMC51X0;
 
 namespace tmc51x0
 {
+struct DriverParameters
+{
+  uint8_t global_current_scalar = GLOBAL_CURRENT_SCALAR_DEFAULT;
+
+  DriverParameters(uint8_t global_current_scalar_ = GLOBAL_CURRENT_SCALAR_DEFAULT)
+  {
+    global_current_scalar = global_current_scalar_;
+  };
+
+  bool operator==(const DriverParameters & rhs) const
+  {
+    if ((this->global_current_scalar == rhs.global_current_scalar))
+    {
+      return true;
+    }
+    return false;
+  }
+  bool operator!=(const DriverParameters & rhs) const
+  {
+    return !(*this == rhs);
+  }
+
+private:
+  const static uint8_t GLOBAL_CURRENT_SCALAR_DEFAULT = 129;
+};
+
 class Driver
 {
 public:
   Driver();
+
+  void setup(DriverParameters driver_parameters);
 
   // driver must be enabled before use it is disabled by default
   void setEnableHardwarePin(size_t hardware_enable_pin);
