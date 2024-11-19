@@ -9,22 +9,25 @@ uint16_t TX_PIN = 4;
 uint16_t RX_PIN = 5;
 #endif
 
-// UART Parameters
-const tmc51x0::UartParameters uart_parameters(
+const tmc51x0::UartParameters uart_parameters =
+{
   uart,
   0, // node_address
-  14); // enable_txrx_pin
+  14 // enable_txrx_pin
+};
 const uint32_t UART_BAUD_RATE = 115200;
 
 const uint32_t SERIAL_BAUD_RATE = 115200;
 const uint16_t DELAY = 1000;
 
-// converter constants
-// external clock is ~16MHz
-const uint8_t CLOCK_FREQUENCY_MHZ = 16;
-// 200 fullsteps per revolution for many steppers * 256 microsteps per fullstep
+const tmc51x0::ConverterParameters converter_parameters =
+{
+  16, // clock_frequency_mhz
+  256 // microsteps_per_real_unit
+};
+// external clock is 16MHz
+// 256 microsteps per fullstep
 // one "real unit" in this example is one fullstep of the motor shaft
-constexpr uint32_t MICROSTEPS_PER_REAL_UNIT = 256;
 
 // driver constants
 const uint8_t GLOBAL_CURRENT_SCALAR = 100; // percent
@@ -62,11 +65,7 @@ void setup()
   uart.begin(UART_BAUD_RATE);
 
   tmc5130.setupUart(uart_parameters);
-  tmc51x0::ConverterParameters converter_parameters =
-    {
-      CLOCK_FREQUENCY_MHZ,
-      MICROSTEPS_PER_REAL_UNIT
-    };
+
   tmc5130.converter.setup(converter_parameters);
   tmc5130.driver.writeGlobalCurrentScaler(tmc5130.converter.percentToGlobalCurrentScaler(GLOBAL_CURRENT_SCALAR));
   tmc5130.driver.writeRunCurrent(tmc5130.converter.percentToCurrentSetting(RUN_CURRENT));

@@ -10,23 +10,21 @@ uint16_t RX_PIN = 12;
 SPIClass & spi = SPI;
 #endif
 
-// SPI Parameters
-tmc51x0::SpiParameters spi_parameters(
+tmc51x0::SpiParameters spi_parameters =
+{
   spi,
-  1000000); // clock_rate
+  1000000 // clock_rate
+};
 const uint16_t SPI_CHIP_SELECT_PIN = 14;
 
-const uint16_t ENABLE_POWER_PIN = 15;
-
-const uint32_t SERIAL_BAUD_RATE = 115200;
-const uint16_t DELAY = 4000;
-
-// converter constants
-// external clock is ~12MHz
-const uint8_t CLOCK_FREQUENCY_MHZ = 16;
+const tmc51x0::ConverterParameters converter_parameters =
+{
+  16, // clock_frequency_mhz
+  51200 // microsteps_per_real_unit
+};
+// external clock is 16MHz
 // 200 fullsteps per revolution for many steppers * 256 microsteps per fullstep
 // one "real unit" in this example is one rotation of the motor shaft
-constexpr uint32_t MICROSTEPS_PER_REAL_UNIT =  200 * 256; // 51200
 
 // driver constants
 const uint8_t GLOBAL_CURRENT_SCALAR = 50; // percent
@@ -47,6 +45,10 @@ const uint32_t MAX_ACCELERATION = 2;  // rotations/(s^2)
 const tmc51x0::Controller::RampMode RAMP_MODE = tmc51x0::Controller::VELOCITY_POSITIVE;
 const int32_t INITIAL_POSITION = 0;
 
+const uint16_t ENABLE_POWER_PIN = 15;
+
+const uint32_t SERIAL_BAUD_RATE = 115200;
+const uint16_t DELAY = 4000;
 
 // Instantiate TMC51X0
 TMC51X0 tmc5160;
@@ -71,11 +73,6 @@ void setup()
   spi_parameters.chip_select_pin = SPI_CHIP_SELECT_PIN;
   tmc5160.setupSpi(spi_parameters);
 
-  tmc51x0::ConverterParameters converter_parameters =
-    {
-      CLOCK_FREQUENCY_MHZ,
-      MICROSTEPS_PER_REAL_UNIT
-    };
   tmc5160.converter.setup(converter_parameters);
 
 tmc5160.driver.writeGlobalCurrentScaler(tmc5160.converter.percentToGlobalCurrentScaler(GLOBAL_CURRENT_SCALAR));

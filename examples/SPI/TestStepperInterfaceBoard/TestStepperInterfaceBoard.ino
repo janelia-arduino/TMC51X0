@@ -10,26 +10,22 @@ uint16_t RX_PIN = 20;
 SPIClass & spi = SPI;
 #endif
 
-// SPI Parameters
-const tmc51x0::SpiParameters spi_parameters(
+const tmc51x0::SpiParameters spi_parameters =
+{
   spi,
   1000000, // clock_rate
-  29); // chip_select_pin
+  29 // chip_select_pin
+};
 
-const uint16_t ENABLE_VIO_PIN = 21;
-const uint16_t ENABLE_FAN_PIN = 28;
-
-const uint32_t SERIAL_BAUD_RATE = 115200;
-const uint16_t LOOP_DELAY = 500;
-const uint16_t DELAY = 4000;
-
-// converter constants
+const tmc51x0::ConverterParameters converter_parameters =
+{
+  12, // clock_frequency_mhz
+  51200, // microsteps_per_real_unit
+  60 // seconds_per_real_velocity_unit
+};
 // internal clock is ~12MHz
-const uint8_t CLOCK_FREQUENCY_MHZ = 12;
 // 200 fullsteps per revolution for many steppers * 256 microsteps per fullstep
 // one "real position unit" in this example is one rotation of the motor shaft
-constexpr int32_t MICROSTEPS_PER_REAL_POSITION_UNIT = 200 * 256; // 51200
-const int32_t SECONDS_PER_REAL_VELOCITY_UNIT = 60;
 // rotations/s -> rotations/min
 // rotations/(s^2) -> (rotations/min)/s
 
@@ -55,6 +51,13 @@ const uint32_t MAX_TARGET_VELOCITY = STEALTH_CHOP_THRESHOLD; // rotations/min
 const uint32_t TARGET_VELOCITY_INC = 60;  // rotations/min
 const uint32_t MAX_ACCELERATION = 60;  // (rotations/min)/s
 const tmc51x0::Controller::RampMode RAMP_MODE = tmc51x0::Controller::VELOCITY_POSITIVE;
+
+const uint16_t ENABLE_VIO_PIN = 21;
+const uint16_t ENABLE_FAN_PIN = 28;
+
+const uint32_t SERIAL_BAUD_RATE = 115200;
+const uint16_t LOOP_DELAY = 500;
+const uint16_t DELAY = 4000;
 
 // Instantiate TMC51X0
 TMC51X0 tmc5160;
@@ -82,12 +85,6 @@ void setup()
   spi.begin();
   tmc5160.setupSpi(spi_parameters);
 
-  tmc51x0::ConverterParameters converter_parameters =
-    {
-      CLOCK_FREQUENCY_MHZ,
-      MICROSTEPS_PER_REAL_POSITION_UNIT,
-      SECONDS_PER_REAL_VELOCITY_UNIT
-    };
   tmc5160.converter.setup(converter_parameters);
 
   tmc5160.driver.writeGlobalCurrentScaler(GLOBAL_CURRENT_SCALAR);

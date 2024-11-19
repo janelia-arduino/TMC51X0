@@ -9,11 +9,12 @@ uint16_t TX_PIN = 4;
 uint16_t RX_PIN = 5;
 #endif
 
-// UART Parameters
-const tmc51x0::UartParameters uart_parameters(
+const tmc51x0::UartParameters uart_parameters =
+{
   uart,
   0, // node_address
-  14); // enable_txrx_pin
+  14 // enable_txrx_pin
+};
 const uint32_t UART_BAUD_RATE = 115200;
 
 const uint32_t SERIAL_BAUD_RATE = 115200;

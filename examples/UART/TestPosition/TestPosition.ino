@@ -9,23 +9,26 @@ uint16_t TX_PIN = 4;
 uint16_t RX_PIN = 5;
 #endif
 
-// UART Parameters
-const tmc51x0::UartParameters uart_parameters(
+const tmc51x0::UartParameters uart_parameters =
+{
   uart,
   0, // node_address
-  14); // enable_txrx_pin
+  14 // enable_txrx_pin
+};
 const uint32_t UART_BAUD_RATE = 115200;
 
 const uint32_t SERIAL_BAUD_RATE = 115200;
 const uint16_t LOOP_DELAY = 2000;
 
-// converter constants
+const tmc51x0::ConverterParameters converter_parameters =
+{
+  16, // clock_frequency_mhz
+  4881 // microsteps_per_real_unit
+};
 // external clock is 16MHz
-const uint8_t CLOCK_FREQUENCY_MHZ = 16;
 // 200 fullsteps per revolution for many steppers * 256 microsteps per fullstep
-// 10.49 millimeters per revolution leadscrew -> 51200 / 10.49
+// 10.49 millimeters per revolution leadscrew -> 51200 / 10.49 ~= 4881
 // one "real unit" in this example is one millimeters of linear travel
-constexpr uint32_t MICROSTEPS_PER_REAL_UNIT = 4881;
 
 // driver constants
 const uint8_t GLOBAL_CURRENT_SCALAR = 100; // percent
@@ -73,11 +76,6 @@ void setup()
 
   tmc5130.setupUart(uart_parameters);
 
-  tmc51x0::ConverterParameters converter_parameters =
-    {
-      CLOCK_FREQUENCY_MHZ,
-      MICROSTEPS_PER_REAL_UNIT
-    };
   tmc5130.converter.setup(converter_parameters);
 
   // tmc5130.driver.setEnableHardwarePin(ENABLE_HARDWARE_PIN);

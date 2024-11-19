@@ -12,10 +12,11 @@ SPIClass & spi = SPI;
 
 const uint8_t PRISM_COUNT = 7;
 
-// SPI Parameters
-tmc51x0::SpiParameters spi_parameters(
+tmc51x0::SpiParameters spi_parameters =
+{
   spi,
-  1000000); // clock_rate
+  1000000 // clock_rate
+};
 const uint16_t SPI_CHIP_SELECT_PINS[PRISM_COUNT] = {14, 8, 7, 6, 5, 4, 3};
 
 const uint8_t PRISMS_RESET_PIN = 15;

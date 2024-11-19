@@ -10,25 +10,22 @@ uint16_t RX_PIN = 20;
 SPIClass & spi = SPI;
 #endif
 
-// SPI Parameters
-const tmc51x0::SpiParameters spi_parameters(
+const tmc51x0::SpiParameters spi_parameters =
+{
   spi,
   1000000, // clock_rate
-  10); // chip_select_pin
+  10 // chip_select_pin
+};
 
-const uint16_t ENABLE_HARDWARE_PIN = 4;
-
-const uint32_t SERIAL_BAUD_RATE = 115200;
-const uint16_t LOOP_DELAY = 500;
-const uint16_t STALL_DELAY = 4000;
-
-// converter constants
+const tmc51x0::ConverterParameters converter_parameters =
+{
+  12, // clock_frequency_mhz
+  4881 // microsteps_per_real_unit
+};
 // internal clock is ~12MHz
-const uint8_t CLOCK_FREQUENCY_MHZ = 12;
 // 200 fullsteps per revolution for many steppers * 256 microsteps per fullstep
-// 10.49 millimeters per revolution leadscrew -> 51200 / 10.49
+// 10.49 millimeters per revolution leadscrew -> 51200 / 10.49 ~= 4881
 // one "real unit" in this example is one millimeters of linear travel
-constexpr uint32_t MICROSTEPS_PER_REAL_UNIT = 4881;
 
 // driver constants
 const uint8_t GLOBAL_CURRENT_SCALAR = 50; // percent
@@ -65,6 +62,12 @@ const uint32_t HOME_START_VELOCITY = 1; // millimeters/s
 const uint32_t HOME_MAX_VELOCITY = 10; // millimeters/s
 const int32_t HOME_TARGET_POSITION = -200;  // millimeters
 
+const uint16_t ENABLE_HARDWARE_PIN = 4;
+
+const uint32_t SERIAL_BAUD_RATE = 115200;
+const uint16_t LOOP_DELAY = 500;
+const uint16_t STALL_DELAY = 4000;
+
 // Instantiate TMC51X0
 TMC51X0 tmc5160;
 
@@ -80,11 +83,6 @@ void setup()
   spi.begin();
   tmc5160.setupSpi(spi_parameters);
 
-  tmc51x0::ConverterParameters converter_parameters =
-    {
-      CLOCK_FREQUENCY_MHZ,
-      MICROSTEPS_PER_REAL_UNIT
-    };
   tmc5160.converter.setup(converter_parameters);
 
   tmc5160.driver.setEnableHardwarePin(ENABLE_HARDWARE_PIN);
