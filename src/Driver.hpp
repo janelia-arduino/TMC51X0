@@ -10,7 +10,6 @@
 #include <Arduino.h>
 
 #include "Registers.hpp"
-#include "Converter.hpp"
 
 
 class TMC51X0;
@@ -142,7 +141,6 @@ public:
 
 private:
   Registers * registers_ptr_;
-  Converter * converter_ptr_;
   int16_t hardware_enable_pin_;
   uint8_t toff_;
 
@@ -165,8 +163,7 @@ private:
 
   const static uint8_t SEMIN_OFF = 0;
 
-  void initialize(Registers & registers,
-    Converter & converter);
+  void initialize(Registers & registers);
 
   void hardwareEnable();
   void hardwareDisable();

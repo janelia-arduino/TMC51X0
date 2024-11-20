@@ -48,11 +48,9 @@ Registers::EncStatus Encoder::readAndClearStatus()
 
 // private
 
-void Encoder::initialize(Registers & registers,
-  Converter & converter)
+void Encoder::initialize(Registers & registers)
 {
   registers_ptr_ = &registers;
-  converter_ptr_ = &converter;
 
   writeFractionalMode(FRACTIONAL_MODE_DEFAULT);
   writeMicrostepsPerPulse(MICROSTEPS_PER_PULSE_INTEGER_DEFAULT, MICROSTEPS_PER_PULSE_FRACTIONAL_DEFAULT);

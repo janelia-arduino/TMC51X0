@@ -9,7 +9,6 @@
 #define TMC51X0_ENCODER_HPP
 
 #include "Registers.hpp"
-#include "Converter.hpp"
 
 
 class TMC51X0;
@@ -44,15 +43,13 @@ public:
 
 private:
   Registers * registers_ptr_;
-  Converter * converter_ptr_;
 
   const static FractionalMode FRACTIONAL_MODE_DEFAULT = BINARY;
   const static int32_t MICROSTEPS_PER_PULSE_INTEGER_DEFAULT = 1;
   const static int32_t MICROSTEPS_PER_PULSE_FRACTIONAL_DEFAULT = 0;
   const static int32_t ACTUAL_POSITION_DEFAULT = 0;
 
-  void initialize(Registers & registers,
-    Converter & converter);
+  void initialize(Registers & registers);
 
   friend class ::TMC51X0;
 };

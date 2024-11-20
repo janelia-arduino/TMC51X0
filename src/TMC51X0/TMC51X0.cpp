@@ -40,8 +40,8 @@ bool TMC51X0::communicating()
 // private
 void TMC51X0::initialize()
 {
-  driver.initialize(registers, converter);
-  controller.initialize(registers, converter);
-  encoder.initialize(registers, converter);
+  driver.initialize(registers);
+  controller.initialize(registers);
+  encoder.initialize(registers);
   printer.initialize(registers);
 }

@@ -153,11 +153,9 @@ void Controller::disableStallStop()
 
 // private
 
-void Controller::initialize(Registers & registers,
-  Converter & converter)
+void Controller::initialize(Registers & registers)
 {
   registers_ptr_ = &registers;
-  converter_ptr_ = &converter;
 
   writeRampMode(RAMP_MODE_DEFAULT);
   writeStopMode(STOP_MODE_DEFAULT);

@@ -9,7 +9,6 @@
 #define TMC51X0_CONTROLLER_HPP
 
 #include "Registers.hpp"
-#include "Converter.hpp"
 
 
 class TMC51X0;
@@ -100,7 +99,6 @@ public:
 
 private:
   Registers * registers_ptr_;
-  Converter * converter_ptr_;
 
   const static RampMode RAMP_MODE_DEFAULT = VELOCITY_POSITIVE;
   const static StopMode STOP_MODE_DEFAULT = SOFT;
@@ -118,8 +116,7 @@ private:
   const static int32_t MAX_POSITIVE_VELOCITY = 8388607;
   const static int32_t VELOCITY_SIGN_CONVERSION = 16777216;
 
-  void initialize(Registers & registers,
-    Converter & converter);
+  void initialize(Registers & registers);
 
   friend class ::TMC51X0;
 };

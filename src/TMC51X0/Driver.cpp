@@ -271,11 +271,9 @@ void Driver::disableShortToGroundProtection()
 
 // private
 
-void Driver::initialize(Registers & registers,
-  Converter & converter)
+void Driver::initialize(Registers & registers)
 {
   registers_ptr_ = &registers;
-  converter_ptr_ = &converter;
   toff_ = TOFF_ENABLE_DEFAULT;
 
   disable();
