@@ -45,6 +45,18 @@ struct DriverParameters
   MotorDirection motor_direction = MOTOR_DIRECTION_DEFAULT;
   StandstillMode standstill_mode = STANDSTILL_MODE_DEFAULT;
   ChopperMode chopper_mode = CHOPPER_MODE_DEFAULT;
+  uint32_t stealth_chop_threshold = TSTEP_THRESHOLD_DEFAULT;
+  bool stealth_chop_enabled = STEALTH_CHOP_ENABLED_DEFAULT;
+  uint32_t cool_step_threshold = TSTEP_THRESHOLD_DEFAULT;
+  uint8_t cool_step_min = COOL_STEP_MIN_DEFAULT;
+  uint8_t cool_step_max = COOL_STEP_MAX_DEFAULT;
+  bool cool_step_enabled = COOL_STEP_ENABLED_DEFAULT;
+  uint32_t high_velocity_threshold = TSTEP_THRESHOLD_DEFAULT;
+  bool high_velocity_fullstep_enabled = HIGH_VELOCITY_FULLSTEP_ENABLED_DEFAULT;
+  bool high_velocity_chopper_switch_enabled = HIGH_VELOCITY_CHOPPER_SWITCH_ENABLED_DEFAULT;
+  int8_t stall_guard_threshold = STALL_GUARD_THRESHOLD_DEFAULT;
+  bool stall_guard_filter_enabled = STALL_GUARD_FILTER_ENABLED_DEFAULT;
+  bool short_to_ground_protection_enabled = SHORT_TO_GROUND_PROTECTION_ENABLED_DEFAULT;
 
   DriverParameters(uint8_t global_current_scalar_ = GLOBAL_CURRENT_SCALAR_DEFAULT,
     uint8_t run_current_ = CURRENT_DEFAULT,
@@ -55,7 +67,19 @@ struct DriverParameters
     bool automatic_current_control_enabled_ = AUTOMATIC_CURRENT_CONTROL_ENABLED_DEFAULT,
     MotorDirection motor_direction_ = MOTOR_DIRECTION_DEFAULT,
     StandstillMode standstill_mode_ = STANDSTILL_MODE_DEFAULT,
-    ChopperMode chopper_mode_ = CHOPPER_MODE_DEFAULT)
+    ChopperMode chopper_mode_ = CHOPPER_MODE_DEFAULT,
+    uint32_t stealth_chop_threshold_ = TSTEP_THRESHOLD_DEFAULT,
+    bool stealth_chop_enabled_ = STEALTH_CHOP_ENABLED_DEFAULT,
+    uint32_t cool_step_threshold_ = TSTEP_THRESHOLD_DEFAULT,
+    uint8_t cool_step_min_ = COOL_STEP_MIN_DEFAULT,
+    uint8_t cool_step_max_ = COOL_STEP_MAX_DEFAULT,
+    bool cool_step_enabled_ = COOL_STEP_ENABLED_DEFAULT,
+    uint32_t high_velocity_threshold_ = TSTEP_THRESHOLD_DEFAULT,
+    bool high_velocity_fullstep_enabled_ = HIGH_VELOCITY_FULLSTEP_ENABLED_DEFAULT,
+    bool high_velocity_chopper_switch_enabled_ = HIGH_VELOCITY_CHOPPER_SWITCH_ENABLED_DEFAULT,
+    int8_t stall_guard_threshold_ = STALL_GUARD_THRESHOLD_DEFAULT,
+    bool stall_guard_filter_enabled_ = STALL_GUARD_FILTER_ENABLED_DEFAULT,
+    bool short_to_ground_protection_enabled_ = SHORT_TO_GROUND_PROTECTION_ENABLED_DEFAULT)
   {
     global_current_scalar = global_current_scalar_;
     run_current = run_current_;
@@ -67,6 +91,18 @@ struct DriverParameters
     motor_direction = motor_direction_;
     standstill_mode = standstill_mode_;
     chopper_mode = chopper_mode_;
+    stealth_chop_threshold = stealth_chop_threshold_;
+    stealth_chop_enabled = stealth_chop_enabled_;
+    cool_step_threshold = cool_step_threshold_;
+    cool_step_min = cool_step_min_;
+    cool_step_max = cool_step_max_;
+    cool_step_enabled = cool_step_enabled_;
+    high_velocity_threshold = high_velocity_threshold_;
+    high_velocity_fullstep_enabled = high_velocity_fullstep_enabled_;
+    high_velocity_chopper_switch_enabled = high_velocity_chopper_switch_enabled_;
+    stall_guard_threshold = stall_guard_threshold_;
+    stall_guard_filter_enabled = stall_guard_filter_enabled_;
+    short_to_ground_protection_enabled = short_to_ground_protection_enabled_;
   };
 
   bool operator==(const DriverParameters & rhs) const
@@ -80,7 +116,19 @@ struct DriverParameters
       (this->automatic_current_control_enabled == rhs.automatic_current_control_enabled) &&
       (this->motor_direction == rhs.motor_direction) &&
       (this->standstill_mode == rhs.standstill_mode) &&
-      (this->chopper_mode == rhs.chopper_mode))
+      (this->chopper_mode == rhs.chopper_mode) &&
+      (this->stealth_chop_threshold == rhs.stealth_chop_threshold) &&
+      (this->stealth_chop_enabled == rhs.stealth_chop_enabled) &&
+      (this->cool_step_threshold == rhs.cool_step_threshold) &&
+      (this->cool_step_min == rhs.cool_step_min) &&
+      (this->cool_step_max == rhs.cool_step_max) &&
+      (this->cool_step_enabled == rhs.cool_step_enabled) &&
+      (this->high_velocity_threshold == rhs.high_velocity_threshold) &&
+      (this->high_velocity_fullstep_enabled == rhs.high_velocity_fullstep_enabled) &&
+      (this->high_velocity_chopper_switch_enabled == rhs.high_velocity_chopper_switch_enabled) &&
+      (this->stall_guard_threshold == rhs.stall_guard_threshold) &&
+      (this->stall_guard_filter_enabled == rhs.stall_guard_filter_enabled) &&
+      (this->short_to_ground_protection_enabled == rhs.short_to_ground_protection_enabled))
     {
       return true;
     }
@@ -100,6 +148,17 @@ private:
   const static MotorDirection MOTOR_DIRECTION_DEFAULT = FORWARD;
   const static StandstillMode STANDSTILL_MODE_DEFAULT = NORMAL;
   const static ChopperMode CHOPPER_MODE_DEFAULT = SPREAD_CYCLE;
+  const static uint32_t TSTEP_THRESHOLD_DEFAULT = 0;
+  const static bool STEALTH_CHOP_ENABLED_DEFAULT = true;
+  const static uint8_t COOL_STEP_MIN_DEFAULT = 1;
+  const static uint8_t COOL_STEP_MAX_DEFAULT = 0;
+  const static bool COOL_STEP_ENABLED_DEFAULT = true;
+  const static bool HIGH_VELOCITY_FULLSTEP_ENABLED_DEFAULT = true;
+  const static bool HIGH_VELOCITY_CHOPPER_SWITCH_ENABLED_DEFAULT = true;
+  const static int8_t STALL_GUARD_THRESHOLD_DEFAULT = 0;
+  const static bool STALL_GUARD_FILTER_ENABLED_DEFAULT = true;
+  const static bool SHORT_TO_GROUND_PROTECTION_ENABLED_DEFAULT = true;
+
   friend class Driver;
 };
 
@@ -156,18 +215,18 @@ public:
   void disableStealthChop();
 
   void writeCoolStepThreshold(uint32_t tstep);
+  // min: 1..15
+  // max: 0..15
+  void enableCoolStep(uint8_t min=1,
+    uint8_t max=0);
+  void disableCoolStep();
+
   void writeHighVelocityThreshold(uint32_t tstep);
 
   void enableHighVelocityFullstep();
   void disableHighVelocityFullstep();
   void enableHighVelocityChopperSwitch();
   void disableHighVelocityChopperSwitch();
-
-  // minimum: 1..15
-  // maximum: 0..15
-  void enableCoolStep(uint8_t minimum=1,
-    uint8_t maximum=0);
-  void disableCoolStep();
 
   // 0 indifferent value
   // 1..63 less sensitivity
@@ -188,9 +247,6 @@ private:
   int16_t hardware_enable_pin_;
   uint8_t toff_;
 
-  const static uint32_t TSTEP_THRESHOLD_DEFAULT = 0;
-
-  const static uint32_t STALL_GUARD_THRESHOLD_DEFAULT = 0;
   const static uint8_t STALL_GUARD_FILTER_ENABLE = 1;
   const static uint8_t STALL_GUARD_FILTER_DISABLE = 0;
 

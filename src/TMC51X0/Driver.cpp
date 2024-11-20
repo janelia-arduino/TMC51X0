@@ -33,6 +33,58 @@ void Driver::setup(tmc51x0::DriverParameters driver_parameters)
   writeMotorDirection(driver_parameters.motor_direction);
   writeStandstillMode(driver_parameters.standstill_mode);
   writeChopperMode(driver_parameters.chopper_mode);
+  writeStealthChopThreshold(driver_parameters.stealth_chop_threshold);
+  if (driver_parameters.stealth_chop_enabled)
+  {
+    enableStealthChop();
+  }
+  else
+  {
+    disableStealthChop();
+  }
+  writeCoolStepThreshold(driver_parameters.cool_step_threshold);
+  if (driver_parameters.cool_step_enabled)
+  {
+    enableCoolStep(driver_parameters.cool_step_min, driver_parameters.cool_step_max);
+  }
+  else
+  {
+    disableCoolStep();
+  }
+  writeHighVelocityThreshold(driver_parameters.high_velocity_threshold);
+  if (driver_parameters.high_velocity_fullstep_enabled)
+  {
+    enableHighVelocityFullstep();
+  }
+  else
+  {
+    disableHighVelocityFullstep();
+  }
+  if (driver_parameters.high_velocity_chopper_switch_enabled)
+  {
+    enableHighVelocityChopperSwitch();
+  }
+  else
+  {
+    disableHighVelocityChopperSwitch();
+  }
+  writeStallGuardThreshold(driver_parameters.stall_guard_threshold);
+  if (driver_parameters.stall_guard_filter_enabled)
+  {
+    enableStallGuardFilter();
+  }
+  else
+  {
+    disableStallGuardFilter();
+  }
+  if (driver_parameters.short_to_ground_protection_enabled)
+  {
+    enableShortToGroundProtection();
+  }
+  else
+  {
+    disableShortToGroundProtection();
+  }
 }
 
 void Driver::setEnableHardwarePin(size_t hardware_enable_pin)
@@ -169,6 +221,24 @@ void Driver::writeCoolStepThreshold(uint32_t tstep)
   registers_ptr_->write(Registers::TCOOLTHRS, tstep);
 }
 
+void Driver::enableCoolStep(uint8_t min,
+    uint8_t max)
+{
+  Registers::Coolconf coolconf;
+  coolconf.bytes = registers_ptr_->getStored(Registers::COOLCONF);
+  coolconf.semin = min;
+  coolconf.semax = max;
+  registers_ptr_->write(Registers::COOLCONF, coolconf.bytes);
+}
+
+void Driver::disableCoolStep()
+{
+  Registers::Coolconf coolconf;
+  coolconf.bytes = registers_ptr_->getStored(Registers::COOLCONF);
+  coolconf.semin = SEMIN_OFF;
+  registers_ptr_->write(Registers::COOLCONF, coolconf.bytes);
+}
+
 void Driver::writeHighVelocityThreshold(uint32_t tstep)
 {
   registers_ptr_->write(Registers::THIGH, tstep);
@@ -204,24 +274,6 @@ void Driver::disableHighVelocityChopperSwitch()
   chopconf.bytes = registers_ptr_->getStored(Registers::CHOPCONF);
   chopconf.vhighchm = 0;
   registers_ptr_->write(Registers::CHOPCONF, chopconf.bytes);
-}
-
-void Driver::enableCoolStep(uint8_t minimum,
-    uint8_t maximum)
-{
-  Registers::Coolconf coolconf;
-  coolconf.bytes = registers_ptr_->getStored(Registers::COOLCONF);
-  coolconf.semin = minimum;
-  coolconf.semax = maximum;
-  registers_ptr_->write(Registers::COOLCONF, coolconf.bytes);
-}
-
-void Driver::disableCoolStep()
-{
-  Registers::Coolconf coolconf;
-  coolconf.bytes = registers_ptr_->getStored(Registers::COOLCONF);
-  coolconf.semin = SEMIN_OFF;
-  registers_ptr_->write(Registers::COOLCONF, coolconf.bytes);
 }
 
 void Driver::writeStallGuardThreshold(int8_t threshold)
@@ -293,19 +345,6 @@ void Driver::initialize(Registers & registers)
   toff_ = TOFF_ENABLE_DEFAULT;
 
   disable();
-
-  // disableAutomaticCurrentControl();
-  // writeMotorDirection(MOTOR_DIRECTION_DEFAULT);
-  // writeStandstillMode(STANDSTILL_MODE_DEFAULT);
-  // writeChopperMode(CHOPPER_MODE_DEFAULT);
-  enableStealthChop();
-  writeStealthChopThreshold(TSTEP_THRESHOLD_DEFAULT);
-  writeCoolStepThreshold(TSTEP_THRESHOLD_DEFAULT);
-  writeHighVelocityThreshold(TSTEP_THRESHOLD_DEFAULT);
-  disableHighVelocityFullstep();
-  disableHighVelocityChopperSwitch();
-  writeStallGuardThreshold(STALL_GUARD_THRESHOLD_DEFAULT);
-  enableCoolStep();
 }
 
 void Driver::hardwareEnable()
