@@ -55,6 +55,23 @@ int32_t Converter::accelerationRealToChip(int32_t acceleration_real)
   return accelerationHzPerSToChip(accelerationRealToHzPerS(acceleration_real));
 }
 
+DriverParameters Converter::driverParametersRealToChip(DriverParameters dp_real)
+{
+  DriverParameters dp_chip;
+  dp_chip.global_current_scalar = percentToGlobalCurrentScaler(dp_real.global_current_scalar);
+  dp_chip.run_current = percentToCurrentSetting(dp_real.run_current);
+  dp_chip.hold_current = percentToCurrentSetting(dp_real.hold_current);
+  dp_chip.hold_delay = percentToHoldDelaySetting(dp_real.hold_delay);
+  dp_chip.pwm_offset = percentToPwmSetting(dp_real.pwm_offset);
+  dp_chip.pwm_gradient = percentToPwmSetting(dp_real.pwm_gradient);
+  dp_chip.automatic_current_control_enabled = dp_real.automatic_current_control_enabled;
+  dp_chip.motor_direction = dp_real.motor_direction;
+  dp_chip.standstill_mode = dp_real.standstill_mode;
+  dp_chip.chopper_mode = dp_real.chopper_mode;
+
+  return dp_chip;
+}
+
 uint8_t Converter::percentToGlobalCurrentScaler(uint8_t percent)
 {
   uint8_t constrained_percent = constrain_(percent,

@@ -26,15 +26,19 @@ const tmc51x0::ConverterParameters converter_parameters =
 // 200 fullsteps per revolution for many steppers * 256 microsteps per fullstep
 // one "real unit" in this example is one rotation of the motor shaft
 
-const tmc51x0::DriverParameters driver_parameters =
+const tmc51x0::DriverParameters driver_parameters_real =
 {
   50, // global_current_scalar (percent)
+  100, // run_current (percent)
+  0, // hold_current (percent)
+  0, // hold_delay (percent)
+  15, // pwm_offset (percent)
+  5, // pwm_gradient (percent)
+  false, // automatic_current_control_enabled
+  tmc51x0::FORWARD, // motor_direction
+  tmc51x0::NORMAL, // standstill_mode
+  tmc51x0::SPREAD_CYCLE, // chopper_mode
 };
-//const uint8_t GLOBAL_CURRENT_SCALAR = 50; // percent
-const uint8_t RUN_CURRENT = 20; // percent
-const uint8_t PWM_OFFSET = 15; // percent
-const uint8_t PWM_GRADIENT = 5; // percent
-const tmc51x0::Driver::MotorDirection MOTOR_DIRECTION = tmc51x0::Driver::FORWARD;
 const uint8_t STEALTH_CHOP_THRESHOLD = 5; // rotations/s
 const uint8_t COOL_STEP_THRESHOLD = 6; // rotations/s
 const uint8_t MIN_COOL_STEP = 1;
@@ -78,14 +82,8 @@ void setup()
 
   tmc5160.converter.setup(converter_parameters);
 
-  tmc5160.driver.setup(driver_parameters);
-
-
-tmc5160.driver.writeGlobalCurrentScaler(tmc5160.converter.percentToGlobalCurrentScaler(GLOBAL_CURRENT_SCALAR));
-  tmc5160.driver.writeRunCurrent(tmc5160.converter.percentToCurrentSetting(RUN_CURRENT));
-  tmc5160.driver.writePwmOffset(tmc5160.converter.percentToPwmSetting(PWM_OFFSET));
-  tmc5160.driver.writePwmGradient(tmc5160.converter.percentToPwmSetting(PWM_GRADIENT));
-  tmc5160.driver.writeMotorDirection(MOTOR_DIRECTION);
+  tmc51x0::DriverParameters driver_parameters_chip = tmc5160.converter.driverParametersRealToChip(driver_parameters_real);
+  tmc5160.driver.setup(driver_parameters_chip);
 
   tmc5160.driver.writeStealthChopThreshold(tmc5160.converter.velocityRealToTstep(STEALTH_CHOP_THRESHOLD));
 
@@ -116,6 +114,13 @@ void loop()
   // tmc5160.printer.readAndPrintRampStat();
   tmc5160.printer.readAndPrintDrvStatus();
   // tmc5160.printer.readAndPrintPwmScale();
+
+  tmc51x0::DriverParameters driver_parameters_chip = tmc5160.converter.driverParametersRealToChip(driver_parameters_real);
+
+  // Serial.print("driver_parameters_real.run_current = ");
+  // Serial.println(driver_parameters_real.run_current);
+  // Serial.print("driver_parameters_chip.run_current = ");
+  // Serial.println(driver_parameters_chip.run_current);
 
   Serial.print("target_velocity (rotations per second): ");
   Serial.println(target_velocity);

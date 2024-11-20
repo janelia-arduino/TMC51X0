@@ -17,6 +17,22 @@ Driver::Driver()
 void Driver::setup(tmc51x0::DriverParameters driver_parameters)
 {
   writeGlobalCurrentScaler(driver_parameters.global_current_scalar);
+  writeRunCurrent(driver_parameters.run_current);
+  writeHoldCurrent(driver_parameters.hold_current);
+  writeHoldDelay(driver_parameters.hold_delay);
+  writePwmOffset(driver_parameters.pwm_offset);
+  writePwmGradient(driver_parameters.pwm_gradient);
+  if (driver_parameters.automatic_current_control_enabled)
+  {
+    enableAutomaticCurrentControl();
+  }
+  else
+  {
+    disableAutomaticCurrentControl();
+  }
+  writeMotorDirection(driver_parameters.motor_direction);
+  writeStandstillMode(driver_parameters.standstill_mode);
+  writeChopperMode(driver_parameters.chopper_mode);
 }
 
 void Driver::setEnableHardwarePin(size_t hardware_enable_pin)
@@ -67,22 +83,6 @@ void Driver::writeHoldDelay(uint8_t hold_delay)
   registers_ptr_->write(Registers::IHOLD_IRUN, ihold_irun.bytes);
 }
 
-void Driver::enableStealthChop()
-{
-  Registers::Gconf gconf;
-  gconf.bytes = registers_ptr_->getStored(Registers::GCONF);
-  gconf.en_pwm_mode = 1;
-  registers_ptr_->write(Registers::GCONF, gconf.bytes);
-}
-
-void Driver::disableStealthChop()
-{
-  Registers::Gconf gconf;
-  gconf.bytes = registers_ptr_->getStored(Registers::GCONF);
-  gconf.en_pwm_mode = 0;
-  registers_ptr_->write(Registers::GCONF, gconf.bytes);
-}
-
 void Driver::writePwmOffset(uint8_t pwm_amplitude)
 {
   Registers::Pwmconf pwmconf;
@@ -119,20 +119,20 @@ void Driver::disableAutomaticCurrentControl()
   registers_ptr_->write(Registers::PWMCONF, pwmconf.bytes);
 }
 
-void Driver::writeStandstillMode(Driver::StandstillMode mode)
-{
-  Registers::Pwmconf pwmconf;
-  pwmconf.bytes = registers_ptr_->getStored(Registers::PWMCONF);
-  pwmconf.freewheel = mode;
-  registers_ptr_->write(Registers::PWMCONF, pwmconf.bytes);
-}
-
 void Driver::writeMotorDirection(MotorDirection motor_direction)
 {
   Registers::Gconf gconf;
   gconf.bytes = registers_ptr_->getStored(Registers::GCONF);
   gconf.shaft = motor_direction;
   registers_ptr_->write(Registers::GCONF, gconf.bytes);
+}
+
+void Driver::writeStandstillMode(StandstillMode mode)
+{
+  Registers::Pwmconf pwmconf;
+  pwmconf.bytes = registers_ptr_->getStored(Registers::PWMCONF);
+  pwmconf.freewheel = mode;
+  registers_ptr_->write(Registers::PWMCONF, pwmconf.bytes);
 }
 
 void Driver::writeChopperMode(ChopperMode chopper_mode)
@@ -146,6 +146,22 @@ void Driver::writeChopperMode(ChopperMode chopper_mode)
 void Driver::writeStealthChopThreshold(uint32_t tstep)
 {
   registers_ptr_->write(Registers::TPWMTHRS, tstep);
+}
+
+void Driver::enableStealthChop()
+{
+  Registers::Gconf gconf;
+  gconf.bytes = registers_ptr_->getStored(Registers::GCONF);
+  gconf.en_pwm_mode = 1;
+  registers_ptr_->write(Registers::GCONF, gconf.bytes);
+}
+
+void Driver::disableStealthChop()
+{
+  Registers::Gconf gconf;
+  gconf.bytes = registers_ptr_->getStored(Registers::GCONF);
+  gconf.en_pwm_mode = 0;
+  registers_ptr_->write(Registers::GCONF, gconf.bytes);
 }
 
 void Driver::writeCoolStepThreshold(uint32_t tstep)
@@ -277,14 +293,12 @@ void Driver::initialize(Registers & registers)
   toff_ = TOFF_ENABLE_DEFAULT;
 
   disable();
-  minimizeMotorCurrent();
+
+  // disableAutomaticCurrentControl();
+  // writeMotorDirection(MOTOR_DIRECTION_DEFAULT);
+  // writeStandstillMode(STANDSTILL_MODE_DEFAULT);
+  // writeChopperMode(CHOPPER_MODE_DEFAULT);
   enableStealthChop();
-  disableAutomaticCurrentControl();
-  writePwmOffset(PWM_SETTING_DEFAULT);
-  writePwmGradient(PWM_SETTING_DEFAULT);
-  writeStandstillMode(STANDSTILL_MODE_DEFAULT);
-  writeMotorDirection(MOTOR_DIRECTION_DEFAULT);
-  writeChopperMode(CHOPPER_MODE_DEFAULT);
   writeStealthChopThreshold(TSTEP_THRESHOLD_DEFAULT);
   writeCoolStepThreshold(TSTEP_THRESHOLD_DEFAULT);
   writeHighVelocityThreshold(TSTEP_THRESHOLD_DEFAULT);
@@ -324,15 +338,4 @@ void Driver::softwareDisable()
   chopconf.bytes = registers_ptr_->getStored(Registers::CHOPCONF);
   chopconf.toff = DISABLE_TOFF;
   registers_ptr_->write(Registers::CHOPCONF, chopconf.bytes);
-}
-
-void Driver::minimizeMotorCurrent()
-{
-  uint32_t global_scaler = GLOBAL_SCALER_DEFAULT;
-  registers_ptr_->write(Registers::GLOBAL_SCALER, global_scaler);
-
-  Registers::IholdIrun ihold_irun;
-  ihold_irun.ihold = CURRENT_SETTING_DEFAULT;
-  ihold_irun.irun = CURRENT_SETTING_DEFAULT;
-  registers_ptr_->write(Registers::IHOLD_IRUN, ihold_irun.bytes);
 }

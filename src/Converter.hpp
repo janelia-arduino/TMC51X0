@@ -9,6 +9,8 @@
 #define TMC51X0_CONVERTER_HPP
 #include <Arduino.h>
 
+#include "Driver.hpp"
+
 
 namespace tmc51x0
 {
@@ -76,6 +78,8 @@ public:
 
   int32_t accelerationChipToReal(int32_t acceleration_chip);
   int32_t accelerationRealToChip(int32_t acceleration_chip);
+
+  DriverParameters driverParametersRealToChip(DriverParameters driver_parameters);
 
   uint8_t percentToGlobalCurrentScaler(uint8_t percent);
 
