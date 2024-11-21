@@ -9,6 +9,13 @@
 
 using namespace tmc51x0;
 
+void Controller::setup(tmc51x0::ControllerParameters controller_parameters)
+{
+  writeRampMode(controller_parameters.ramp_mode);
+  writeMaxVelocity(controller_parameters.max_velocity);
+  writeMaxAcceleration(controller_parameters.max_acceleration);
+}
+
 void Controller::writeRampMode(RampMode ramp_mode)
 {
   registers_ptr_->write(Registers::RAMPMODE, ramp_mode);
@@ -157,11 +164,11 @@ void Controller::initialize(Registers & registers)
 {
   registers_ptr_ = &registers;
 
-  writeRampMode(RAMP_MODE_DEFAULT);
+  // writeRampMode(RAMP_MODE_DEFAULT);
+  // writeMaxVelocity(MAX_VELOCITY_DEFAULT);
+  // writeMaxAcceleration(MAX_ACCELERATION_DEFAULT);
   writeStopMode(STOP_MODE_DEFAULT);
   writeActualPosition(ACTUAL_POSITION_DEFAULT);
-  writeMaxVelocity(MAX_VELOCITY_DEFAULT);
-  writeMaxAcceleration(MAX_ACCELERATION_DEFAULT);
   writeStartVelocity(START_VELOCITY_DEFAULT);
   writeStopVelocity(STOP_VELOCITY_DEFAULT);
   writeFirstAcceleration(FIRST_ACCELERATION_DEFAULT);

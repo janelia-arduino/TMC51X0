@@ -15,6 +15,45 @@ void Converter::setup(ConverterParameters converter_parameters)
   converter_parameters_ = converter_parameters;
 }
 
+DriverParameters Converter::driverParametersRealToChip(DriverParameters dp_real)
+{
+  DriverParameters dp_chip;
+  dp_chip.global_current_scalar = percentToGlobalCurrentScaler(dp_real.global_current_scalar);
+  dp_chip.run_current = percentToCurrentSetting(dp_real.run_current);
+  dp_chip.hold_current = percentToCurrentSetting(dp_real.hold_current);
+  dp_chip.hold_delay = percentToHoldDelaySetting(dp_real.hold_delay);
+  dp_chip.pwm_offset = percentToPwmSetting(dp_real.pwm_offset);
+  dp_chip.pwm_gradient = percentToPwmSetting(dp_real.pwm_gradient);
+  dp_chip.automatic_current_control_enabled = dp_real.automatic_current_control_enabled;
+  dp_chip.motor_direction = dp_real.motor_direction;
+  dp_chip.standstill_mode = dp_real.standstill_mode;
+  dp_chip.chopper_mode = dp_real.chopper_mode;
+  dp_chip.stealth_chop_threshold = velocityRealToTstep(dp_real.stealth_chop_threshold);
+  dp_chip.stealth_chop_enabled = dp_real.stealth_chop_enabled;
+  dp_chip.cool_step_threshold = velocityRealToTstep(dp_real.cool_step_threshold);
+  dp_chip.cool_step_min = dp_real.cool_step_min;
+  dp_chip.cool_step_max = dp_real.cool_step_max;
+  dp_chip.cool_step_enabled = dp_real.cool_step_enabled;
+  dp_chip.high_velocity_threshold = velocityRealToTstep(dp_real.high_velocity_threshold);
+  dp_chip.high_velocity_fullstep_enabled = dp_real.high_velocity_fullstep_enabled;
+  dp_chip.high_velocity_chopper_switch_enabled = dp_real.high_velocity_chopper_switch_enabled;
+  dp_chip.stall_guard_threshold = dp_real.stall_guard_threshold;
+  dp_chip.stall_guard_filter_enabled = dp_real.stall_guard_filter_enabled;
+  dp_chip.short_to_ground_protection_enabled = dp_real.short_to_ground_protection_enabled;
+
+  return dp_chip;
+}
+
+ControllerParameters Converter::controllerParametersRealToChip(ControllerParameters cp_real)
+{
+  ControllerParameters cp_chip;
+  cp_chip.ramp_mode = cp_real.ramp_mode;
+  cp_chip.max_velocity = velocityRealToChip(cp_real.max_velocity);
+  cp_chip.max_acceleration = accelerationRealToChip(cp_real.max_acceleration);
+
+  return cp_chip;
+}
+
 int32_t Converter::positionChipToReal(int32_t position_chip)
 {
   return position_chip / converter_parameters_.microsteps_per_real_position_unit;
@@ -53,35 +92,6 @@ int32_t Converter::accelerationChipToReal(int32_t acceleration_chip)
 int32_t Converter::accelerationRealToChip(int32_t acceleration_real)
 {
   return accelerationHzPerSToChip(accelerationRealToHzPerS(acceleration_real));
-}
-
-DriverParameters Converter::driverParametersRealToChip(DriverParameters dp_real)
-{
-  DriverParameters dp_chip;
-  dp_chip.global_current_scalar = percentToGlobalCurrentScaler(dp_real.global_current_scalar);
-  dp_chip.run_current = percentToCurrentSetting(dp_real.run_current);
-  dp_chip.hold_current = percentToCurrentSetting(dp_real.hold_current);
-  dp_chip.hold_delay = percentToHoldDelaySetting(dp_real.hold_delay);
-  dp_chip.pwm_offset = percentToPwmSetting(dp_real.pwm_offset);
-  dp_chip.pwm_gradient = percentToPwmSetting(dp_real.pwm_gradient);
-  dp_chip.automatic_current_control_enabled = dp_real.automatic_current_control_enabled;
-  dp_chip.motor_direction = dp_real.motor_direction;
-  dp_chip.standstill_mode = dp_real.standstill_mode;
-  dp_chip.chopper_mode = dp_real.chopper_mode;
-  dp_chip.stealth_chop_threshold = velocityRealToTstep(dp_real.stealth_chop_threshold);
-  dp_chip.stealth_chop_enabled = dp_real.stealth_chop_enabled;
-  dp_chip.cool_step_threshold = velocityRealToTstep(dp_real.cool_step_threshold);
-  dp_chip.cool_step_min = dp_real.cool_step_min;
-  dp_chip.cool_step_max = dp_real.cool_step_max;
-  dp_chip.cool_step_enabled = dp_real.cool_step_enabled;
-  dp_chip.high_velocity_threshold = velocityRealToTstep(dp_real.high_velocity_threshold);
-  dp_chip.high_velocity_fullstep_enabled = dp_real.high_velocity_fullstep_enabled;
-  dp_chip.high_velocity_chopper_switch_enabled = dp_real.high_velocity_chopper_switch_enabled;
-  dp_chip.stall_guard_threshold = dp_real.stall_guard_threshold;
-  dp_chip.stall_guard_filter_enabled = dp_real.stall_guard_filter_enabled;
-  dp_chip.short_to_ground_protection_enabled = dp_real.short_to_ground_protection_enabled;
-
-  return dp_chip;
 }
 
 uint8_t Converter::percentToGlobalCurrentScaler(uint8_t percent)
@@ -197,7 +207,7 @@ int32_t Converter::velocityRealToHz(int32_t velocity_real)
 
 int32_t Converter::velocityHzToReal(int32_t velocity_hz)
 {
-  int64_t velocity_real;
+  int32_t velocity_real;
   velocity_real = positionChipToReal(velocity_hz);
   velocity_real = velocity_real * converter_parameters_.seconds_per_real_velocity_unit;
   return velocity_real;

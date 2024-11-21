@@ -55,13 +55,12 @@ const tmc51x0::DriverParameters driver_parameters_real =
   true // short_to_ground_protection_enabled
 };
 
-// controller constants
-// const uint32_t TARGET_VELOCITY = 1;  // rotations/s
-// const uint32_t MAX_ACCELERATION = 2;  // rotations/(s^2)
-const uint32_t TARGET_VELOCITY = 120;  // rotations/min
-const uint32_t MAX_ACCELERATION = 120;  // (rotations/min)/s
-const tmc51x0::Controller::RampMode RAMP_MODE = tmc51x0::Controller::VELOCITY_POSITIVE;
-const int32_t INITIAL_POSITION = 0;
+const tmc51x0::ControllerParameters controller_parameters_real =
+{
+  tmc51x0::VELOCITY_POSITIVE, // ramp_mode
+  120, // max_velocity (rotations/min)
+  120, // max_acceleration ((rotations/min)/s)
+};
 
 const size_t ENABLE_POWER_PIN = 15;
 
@@ -70,7 +69,7 @@ const uint16_t DELAY = 4000;
 
 // Instantiate TMC51X0
 TMC51X0 prism;
-uint32_t target_velocity;
+//uint32_t target_velocity;
 
 void setup()
 {
@@ -96,15 +95,15 @@ void setup()
   tmc51x0::DriverParameters driver_parameters_chip = prism.converter.driverParametersRealToChip(driver_parameters_real);
   prism.driver.setup(driver_parameters_chip);
 
-  prism.controller.writeMaxAcceleration(prism.converter.accelerationRealToChip(MAX_ACCELERATION));
-  prism.controller.writeRampMode(RAMP_MODE);
-  prism.controller.writeActualPosition(prism.converter.positionRealToChip(INITIAL_POSITION));
+  tmc51x0::ControllerParameters controller_parameters_chip = prism.converter.controllerParametersRealToChip(controller_parameters_real);
+  prism.controller.setup(controller_parameters_chip);
 
   prism.driver.enable();
 
   prism.controller.rampToZeroVelocity();
+  prism.controller.writeMaxVelocity(prism.converter.velocityRealToChip(controller_parameters_real.max_velocity));
 
-  target_velocity = TARGET_VELOCITY;
+  prism.controller.writeActualPosition(0);
 
   delay(DELAY);
 }
@@ -117,46 +116,42 @@ void loop()
   prism.printer.readAndPrintDrvStatus();
   prism.printer.readAndPrintPwmScale();
 
-  tmc51x0::DriverParameters driver_parameters_chip = prism.converter.driverParametersRealToChip(driver_parameters_real);
-  prism.driver.setup(driver_parameters_chip);
-
-  Serial.print("driver_parameters_real.stealth_chop_threshold = ");
-  Serial.println(driver_parameters_real.stealth_chop_threshold);
-  Serial.print("driver_parameters_chip.stealth_chop_threshold = ");
-  Serial.println(driver_parameters_chip.stealth_chop_threshold);
-
-  Serial.print("driver_parameters_real.stall_guard_threshold = ");
-  Serial.println(driver_parameters_real.stall_guard_threshold);
-  Serial.print("driver_parameters_chip.stall_guard_threshold = ");
-  Serial.println(driver_parameters_chip.stall_guard_threshold);
-  uint16_t stall_guard_result = prism.driver.readStallGuardResult();
-  Serial.print("driver_parameters_chip.stall_guard_result = ");
-  Serial.println(stall_guard_result);
-
-  Serial.print("target_velocity (rotations per second): ");
-  Serial.println(target_velocity);
-  uint32_t chip_velocity = prism.converter.velocityRealToChip(target_velocity);
+  Serial.print("target_velocity (rotations per minute): ");
+  Serial.println(controller_parameters_real.max_velocity);
+  uint32_t chip_velocity = prism.converter.velocityRealToChip(controller_parameters_real.max_velocity);
   Serial.print("chip_velocity (chip units): ");
   Serial.println(chip_velocity);
+  uint32_t hz_velocity = prism.converter.velocityRealToHz(controller_parameters_real.max_velocity);
+  Serial.print("hz_velocity (Hz): ");
+  Serial.println(hz_velocity);
+  chip_velocity = prism.converter.velocityHzToChip(hz_velocity);
+  Serial.print("chip_velocity (chip units): ");
+  Serial.println(chip_velocity);
+  Serial.println("--------------------------");
 
-  // uint32_t actual_velocity_chip = prism.controller.readActualVelocity();
-  // Serial.print("actual_velocity (chip units): ");
-  // Serial.println(actual_velocity_chip);
-  // uint32_t actual_velocity_real = prism.converter.velocityChipToReal(actual_velocity_chip);
-  // Serial.print("actual_velocity (rotations per second): ");
-  // Serial.println(actual_velocity_real);
-  // Serial.println("--------------------------");
+  uint32_t actual_velocity_chip = prism.controller.readActualVelocity();
+  Serial.print("actual_velocity (chip units): ");
+  Serial.println(actual_velocity_chip);
+  uint32_t actual_velocity_real = prism.converter.velocityChipToReal(actual_velocity_chip);
+  Serial.print("actual_velocity (rotations per minute): ");
+  Serial.println(actual_velocity_real);
+  hz_velocity = prism.converter.velocityChipToHz(actual_velocity_chip);
+  Serial.print("hz_velocity (Hz): ");
+  Serial.println(hz_velocity);
+  actual_velocity_real = prism.converter.velocityHzToReal(hz_velocity);
+  Serial.print("actual_velocity (rotations per minute): ");
+  Serial.println(actual_velocity_real);
+  Serial.println("--------------------------");
 
-  // int32_t actual_position_chip = prism.controller.readActualPosition();
-  // Serial.print("actual position (chip units): ");
-  // Serial.println(actual_position_chip);
-  // int32_t actual_position_real = prism.converter.positionChipToReal(actual_position_chip);
-  // Serial.print("actual position (rotations): ");
-  // Serial.println(actual_position_real);
-  // Serial.println("--------------------------");
+  int32_t actual_position_chip = prism.controller.readActualPosition();
+  Serial.print("actual position (chip units): ");
+  Serial.println(actual_position_chip);
+  int32_t actual_position_real = prism.converter.positionChipToReal(actual_position_chip);
+  Serial.print("actual position (rotations): ");
+  Serial.println(actual_position_real);
+  Serial.println("--------------------------");
 
   Serial.println("--------------------------");
-  prism.controller.writeMaxVelocity(prism.converter.velocityRealToChip(target_velocity));
 
   delay(DELAY);
 }

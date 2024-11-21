@@ -10,6 +10,7 @@
 #include <Arduino.h>
 
 #include "Driver.hpp"
+#include "Controller.hpp"
 
 
 namespace tmc51x0
@@ -67,6 +68,9 @@ class Converter
 public:
   void setup(ConverterParameters converter_parameters);
 
+  DriverParameters driverParametersRealToChip(DriverParameters driver_parameters);
+  ControllerParameters controllerParametersRealToChip(ControllerParameters controller_parameters);
+
   int32_t positionChipToReal(int32_t position_chip);
   int32_t positionRealToChip(int32_t position_real);
 
@@ -78,8 +82,6 @@ public:
 
   int32_t accelerationChipToReal(int32_t acceleration_chip);
   int32_t accelerationRealToChip(int32_t acceleration_chip);
-
-  DriverParameters driverParametersRealToChip(DriverParameters driver_parameters);
 
   uint8_t percentToGlobalCurrentScaler(uint8_t percent);
 
@@ -118,7 +120,7 @@ private:
   const static uint8_t SEMIN_MAX = 15;
   const static uint8_t SEMAX_MIN = 0;
   const static uint8_t SEMAX_MAX = 15;
-
+public:
   int32_t velocityChipToHz(int32_t velocity_chip);
   int32_t velocityHzToChip(int32_t velocity_hz);
   int32_t velocityRealToHz(int32_t velocity_real);
