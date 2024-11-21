@@ -82,6 +82,7 @@ public:
   void writeActualPosition(int32_t position);
   // -(2^23)-1..(2^23)-1 microsteps/t
   int32_t readActualVelocity();
+  void zeroActualPosition();
 
   bool velocityReached();
   bool positionReached();

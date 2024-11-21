@@ -100,11 +100,6 @@ void setup()
 
   prism.driver.enable();
 
-  prism.controller.rampToZeroVelocity();
-  prism.controller.writeMaxVelocity(prism.converter.velocityRealToChip(controller_parameters_real.max_velocity));
-
-  prism.controller.writeActualPosition(0);
-
   delay(DELAY);
 }
 
@@ -121,24 +116,12 @@ void loop()
   uint32_t chip_velocity = prism.converter.velocityRealToChip(controller_parameters_real.max_velocity);
   Serial.print("chip_velocity (chip units): ");
   Serial.println(chip_velocity);
-  uint32_t hz_velocity = prism.converter.velocityRealToHz(controller_parameters_real.max_velocity);
-  Serial.print("hz_velocity (Hz): ");
-  Serial.println(hz_velocity);
-  chip_velocity = prism.converter.velocityHzToChip(hz_velocity);
-  Serial.print("chip_velocity (chip units): ");
-  Serial.println(chip_velocity);
   Serial.println("--------------------------");
 
   uint32_t actual_velocity_chip = prism.controller.readActualVelocity();
   Serial.print("actual_velocity (chip units): ");
   Serial.println(actual_velocity_chip);
   uint32_t actual_velocity_real = prism.converter.velocityChipToReal(actual_velocity_chip);
-  Serial.print("actual_velocity (rotations per minute): ");
-  Serial.println(actual_velocity_real);
-  hz_velocity = prism.converter.velocityChipToHz(actual_velocity_chip);
-  Serial.print("hz_velocity (Hz): ");
-  Serial.println(hz_velocity);
-  actual_velocity_real = prism.converter.velocityHzToReal(hz_velocity);
   Serial.print("actual_velocity (rotations per minute): ");
   Serial.println(actual_velocity_real);
   Serial.println("--------------------------");

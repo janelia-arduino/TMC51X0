@@ -59,13 +59,17 @@ const tmc51x0::DriverParameters driver_parameters_real =
 const int32_t MIN_TARGET_VELOCITY = 50;  // fullsteps/s
 const int32_t MAX_TARGET_VELOCITY = 500; // fullsteps/s
 const int32_t TARGET_VELOCITY_INC = 50;  // fullsteps/s
-const uint32_t MAX_ACCELERATION = 50;  // fullsteps/(s^2)
-const int32_t INITIAL_POSITION = 0;
+const tmc51x0::ControllerParameters controller_parameters_real =
+{
+  tmc51x0::VELOCITY_POSITIVE, // ramp_mode
+  MIN_TARGET_VELOCITY, // max_velocity (fullsteps/s)
+  50, // max_acceleration ((fullsteps/s)/s)
+};
 
 // Instantiate TMC51X0
 TMC51X0 tmc5130;
 uint32_t target_velocity;
-tmc51x0::Controller::RampMode ramp_mode = tmc51x0::Controller::VELOCITY_POSITIVE;
+tmc51x0::RampMode ramp_mode = tmc51x0::VELOCITY_POSITIVE;
 
 void setup()
 {
@@ -84,9 +88,8 @@ void setup()
   tmc51x0::DriverParameters driver_parameters_chip = tmc5130.converter.driverParametersRealToChip(driver_parameters_real);
   tmc5130.driver.setup(driver_parameters_chip);
 
-  tmc5130.controller.writeMaxAcceleration(tmc5130.converter.accelerationRealToChip(MAX_ACCELERATION));
-  tmc5130.controller.writeRampMode(ramp_mode);
-  tmc5130.controller.writeActualPosition(tmc5130.converter.positionRealToChip(INITIAL_POSITION));
+  tmc51x0::ControllerParameters controller_parameters_chip = tmc5130.converter.controllerParametersRealToChip(controller_parameters_real);
+  tmc5130.controller.setup(controller_parameters_chip);
 
   tmc5130.driver.enable();
 
@@ -96,6 +99,8 @@ void setup()
     Serial.println("Waiting for zero velocity.");
     delay(DELAY);
   }
+
+  tmc5130.controller.zeroActualPosition();
 
   target_velocity = MIN_TARGET_VELOCITY;
   tmc5130.controller.writeMaxVelocity(tmc5130.converter.velocityRealToChip(target_velocity));
@@ -115,13 +120,13 @@ void loop()
     if (target_velocity > MAX_TARGET_VELOCITY)
     {
       target_velocity = MIN_TARGET_VELOCITY;
-      if (ramp_mode == tmc51x0::Controller::VELOCITY_POSITIVE)
+      if (ramp_mode == tmc51x0::VELOCITY_POSITIVE)
       {
-        ramp_mode = tmc51x0::Controller::VELOCITY_NEGATIVE;
+        ramp_mode = tmc51x0::VELOCITY_NEGATIVE;
       }
       else
       {
-        ramp_mode = tmc51x0::Controller::VELOCITY_POSITIVE;
+        ramp_mode = tmc51x0::VELOCITY_POSITIVE;
       }
       tmc5130.controller.writeRampMode(ramp_mode);
     }

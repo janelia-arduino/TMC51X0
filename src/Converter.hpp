@@ -120,7 +120,7 @@ private:
   const static uint8_t SEMIN_MAX = 15;
   const static uint8_t SEMAX_MIN = 0;
   const static uint8_t SEMAX_MAX = 15;
-public:
+
   int32_t velocityChipToHz(int32_t velocity_chip);
   int32_t velocityHzToChip(int32_t velocity_hz);
   int32_t velocityRealToHz(int32_t velocity_real);

@@ -54,6 +54,11 @@ int32_t Controller::readActualVelocity()
   return actual_velocity;
 }
 
+void Controller::zeroActualPosition()
+{
+  return writeActualPosition(0);
+}
+
 bool Controller::velocityReached()
 {
   Registers::RampStat ramp_stat;

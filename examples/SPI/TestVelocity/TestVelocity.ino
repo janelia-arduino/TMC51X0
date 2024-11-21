@@ -56,9 +56,12 @@ const tmc51x0::DriverParameters driver_parameters_real =
 const uint32_t MIN_TARGET_VELOCITY = 1;  // rotations/s
 const uint32_t MAX_TARGET_VELOCITY = 25; // rotations/s
 const uint32_t TARGET_VELOCITY_INC = 1;  // rotations/s
-const uint32_t MAX_ACCELERATION = 2;  // rotations/(s^2)
-const tmc51x0::Controller::RampMode RAMP_MODE = tmc51x0::Controller::VELOCITY_POSITIVE;
-const int32_t INITIAL_POSITION = 0;
+const tmc51x0::ControllerParameters controller_parameters_real =
+{
+  tmc51x0::VELOCITY_POSITIVE, // ramp_mode
+  MIN_TARGET_VELOCITY, // max_velocity (rotations/s)
+  2, // max_acceleration ((rotations/s)/s)
+};
 
 const size_t ENABLE_HARDWARE_PIN = 4;
 
@@ -87,9 +90,8 @@ void setup()
   tmc51x0::DriverParameters driver_parameters_chip = tmc5160.converter.driverParametersRealToChip(driver_parameters_real);
   tmc5160.driver.setup(driver_parameters_chip);
 
-  tmc5160.controller.writeMaxAcceleration(tmc5160.converter.accelerationRealToChip(MAX_ACCELERATION));
-  tmc5160.controller.writeRampMode(RAMP_MODE);
-  tmc5160.controller.writeActualPosition(tmc5160.converter.positionRealToChip(INITIAL_POSITION));
+  tmc51x0::ControllerParameters controller_parameters_chip = tmc5160.converter.controllerParametersRealToChip(controller_parameters_real);
+  tmc5160.controller.setup(controller_parameters_chip);
 
   tmc5160.driver.enable();
 
@@ -99,6 +101,8 @@ void setup()
     Serial.println("Waiting for zero velocity.");
     delay(DELAY);
   }
+
+  tmc5160.controller.zeroActualPosition();
 
   target_velocity = MIN_TARGET_VELOCITY;
   tmc5160.controller.writeMaxVelocity(tmc5160.converter.velocityRealToChip(target_velocity));
@@ -113,42 +117,42 @@ void loop()
   tmc5160.printer.readAndPrintDrvStatus();
   tmc5160.printer.readAndPrintPwmScale();
 
-  // Serial.print("acceleration (rotations per second per second): ");
-  // Serial.println(MAX_ACCELERATION);
-  // Serial.print("acceleration (chip units): ");
-  // Serial.println(tmc5160.converter.accelerationRealToChip(MAX_ACCELERATION));
-  // Serial.println("--------------------------");
+  Serial.print("acceleration (rotations per second per second): ");
+  Serial.println(controller_parameters_real.max_acceleration);
+  Serial.print("acceleration (chip units): ");
+  Serial.println(tmc5160.converter.accelerationRealToChip(controller_parameters_real.max_acceleration));
+  Serial.println("--------------------------");
 
   Serial.print("target_velocity (rotations per second): ");
   Serial.println(target_velocity);
   uint32_t actual_velocity_chip = tmc5160.controller.readActualVelocity();
-  // Serial.print("actual_velocity (chip units): ");
-  // Serial.println(actual_velocity_chip);
+  Serial.print("actual_velocity (chip units): ");
+  Serial.println(actual_velocity_chip);
   uint32_t actual_velocity_real = tmc5160.converter.velocityChipToReal(actual_velocity_chip);
   Serial.print("actual_velocity (rotations per second): ");
   Serial.println(actual_velocity_real);
-  // uint32_t tstep = tmc5160.controller.readTstep();
-  // Serial.print("tstep (chip units): ");
-  // Serial.println(tstep);
-  // uint32_t velocity_real = tmc5160.converter.tstepToVelocityReal(tstep);
-  // Serial.print("tstepToVelocityReal (rotations per second): ");
-  // Serial.println(velocity_real);
-  // tstep = tmc5160.converter.velocityRealToTstep(velocity_real);
-  // Serial.print("velocityRealToTstep (chip_units): ");
-  // Serial.println(tstep);
-  // Serial.print("STEALTH_CHOP_THRESHOLD (rotations per second): ");
-  // Serial.println(STEALTH_CHOP_THRESHOLD);
-  // Serial.print("STEALTH_CHOP_THRESHOLD (chip units): ");
-  // Serial.println(tmc5160.converter.velocityRealToTstep(STEALTH_CHOP_THRESHOLD));
+  uint32_t tstep = tmc5160.controller.readTstep();
+  Serial.print("tstep (chip units): ");
+  Serial.println(tstep);
+  uint32_t velocity_real = tmc5160.converter.tstepToVelocityReal(tstep);
+  Serial.print("tstepToVelocityReal (rotations per second): ");
+  Serial.println(velocity_real);
+  tstep = tmc5160.converter.velocityRealToTstep(velocity_real);
+  Serial.print("velocityRealToTstep (chip_units): ");
+  Serial.println(tstep);
+  Serial.print("STEALTH_CHOP_THRESHOLD (rotations per second): ");
+  Serial.println(driver_parameters_real.stealth_chop_threshold);
+  Serial.print("STEALTH_CHOP_THRESHOLD (chip units): ");
+  Serial.println(tmc5160.converter.velocityRealToTstep(driver_parameters_real.stealth_chop_threshold));
   Serial.println("--------------------------");
 
-  // int32_t actual_position_chip = tmc5160.controller.readActualPosition();
-  // Serial.print("actual position (chip units): ");
-  // Serial.println(actual_position_chip);
-  // int32_t actual_position_real = tmc5160.converter.positionChipToReal(actual_position_chip);
-  // Serial.print("actual position (rotations): ");
-  // Serial.println(actual_position_real);
-  // Serial.println("--------------------------");
+  int32_t actual_position_chip = tmc5160.controller.readActualPosition();
+  Serial.print("actual position (chip units): ");
+  Serial.println(actual_position_chip);
+  int32_t actual_position_real = tmc5160.converter.positionChipToReal(actual_position_chip);
+  Serial.print("actual position (rotations): ");
+  Serial.println(actual_position_real);
+  Serial.println("--------------------------");
 
   Serial.println("--------------------------");
 

@@ -66,8 +66,12 @@ const tmc51x0::DriverParameters driver_parameters_real =
 const uint32_t MIN_TARGET_VELOCITY = 60;  // rotations/min
 const uint32_t MAX_TARGET_VELOCITY = 600; // rotations/min
 const uint32_t TARGET_VELOCITY_INC = 60;  // rotations/min
-const uint32_t MAX_ACCELERATION = 60;  // (rotations/min)/s
-const tmc51x0::Controller::RampMode RAMP_MODE = tmc51x0::Controller::VELOCITY_POSITIVE;
+const tmc51x0::ControllerParameters controller_parameters_real =
+{
+  tmc51x0::VELOCITY_POSITIVE, // ramp_mode
+  MIN_TARGET_VELOCITY, // max_velocity (rotations/min)
+  60, // max_acceleration ((rotations/min)/s)
+};
 
 const size_t ENABLE_VIO_PIN = 21;
 const size_t ENABLE_FAN_PIN = 28;
@@ -107,8 +111,8 @@ void setup()
   tmc51x0::DriverParameters driver_parameters_chip = tmc5160.converter.driverParametersRealToChip(driver_parameters_real);
   tmc5160.driver.setup(driver_parameters_chip);
 
-  tmc5160.controller.writeMaxAcceleration(tmc5160.converter.accelerationRealToChip(MAX_ACCELERATION));
-  tmc5160.controller.writeRampMode(RAMP_MODE);
+  tmc51x0::ControllerParameters controller_parameters_chip = tmc5160.converter.controllerParametersRealToChip(controller_parameters_real);
+  tmc5160.controller.setup(controller_parameters_chip);
 
   tmc5160.driver.enable();
 
@@ -136,7 +140,7 @@ void loop()
   Serial.println("--------------------------");
 
   Serial.print("acceleration (rotations per second per second): ");
-  Serial.println(MAX_ACCELERATION);
+  Serial.println(controller_parameters_real.max_acceleration);
   Serial.print("target_velocity (rotations per minute): ");
   Serial.println(target_velocity);
   Serial.println("--------------------------");
