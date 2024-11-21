@@ -50,19 +50,19 @@ void setup()
 void loop()
 {
   Serial.println("standstill mode = NORMAL");
-  tmc5130.driver.writeStandstillMode(tmc51x0::Driver::NORMAL);
+  tmc5130.driver.writeStandstillMode(tmc51x0::NORMAL);
   delay(DELAY);
 
   Serial.println("standstill mode = FREEWHEELING");
-  tmc5130.driver.writeStandstillMode(tmc51x0::Driver::FREEWHEELING);
+  tmc5130.driver.writeStandstillMode(tmc51x0::FREEWHEELING);
   delay(DELAY);
 
   Serial.println("standstill mode = PASSIVE_BRAKING_LS");
-  tmc5130.driver.writeStandstillMode(tmc51x0::Driver::PASSIVE_BRAKING_LS);
+  tmc5130.driver.writeStandstillMode(tmc51x0::PASSIVE_BRAKING_LS);
   delay(DELAY);
 
   Serial.println("standstill mode = PASSIVE_BRAKING_HS");
-  tmc5130.driver.writeStandstillMode(tmc51x0::Driver::PASSIVE_BRAKING_HS);
+  tmc5130.driver.writeStandstillMode(tmc51x0::PASSIVE_BRAKING_HS);
   delay(DELAY);
 
   Serial.println("--------------------------");

@@ -19,7 +19,7 @@ tmc51x0::SpiParameters spi_parameters =
 };
 const size_t SPI_CHIP_SELECT_PINS[PRISM_COUNT] = {14, 8, 7, 6, 5, 4, 3};
 
-const uint8_t PRISMS_RESET_PIN = 15;
+const size_t PRISMS_RESET_PIN = 15;
 
 const uint32_t SERIAL_BAUD_RATE = 115200;
 const uint16_t DELAY = 1000;

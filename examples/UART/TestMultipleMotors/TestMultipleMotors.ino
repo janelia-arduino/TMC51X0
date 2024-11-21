@@ -43,19 +43,31 @@ const tmc51x0::ConverterParameters converter_parameters =
 // 10.49 millimeters per revolution leadscrew -> 51200 / 10.49 ~= 4881
 // one "real unit" in this example is one millimeters of linear travel
 
-// driver constants
-const uint8_t GLOBAL_CURRENT_SCALAR = 100; // percent
-const uint8_t RUN_CURRENT = 50; // percent
-const uint8_t PWM_OFFSET = 20; // percent
-const uint8_t PWM_GRADIENT = 5; // percent
-const tmc51x0::Driver::MotorDirection MOTOR_DIRECTION = tmc51x0::Driver::FORWARD;
-
-const uint8_t STEALTH_CHOP_THRESHOLD = 10; // millimeters/s
-const uint8_t COOL_STEP_THRESHOLD = 50; // millimeters/s
-const uint8_t MIN_COOL_STEP = 1;
-const uint8_t MAX_COOL_STEP = 0;
-const uint8_t HIGH_VELOCITY_THRESHOLD = 90; // millimeters/s
-const int8_t STALL_GUARD_THRESHOLD = 1;
+const tmc51x0::DriverParameters driver_parameters_real =
+{
+  50, // global_current_scalar (percent)
+  20, // run_current (percent)
+  0, // hold_current (percent)
+  0, // hold_delay (percent)
+  20, // pwm_offset (percent)
+  5, // pwm_gradient (percent)
+  false, // automatic_current_control_enabled
+  tmc51x0::REVERSE, // motor_direction
+  tmc51x0::NORMAL, // standstill_mode
+  tmc51x0::SPREAD_CYCLE, // chopper_mode
+  10, // stealth_chop_threshold (millimeters/s)
+  true, // stealth_chop_enabled
+  50, // cool_step_threshold (millimeters/s)
+  1, // cool_step_min
+  0, // cool_step_max
+  true, // cool_step_enabled
+  90, // high_velocity_threshold (rotations/min)
+  true, // high_velocity_fullstep_enabled
+  true, // high_velocity_chopper_switch_enabled
+  1, // stall_guard_threshold
+  false, // stall_guard_filter_enabled
+  true // short_to_ground_protection_enabled
+};
 
 // controller constants
 const uint32_t START_VELOCITY = 1; // millimeters/s
@@ -96,8 +108,6 @@ void setup()
 #endif
   uart.begin(UART_BAUD_RATE);
 
-  tmc5160.converter.setup(converter_parameters);
-
   randomSeed(analogRead(A0));
 
   for (size_t i=0; i<MOTOR_COUNT; ++i)
@@ -107,20 +117,14 @@ void setup()
     uart_parameters.enable_txrx_pin = ENABLE_TXRX_PINS[i];
     motor.setupUart(uart_parameters);
 
+    motor.converter.setup(converter_parameters);
+    tmc51x0::DriverParameters driver_parameters_chip = motor.converter.driverParametersRealToChip(driver_parameters_real);
+
     digitalWrite(MUX_ADDRESS_0_PIN, MUX_ADDRESS_0_VALUES[i]);
     digitalWrite(MUX_ADDRESS_1_PIN, MUX_ADDRESS_1_VALUES[i]);
     digitalWrite(MUX_ADDRESS_2_PIN, MUX_ADDRESS_2_VALUES[i]);
 
-    motor.driver.writeGlobalCurrentScaler(motor.converter.percentToGlobalCurrentScaler(GLOBAL_CURRENT_SCALAR));
-    motor.driver.writeRunCurrent(motor.converter.percentToCurrentSetting(RUN_CURRENT));
-    motor.driver.writePwmOffset(motor.converter.percentToPwmSetting(PWM_OFFSET));
-    motor.driver.writePwmGradient(motor.converter.percentToPwmSetting(PWM_GRADIENT));
-    motor.driver.writeMotorDirection(MOTOR_DIRECTION);
-    motor.driver.writeStealthChopThreshold(motor.converter.velocityRealToTstep(STEALTH_CHOP_THRESHOLD));
-    // motor.driver.writeCoolStepThreshold(motor.converter.velocityRealToTstep(COOL_STEP_THRESHOLD));
-    // motor.driver.enableCoolStep(MIN_COOL_STEP, MAX_COOL_STEP);
-    // motor.driver.writeHighVelocityThreshold(motor.converter.velocityRealToTstep(HIGH_VELOCITY_THRESHOLD));
-    // motor.driver.writeStallGuardThreshold(STALL_GUARD_THRESHOLD);
+    motor.driver.setup(driver_parameters_chip);
 
     motor.controller.writeFirstAcceleration(motor.converter.accelerationRealToChip(FIRST_ACCELERATION));
     motor.controller.writeFirstVelocity(motor.converter.velocityRealToChip(FIRST_VELOCITY));

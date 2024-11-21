@@ -41,16 +41,13 @@ const tmc51x0::DriverParameters driver_parameters_real =
   tmc51x0::FORWARD, // motor_direction
   tmc51x0::NORMAL, // standstill_mode
   tmc51x0::SPREAD_CYCLE, // chopper_mode
-  // 300, // stealth_chop_threshold (rotations/min)
   40, // stealth_chop_threshold (rotations/min)
   true, // stealth_chop_enabled
-  // 360, // cool_step_threshold (rotations/min)
   50, // cool_step_threshold (rotations/min)
   1, // cool_step_min
   0, // cool_step_max
   true, // cool_step_enabled
-  540, // high_velocity_threshold (rotations/min)
-  // 55, // high_velocity_threshold (rotations/min)
+  200, // high_velocity_threshold (rotations/min)
   true, // high_velocity_fullstep_enabled
   true, // high_velocity_chopper_switch_enabled
   0, // stall_guard_threshold
@@ -121,6 +118,7 @@ void loop()
   prism.printer.readAndPrintPwmScale();
 
   tmc51x0::DriverParameters driver_parameters_chip = prism.converter.driverParametersRealToChip(driver_parameters_real);
+  prism.driver.setup(driver_parameters_chip);
 
   Serial.print("driver_parameters_real.stealth_chop_threshold = ");
   Serial.println(driver_parameters_real.stealth_chop_threshold);

@@ -30,19 +30,31 @@ const tmc51x0::ConverterParameters converter_parameters =
 // 10.49 millimeters per revolution leadscrew -> 51200 / 10.49 ~= 4881
 // one "real unit" in this example is one millimeters of linear travel
 
-// driver constants
-const uint8_t GLOBAL_CURRENT_SCALAR = 100; // percent
-const uint8_t RUN_CURRENT = 50; // percent
-const uint8_t PWM_OFFSET = 20; // percent
-const uint8_t PWM_GRADIENT = 5; // percent
-const tmc51x0::Driver::MotorDirection MOTOR_DIRECTION = tmc51x0::Driver::FORWARD;
-
-const uint8_t STEALTH_CHOP_THRESHOLD = 10; // millimeters/s
-const uint8_t COOL_STEP_THRESHOLD = 50; // millimeters/s
-const uint8_t MIN_COOL_STEP = 1;
-const uint8_t MAX_COOL_STEP = 0;
-const uint8_t HIGH_VELOCITY_THRESHOLD = 90; // millimeters/s
-const int8_t STALL_GUARD_THRESHOLD = 1;
+const tmc51x0::DriverParameters driver_parameters_real =
+{
+  50, // global_current_scalar (percent)
+  20, // run_current (percent)
+  0, // hold_current (percent)
+  0, // hold_delay (percent)
+  20, // pwm_offset (percent)
+  5, // pwm_gradient (percent)
+  false, // automatic_current_control_enabled
+  tmc51x0::REVERSE, // motor_direction
+  tmc51x0::NORMAL, // standstill_mode
+  tmc51x0::SPREAD_CYCLE, // chopper_mode
+  10, // stealth_chop_threshold (millimeters/s)
+  true, // stealth_chop_enabled
+  50, // cool_step_threshold (millimeters/s)
+  1, // cool_step_min
+  0, // cool_step_max
+  true, // cool_step_enabled
+  90, // high_velocity_threshold (rotations/min)
+  true, // high_velocity_fullstep_enabled
+  true, // high_velocity_chopper_switch_enabled
+  1, // stall_guard_threshold
+  false, // stall_guard_filter_enabled
+  true // short_to_ground_protection_enabled
+};
 
 // controller constants
 const uint32_t START_VELOCITY = 1; // millimeters/s
@@ -78,17 +90,8 @@ void setup()
 
   tmc5130.converter.setup(converter_parameters);
 
-  // tmc5130.driver.setEnableHardwarePin(ENABLE_HARDWARE_PIN);
-  tmc5130.driver.writeGlobalCurrentScaler(tmc5130.converter.percentToGlobalCurrentScaler(GLOBAL_CURRENT_SCALAR));
-  tmc5130.driver.writeRunCurrent(tmc5130.converter.percentToCurrentSetting(RUN_CURRENT));
-  tmc5130.driver.writePwmOffset(tmc5130.converter.percentToPwmSetting(PWM_OFFSET));
-  tmc5130.driver.writePwmGradient(tmc5130.converter.percentToPwmSetting(PWM_GRADIENT));
-  tmc5130.driver.writeMotorDirection(MOTOR_DIRECTION);
-  tmc5130.driver.writeStealthChopThreshold(tmc5130.converter.velocityRealToTstep(STEALTH_CHOP_THRESHOLD));
-  // tmc5130.driver.writeCoolStepThreshold(tmc5130.converter.velocityRealToTstep(COOL_STEP_THRESHOLD));
-  // tmc5130.driver.enableCoolStep(MIN_COOL_STEP, MAX_COOL_STEP);
-  // tmc5130.driver.writeHighVelocityThreshold(tmc5130.converter.velocityRealToTstep(HIGH_VELOCITY_THRESHOLD));
-  // tmc5130.driver.writeStallGuardThreshold(STALL_GUARD_THRESHOLD);
+  tmc51x0::DriverParameters driver_parameters_chip = tmc5130.converter.driverParametersRealToChip(driver_parameters_real);
+  tmc5130.driver.setup(driver_parameters_chip);
 
   tmc5130.controller.writeFirstAcceleration(tmc5130.converter.accelerationRealToChip(FIRST_ACCELERATION));
   tmc5130.controller.writeFirstVelocity(tmc5130.converter.velocityRealToChip(FIRST_VELOCITY));

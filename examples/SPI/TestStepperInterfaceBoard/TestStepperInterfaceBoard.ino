@@ -36,18 +36,35 @@ const tmc51x0::ConverterParameters converter_parameters =
 //   driver:
 //     0.15 current sense resistor
 //     1.6 A RMS
-const uint8_t GLOBAL_CURRENT_SCALAR = 255; // 128..255
-const uint8_t RUN_CURRENT = 31; // 0..31
-const uint8_t PWM_OFFSET = 4; // 0..255
-const uint8_t PWM_GRADIENT = 42; // 0..255
-const tmc51x0::Driver::MotorDirection MOTOR_DIRECTION = tmc51x0::Driver::FORWARD;
-const uint16_t STEALTH_CHOP_THRESHOLD = 300; // rotations/min seems to be upper limit
-const bool AUTOGRAD = true; // automatic gradient adaptation
-const uint8_t PWM_REG = 4; // 1..15 -> slowest regulation..fastest regulation
+const tmc51x0::DriverParameters driver_parameters_real =
+{
+  100, // global_current_scalar (percent)
+  100, // run_current (percent)
+  0, // hold_current (percent)
+  0, // hold_delay (percent)
+  15, // pwm_offset (percent)
+  5, // pwm_gradient (percent)
+  false, // automatic_current_control_enabled
+  tmc51x0::FORWARD, // motor_direction
+  tmc51x0::NORMAL, // standstill_mode
+  tmc51x0::SPREAD_CYCLE, // chopper_mode
+  40, // stealth_chop_threshold (rotations/min)
+  true, // stealth_chop_enabled
+  50, // cool_step_threshold (rotations/min)
+  1, // cool_step_min
+  0, // cool_step_max
+  true, // cool_step_enabled
+  200, // high_velocity_threshold (rotations/min)
+  true, // high_velocity_fullstep_enabled
+  true, // high_velocity_chopper_switch_enabled
+  0, // stall_guard_threshold
+  true, // stall_guard_filter_enabled
+  true // short_to_ground_protection_enabled
+};
 
 // controller constants
 const uint32_t MIN_TARGET_VELOCITY = 60;  // rotations/min
-const uint32_t MAX_TARGET_VELOCITY = STEALTH_CHOP_THRESHOLD; // rotations/min
+const uint32_t MAX_TARGET_VELOCITY = 600; // rotations/min
 const uint32_t TARGET_VELOCITY_INC = 60;  // rotations/min
 const uint32_t MAX_ACCELERATION = 60;  // (rotations/min)/s
 const tmc51x0::Controller::RampMode RAMP_MODE = tmc51x0::Controller::VELOCITY_POSITIVE;
@@ -87,14 +104,8 @@ void setup()
 
   tmc5160.converter.setup(converter_parameters);
 
-  tmc5160.driver.writeGlobalCurrentScaler(GLOBAL_CURRENT_SCALAR);
-  tmc5160.driver.writeRunCurrent(RUN_CURRENT);
-  tmc5160.driver.writePwmOffset(PWM_OFFSET);
-  tmc5160.driver.writePwmGradient(PWM_GRADIENT);
-  tmc5160.driver.writeMotorDirection(MOTOR_DIRECTION);
-
-  tmc5160.driver.writeStealthChopThreshold(tmc5160.converter.velocityRealToTstep(STEALTH_CHOP_THRESHOLD));
-  tmc5160.driver.enableStealthChop();
+  tmc51x0::DriverParameters driver_parameters_chip = tmc5160.converter.driverParametersRealToChip(driver_parameters_real);
+  tmc5160.driver.setup(driver_parameters_chip);
 
   tmc5160.controller.writeMaxAcceleration(tmc5160.converter.accelerationRealToChip(MAX_ACCELERATION));
   tmc5160.controller.writeRampMode(RAMP_MODE);
@@ -108,8 +119,6 @@ void setup()
     delay(LOOP_DELAY);
   }
   delay(LOOP_DELAY);
-
-  tmc5160.driver.enableAutomaticCurrentControl(AUTOGRAD, PWM_REG);
 
   target_velocity = MIN_TARGET_VELOCITY;
   tmc5160.controller.writeMaxVelocity(tmc5160.converter.velocityRealToChip(target_velocity));
@@ -128,8 +137,6 @@ void loop()
 
   Serial.print("acceleration (rotations per second per second): ");
   Serial.println(MAX_ACCELERATION);
-  Serial.print("STEALTH_CHOP_THRESHOLD (rotations per minute): ");
-  Serial.println(STEALTH_CHOP_THRESHOLD);
   Serial.print("target_velocity (rotations per minute): ");
   Serial.println(target_velocity);
   Serial.println("--------------------------");
