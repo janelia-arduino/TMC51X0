@@ -29,31 +29,32 @@ const tmc51x0::ConverterParameters converter_parameters =
 // rotations/s -> rotations/min
 // rotations/(s^2) -> (rotations/min)/s
 
-const tmc51x0::DriverParameters driver_parameters_real =
-{
-  50, // global_current_scalar (percent)
-  50, // run_current (percent)
-  0, // hold_current (percent)
-  0, // hold_delay (percent)
-  15, // pwm_offset (percent)
-  5, // pwm_gradient (percent)
-  false, // automatic_current_control_enabled
-  tmc51x0::FORWARD, // motor_direction
-  tmc51x0::NORMAL, // standstill_mode
-  tmc51x0::SPREAD_CYCLE, // chopper_mode
-  40, // stealth_chop_threshold (rotations/min)
-  true, // stealth_chop_enabled
-  50, // cool_step_threshold (rotations/min)
-  1, // cool_step_min
-  0, // cool_step_max
-  true, // cool_step_enabled
-  200, // high_velocity_threshold (rotations/min)
-  true, // high_velocity_fullstep_enabled
-  true, // high_velocity_chopper_switch_enabled
-  0, // stall_guard_threshold
-  true, // stall_guard_filter_enabled
-  true // short_to_ground_protection_enabled
-};
+tmc51x0::DriverParameters driver_parameters_real;
+// const tmc51x0::DriverParameters driver_parameters_real =
+// {
+//   50, // global_current_scalar (percent)
+//   50, // run_current (percent)
+//   0, // hold_current (percent)
+//   0, // hold_delay (percent)
+//   15, // pwm_offset (percent)
+//   5, // pwm_gradient (percent)
+//   false, // automatic_current_control_enabled
+//   tmc51x0::FORWARD, // motor_direction
+//   tmc51x0::NORMAL, // standstill_mode
+//   tmc51x0::SPREAD_CYCLE, // chopper_mode
+//   40, // stealth_chop_threshold (rotations/min)
+//   true, // stealth_chop_enabled
+//   50, // cool_step_threshold (rotations/min)
+//   1, // cool_step_min
+//   0, // cool_step_max
+//   true, // cool_step_enabled
+//   200, // high_velocity_threshold (rotations/min)
+//   true, // high_velocity_fullstep_enabled
+//   true, // high_velocity_chopper_switch_enabled
+//   0, // stall_guard_threshold
+//   true, // stall_guard_filter_enabled
+//   true // short_to_ground_protection_enabled
+// };
 
 const tmc51x0::ControllerParameters controller_parameters_real =
 {
@@ -92,6 +93,30 @@ void setup()
 
   prism.converter.setup(converter_parameters);
 
+  driver_parameters_real.gconf.en_pwm_mode = 1; // stealth_chop_enabled
+  driver_parameters_real.gconf.shaft = tmc51x0::FORWARD; // motor_direction
+//   50, // global_current_scalar (percent)
+//   50, // run_current (percent)
+//   0, // hold_current (percent)
+//   0, // hold_delay (percent)
+//   15, // pwm_offset (percent)
+//   5, // pwm_gradient (percent)
+//   false, // automatic_current_control_enabled
+////   tmc51x0::FORWARD, // motor_direction
+//   tmc51x0::NORMAL, // standstill_mode
+//   tmc51x0::SPREAD_CYCLE, // chopper_mode
+//   40, // stealth_chop_threshold (rotations/min)
+////   true, // stealth_chop_enabled
+//   50, // cool_step_threshold (rotations/min)
+//   1, // cool_step_min
+//   0, // cool_step_max
+//   true, // cool_step_enabled
+//   200, // high_velocity_threshold (rotations/min)
+//   true, // high_velocity_fullstep_enabled
+//   true, // high_velocity_chopper_switch_enabled
+//   0, // stall_guard_threshold
+//   true, // stall_guard_filter_enabled
+//   true // short_to_ground_protection_enabled
   tmc51x0::DriverParameters driver_parameters_chip = prism.converter.driverParametersRealToChip(driver_parameters_real);
   prism.driver.setup(driver_parameters_chip);
 

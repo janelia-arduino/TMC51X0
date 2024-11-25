@@ -17,29 +17,29 @@ void Converter::setup(ConverterParameters converter_parameters)
 
 DriverParameters Converter::driverParametersRealToChip(DriverParameters dp_real)
 {
-  DriverParameters dp_chip;
-  dp_chip.global_current_scalar = percentToGlobalCurrentScaler(dp_real.global_current_scalar);
-  dp_chip.run_current = percentToCurrentSetting(dp_real.run_current);
-  dp_chip.hold_current = percentToCurrentSetting(dp_real.hold_current);
-  dp_chip.hold_delay = percentToHoldDelaySetting(dp_real.hold_delay);
-  dp_chip.pwm_offset = percentToPwmSetting(dp_real.pwm_offset);
-  dp_chip.pwm_gradient = percentToPwmSetting(dp_real.pwm_gradient);
-  dp_chip.automatic_current_control_enabled = dp_real.automatic_current_control_enabled;
-  dp_chip.motor_direction = dp_real.motor_direction;
-  dp_chip.standstill_mode = dp_real.standstill_mode;
-  dp_chip.chopper_mode = dp_real.chopper_mode;
-  dp_chip.stealth_chop_threshold = velocityRealToTstep(dp_real.stealth_chop_threshold);
-  dp_chip.stealth_chop_enabled = dp_real.stealth_chop_enabled;
-  dp_chip.cool_step_threshold = velocityRealToTstep(dp_real.cool_step_threshold);
-  dp_chip.cool_step_min = dp_real.cool_step_min;
-  dp_chip.cool_step_max = dp_real.cool_step_max;
-  dp_chip.cool_step_enabled = dp_real.cool_step_enabled;
-  dp_chip.high_velocity_threshold = velocityRealToTstep(dp_real.high_velocity_threshold);
-  dp_chip.high_velocity_fullstep_enabled = dp_real.high_velocity_fullstep_enabled;
-  dp_chip.high_velocity_chopper_switch_enabled = dp_real.high_velocity_chopper_switch_enabled;
-  dp_chip.stall_guard_threshold = dp_real.stall_guard_threshold;
-  dp_chip.stall_guard_filter_enabled = dp_real.stall_guard_filter_enabled;
-  dp_chip.short_to_ground_protection_enabled = dp_real.short_to_ground_protection_enabled;
+  DriverParameters dp_chip = dp_real;
+  // dp_chip.global_current_scalar = percentToGlobalCurrentScaler(dp_real.global_current_scalar);
+  // dp_chip.run_current = percentToCurrentSetting(dp_real.run_current);
+  // dp_chip.hold_current = percentToCurrentSetting(dp_real.hold_current);
+  // dp_chip.hold_delay = percentToHoldDelaySetting(dp_real.hold_delay);
+  // dp_chip.pwm_offset = percentToPwmSetting(dp_real.pwm_offset);
+  // dp_chip.pwm_gradient = percentToPwmSetting(dp_real.pwm_gradient);
+  // dp_chip.automatic_current_control_enabled = dp_real.automatic_current_control_enabled;
+  // dp_chip.motor_direction = dp_real.motor_direction;
+  // dp_chip.standstill_mode = dp_real.standstill_mode;
+  // dp_chip.chopper_mode = dp_real.chopper_mode;
+  // dp_chip.stealth_chop_threshold = velocityRealToTstep(dp_real.stealth_chop_threshold);
+  // dp_chip.stealth_chop_enabled = dp_real.stealth_chop_enabled;
+  // dp_chip.cool_step_threshold = velocityRealToTstep(dp_real.cool_step_threshold);
+  // dp_chip.cool_step_min = dp_real.cool_step_min;
+  // dp_chip.cool_step_max = dp_real.cool_step_max;
+  // dp_chip.cool_step_enabled = dp_real.cool_step_enabled;
+  // dp_chip.high_velocity_threshold = velocityRealToTstep(dp_real.high_velocity_threshold);
+  // dp_chip.high_velocity_fullstep_enabled = dp_real.high_velocity_fullstep_enabled;
+  // dp_chip.high_velocity_chopper_switch_enabled = dp_real.high_velocity_chopper_switch_enabled;
+  // dp_chip.stall_guard_threshold = dp_real.stall_guard_threshold;
+  // dp_chip.stall_guard_filter_enabled = dp_real.stall_guard_filter_enabled;
+  // dp_chip.short_to_ground_protection_enabled = dp_real.short_to_ground_protection_enabled;
 
   return dp_chip;
 }

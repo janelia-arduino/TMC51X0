@@ -16,75 +16,76 @@ Driver::Driver()
 
 void Driver::setup(tmc51x0::DriverParameters driver_parameters)
 {
-  writeGlobalCurrentScaler(driver_parameters.global_current_scalar);
-  writeRunCurrent(driver_parameters.run_current);
-  writeHoldCurrent(driver_parameters.hold_current);
-  writeHoldDelay(driver_parameters.hold_delay);
-  writePwmOffset(driver_parameters.pwm_offset);
-  writePwmGradient(driver_parameters.pwm_gradient);
-  if (driver_parameters.automatic_current_control_enabled)
-  {
-    enableAutomaticCurrentControl();
-  }
-  else
-  {
-    disableAutomaticCurrentControl();
-  }
-  writeMotorDirection(driver_parameters.motor_direction);
-  writeStandstillMode(driver_parameters.standstill_mode);
-  writeChopperMode(driver_parameters.chopper_mode);
-  writeStealthChopThreshold(driver_parameters.stealth_chop_threshold);
-  if (driver_parameters.stealth_chop_enabled)
-  {
-    enableStealthChop();
-  }
-  else
-  {
-    disableStealthChop();
-  }
-  writeCoolStepThreshold(driver_parameters.cool_step_threshold);
-  if (driver_parameters.cool_step_enabled)
-  {
-    enableCoolStep(driver_parameters.cool_step_min, driver_parameters.cool_step_max);
-  }
-  else
-  {
-    disableCoolStep();
-  }
-  writeHighVelocityThreshold(driver_parameters.high_velocity_threshold);
-  if (driver_parameters.high_velocity_fullstep_enabled)
-  {
-    enableHighVelocityFullstep();
-  }
-  else
-  {
-    disableHighVelocityFullstep();
-  }
-  if (driver_parameters.high_velocity_chopper_switch_enabled)
-  {
-    enableHighVelocityChopperSwitch();
-  }
-  else
-  {
-    disableHighVelocityChopperSwitch();
-  }
-  writeStallGuardThreshold(driver_parameters.stall_guard_threshold);
-  if (driver_parameters.stall_guard_filter_enabled)
-  {
-    enableStallGuardFilter();
-  }
-  else
-  {
-    disableStallGuardFilter();
-  }
-  if (driver_parameters.short_to_ground_protection_enabled)
-  {
-    enableShortToGroundProtection();
-  }
-  else
-  {
-    disableShortToGroundProtection();
-  }
+  registers_ptr_->write(Registers::GCONF, driver_parameters.gconf.bytes);
+  // writeGlobalCurrentScaler(driver_parameters.global_current_scalar);
+  // writeRunCurrent(driver_parameters.run_current);
+  // writeHoldCurrent(driver_parameters.hold_current);
+  // writeHoldDelay(driver_parameters.hold_delay);
+  // writePwmOffset(driver_parameters.pwm_offset);
+  // writePwmGradient(driver_parameters.pwm_gradient);
+  // if (driver_parameters.automatic_current_control_enabled)
+  // {
+  //   enableAutomaticCurrentControl();
+  // }
+  // else
+  // {
+  //   disableAutomaticCurrentControl();
+  // }
+  // writeMotorDirection(driver_parameters.motor_direction);
+  // writeStandstillMode(driver_parameters.standstill_mode);
+  // writeChopperMode(driver_parameters.chopper_mode);
+  // writeStealthChopThreshold(driver_parameters.stealth_chop_threshold);
+  // if (driver_parameters.stealth_chop_enabled)
+  // {
+  //   enableStealthChop();
+  // }
+  // else
+  // {
+  //   disableStealthChop();
+  // }
+  // writeCoolStepThreshold(driver_parameters.cool_step_threshold);
+  // if (driver_parameters.cool_step_enabled)
+  // {
+  //   enableCoolStep(driver_parameters.cool_step_min, driver_parameters.cool_step_max);
+  // }
+  // else
+  // {
+  //   disableCoolStep();
+  // }
+  // writeHighVelocityThreshold(driver_parameters.high_velocity_threshold);
+  // if (driver_parameters.high_velocity_fullstep_enabled)
+  // {
+  //   enableHighVelocityFullstep();
+  // }
+  // else
+  // {
+  //   disableHighVelocityFullstep();
+  // }
+  // if (driver_parameters.high_velocity_chopper_switch_enabled)
+  // {
+  //   enableHighVelocityChopperSwitch();
+  // }
+  // else
+  // {
+  //   disableHighVelocityChopperSwitch();
+  // }
+  // writeStallGuardThreshold(driver_parameters.stall_guard_threshold);
+  // if (driver_parameters.stall_guard_filter_enabled)
+  // {
+  //   enableStallGuardFilter();
+  // }
+  // else
+  // {
+  //   disableStallGuardFilter();
+  // }
+  // if (driver_parameters.short_to_ground_protection_enabled)
+  // {
+  //   enableShortToGroundProtection();
+  // }
+  // else
+  // {
+  //   disableShortToGroundProtection();
+  // }
 }
 
 void Driver::setEnableHardwarePin(size_t hardware_enable_pin)

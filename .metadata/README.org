@@ -112,7 +112,7 @@ stepper motor controller.
 
 | Name          | Address | Default |
 |---------------+---------+---------|
-| GCONF         |    0x00 |         |
+| GCONF         |    0x00 |    0x0  |
 | GLOBAL_SCALAR |    0X0B |         |
 | IHOLD_IRUN    |    0X10 |         |
 | TPWMTHRS      |    0X13 |         |
