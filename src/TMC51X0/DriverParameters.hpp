@@ -139,7 +139,7 @@ struct DriverParameters
   }
 
 private:
-  const static uint8_t GLOBAL_CURRENT_SCALAR_DEFAULT = 129;
+  const static uint8_t GLOBAL_CURRENT_SCALAR_DEFAULT = 0;
   const static uint8_t CURRENT_DEFAULT = 0;
   const static uint8_t HOLD_DELAY_DEFAULT = 0;
   const static uint32_t PWM_DEFAULT = 0;
