@@ -35,10 +35,13 @@ enum ChopperMode
 struct DriverParameters
 {
   Registers::Gconf gconf;
+  uint8_t global_current_scalar;
+  Registers::IholdIrun ihold_irun;
 
   DriverParameters()
   {
     gconf.bytes = GCONF_DEFAULT;
+    global_current_scalar = GLOBAL_CURRENT_SCALAR_DEFAULT;
   };
 
   bool operator==(const DriverParameters & rhs) const
@@ -56,6 +59,7 @@ struct DriverParameters
 
 private:
   const static uint32_t GCONF_DEFAULT = 0x0;
+  const static uint8_t GLOBAL_CURRENT_SCALAR_DEFAULT = 0x0;
 };
 // struct DriverParameters
 // {

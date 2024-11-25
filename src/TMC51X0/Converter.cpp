@@ -18,7 +18,8 @@ void Converter::setup(ConverterParameters converter_parameters)
 DriverParameters Converter::driverParametersRealToChip(DriverParameters dp_real)
 {
   DriverParameters dp_chip = dp_real;
-  // dp_chip.global_current_scalar = percentToGlobalCurrentScaler(dp_real.global_current_scalar);
+  dp_chip.global_current_scalar = percentToGlobalCurrentScaler(dp_real.global_current_scalar);
+
   // dp_chip.run_current = percentToCurrentSetting(dp_real.run_current);
   // dp_chip.hold_current = percentToCurrentSetting(dp_real.hold_current);
   // dp_chip.hold_delay = percentToHoldDelaySetting(dp_real.hold_delay);

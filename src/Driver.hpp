@@ -33,7 +33,8 @@ public:
   // 1..31: not allowed for operation
   // 32..255: 32/256..255/256 of maximum current
   // >128 recommended for best results
-  // reset default: 129
+  // reset default: 0
+  // only available on the TMC5160
   void writeGlobalCurrentScaler(uint8_t scaler);
 
   // 0..31: 1/32..32/32

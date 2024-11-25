@@ -17,7 +17,8 @@ Driver::Driver()
 void Driver::setup(tmc51x0::DriverParameters driver_parameters)
 {
   registers_ptr_->write(Registers::GCONF, driver_parameters.gconf.bytes);
-  // writeGlobalCurrentScaler(driver_parameters.global_current_scalar);
+  writeGlobalCurrentScaler(driver_parameters.global_current_scalar);
+
   // writeRunCurrent(driver_parameters.run_current);
   // writeHoldCurrent(driver_parameters.hold_current);
   // writeHoldDelay(driver_parameters.hold_delay);

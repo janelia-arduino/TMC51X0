@@ -95,6 +95,7 @@ void setup()
 
   driver_parameters_real.gconf.en_pwm_mode = 1; // stealth_chop_enabled
   driver_parameters_real.gconf.shaft = tmc51x0::FORWARD; // motor_direction
+  driver_parameters_real.global_current_scalar = 100; // percent
 //   50, // global_current_scalar (percent)
 //   50, // run_current (percent)
 //   0, // hold_current (percent)
