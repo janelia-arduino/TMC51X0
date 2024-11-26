@@ -24,7 +24,7 @@ public:
   // reset default: VELOCITY_POSITIVE
   void writeRampMode(RampMode ramp_mode);
 
-  // reset default: SOFT
+  // reset default: HARD
   void writeStopMode(StopMode stop_mode);
 
   uint32_t readTstep();
@@ -92,7 +92,6 @@ public:
 private:
   Registers * registers_ptr_;
 
-  const static StopMode STOP_MODE_DEFAULT = SOFT;
   const static int32_t ACTUAL_POSITION_DEFAULT = 0;
   const static uint32_t START_VELOCITY_DEFAULT = 0;
   const static uint32_t STOP_VELOCITY_DEFAULT = 10;

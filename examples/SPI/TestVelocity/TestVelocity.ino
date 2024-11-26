@@ -58,6 +58,7 @@ const tmc51x0::DriverParameters driver_parameters_real =
 const tmc51x0::ControllerParameters controller_parameters_real =
 {
   tmc51x0::VELOCITY_POSITIVE, // ramp_mode
+  tmc51x0::HARD, // stop_mode
   45, // max_velocity (rotations/min)
   45, // max_acceleration ((rotations/min)/s)
 };
@@ -90,14 +91,16 @@ void setup()
 
   tmc5130.driver.enable();
 
-  // tmc5130.controller.rampToZeroVelocity();
-  // while (!tmc5130.controller.zeroVelocity())
-  // {
-  //   Serial.println("Waiting for zero velocity.");
-  //   delay(LOOP_DELAY);
-  // }
+  tmc5130.controller.rampToZeroVelocity();
+  while (!tmc5130.controller.zeroVelocity())
+  {
+    Serial.println("Waiting for zero velocity.");
+    delay(LOOP_DELAY);
+  }
 
   tmc5130.controller.zeroActualPosition();
+
+  tmc5130.controller.writeMaxVelocity(controller_parameters_chip.max_velocity);
 }
 
 void loop()
