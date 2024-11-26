@@ -22,11 +22,19 @@
 
 struct TMC51X0
 {
+  TMC51X0();
+
   void setupSpi(tmc51x0::SpiParameters spi_parameters);
   void setupUart(tmc51x0::UartParameters uart_parameters);
 
   uint8_t readVersion();
   bool communicating();
+
+  // optional
+  void setEnablePowerPin(size_t enable_power_pin);
+  void setEnablePowerPolarity(uint8_t pin_value_when_enabled);
+  void enablePower();
+  void disablePower();
 
   tmc51x0::Registers registers;
   tmc51x0::Converter converter;
@@ -38,6 +46,8 @@ struct TMC51X0
 private:
   tmc51x0::SpiInterface interface_spi_;
   tmc51x0::UartInterface interface_uart_;
+  size_t enable_power_pin_;
+  uint8_t pin_value_when_enabled_;
   void initialize();
 };
 

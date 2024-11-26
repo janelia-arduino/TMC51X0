@@ -9,6 +9,12 @@
 
 using namespace tmc51x0;
 
+TMC51X0::TMC51X0()
+{
+  enable_power_pin_ = NO_PIN;
+  pin_value_when_enabled_ = HIGH;
+}
+
 void TMC51X0::setupSpi(SpiParameters spi_parameters)
 {
   interface_spi_.setup(spi_parameters);
@@ -35,6 +41,41 @@ bool TMC51X0::communicating()
   uint8_t version = readVersion();
   return ((version == Registers::VERSION_TMC5130) ||
     (version == Registers::VERSION_TMC5160));
+}
+
+// optional
+void TMC51X0::setEnablePowerPin(size_t enable_power_pin)
+{
+  enable_power_pin_ = enable_power_pin;
+  pinMode(enable_power_pin_, OUTPUT);
+}
+
+void TMC51X0::setEnablePowerPolarity(uint8_t pin_value_when_enabled)
+{
+  pin_value_when_enabled_ = pin_value_when_enabled;
+}
+
+void TMC51X0::enablePower()
+{
+  if (enable_power_pin_ != NO_PIN)
+  {
+    digitalWrite(enable_power_pin_, pin_value_when_enabled_);
+  }
+}
+
+void TMC51X0::disablePower()
+{
+  if (enable_power_pin_ != NO_PIN)
+  {
+    if (pin_value_when_enabled_ == LOW)
+    {
+      digitalWrite(enable_power_pin_, HIGH);
+    }
+    else
+    {
+      digitalWrite(enable_power_pin_, LOW);
+    }
+  }
 }
 
 // private

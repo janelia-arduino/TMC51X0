@@ -11,18 +11,19 @@ using namespace tmc51x0;
 
 Driver::Driver()
 {
-  hardware_enable_pin_ = -1;
+  driver_parameters_ = DriverParameters{};
+  hardware_enable_pin_ = NO_PIN;
 }
 
-void Driver::setup(tmc51x0::DriverParameters driver_parameters)
+void Driver::setup()
 {
-  writeGlobalCurrentScaler(driver_parameters.global_current_scalar);
-  writeRunCurrent(driver_parameters.run_current);
-  writeHoldCurrent(driver_parameters.hold_current);
-  writeHoldDelay(driver_parameters.hold_delay);
-  writePwmOffset(driver_parameters.pwm_offset);
-  writePwmGradient(driver_parameters.pwm_gradient);
-  if (driver_parameters.automatic_current_control_enabled)
+  writeGlobalCurrentScaler(driver_parameters_.global_current_scalar);
+  writeRunCurrent(driver_parameters_.run_current);
+  writeHoldCurrent(driver_parameters_.hold_current);
+  writeHoldDelay(driver_parameters_.hold_delay);
+  writePwmOffset(driver_parameters_.pwm_offset);
+  writePwmGradient(driver_parameters_.pwm_gradient);
+  if (driver_parameters_.automatic_current_control_enabled)
   {
     enableAutomaticCurrentControl();
   }
@@ -30,11 +31,11 @@ void Driver::setup(tmc51x0::DriverParameters driver_parameters)
   {
     disableAutomaticCurrentControl();
   }
-  writeMotorDirection(driver_parameters.motor_direction);
-  writeStandstillMode(driver_parameters.standstill_mode);
-  writeChopperMode(driver_parameters.chopper_mode);
-  writeStealthChopThreshold(driver_parameters.stealth_chop_threshold);
-  if (driver_parameters.stealth_chop_enabled)
+  writeMotorDirection(driver_parameters_.motor_direction);
+  writeStandstillMode(driver_parameters_.standstill_mode);
+  writeChopperMode(driver_parameters_.chopper_mode);
+  writeStealthChopThreshold(driver_parameters_.stealth_chop_threshold);
+  if (driver_parameters_.stealth_chop_enabled)
   {
     enableStealthChop();
   }
@@ -42,17 +43,17 @@ void Driver::setup(tmc51x0::DriverParameters driver_parameters)
   {
     disableStealthChop();
   }
-  writeCoolStepThreshold(driver_parameters.cool_step_threshold);
-  if (driver_parameters.cool_step_enabled)
+  writeCoolStepThreshold(driver_parameters_.cool_step_threshold);
+  if (driver_parameters_.cool_step_enabled)
   {
-    enableCoolStep(driver_parameters.cool_step_min, driver_parameters.cool_step_max);
+    enableCoolStep(driver_parameters_.cool_step_min, driver_parameters_.cool_step_max);
   }
   else
   {
     disableCoolStep();
   }
-  writeHighVelocityThreshold(driver_parameters.high_velocity_threshold);
-  if (driver_parameters.high_velocity_fullstep_enabled)
+  writeHighVelocityThreshold(driver_parameters_.high_velocity_threshold);
+  if (driver_parameters_.high_velocity_fullstep_enabled)
   {
     enableHighVelocityFullstep();
   }
@@ -60,7 +61,7 @@ void Driver::setup(tmc51x0::DriverParameters driver_parameters)
   {
     disableHighVelocityFullstep();
   }
-  if (driver_parameters.high_velocity_chopper_switch_enabled)
+  if (driver_parameters_.high_velocity_chopper_switch_enabled)
   {
     enableHighVelocityChopperSwitch();
   }
@@ -68,8 +69,8 @@ void Driver::setup(tmc51x0::DriverParameters driver_parameters)
   {
     disableHighVelocityChopperSwitch();
   }
-  writeStallGuardThreshold(driver_parameters.stall_guard_threshold);
-  if (driver_parameters.stall_guard_filter_enabled)
+  writeStallGuardThreshold(driver_parameters_.stall_guard_threshold);
+  if (driver_parameters_.stall_guard_filter_enabled)
   {
     enableStallGuardFilter();
   }
@@ -77,7 +78,7 @@ void Driver::setup(tmc51x0::DriverParameters driver_parameters)
   {
     disableStallGuardFilter();
   }
-  if (driver_parameters.short_to_ground_protection_enabled)
+  if (driver_parameters_.short_to_ground_protection_enabled)
   {
     enableShortToGroundProtection();
   }
@@ -85,6 +86,12 @@ void Driver::setup(tmc51x0::DriverParameters driver_parameters)
   {
     disableShortToGroundProtection();
   }
+}
+
+void Driver::setup(tmc51x0::DriverParameters driver_parameters)
+{
+  driver_parameters_ = driver_parameters;
+  setup();
 }
 
 void Driver::setEnableHardwarePin(size_t hardware_enable_pin)
@@ -349,7 +356,7 @@ void Driver::initialize(Registers & registers)
 
 void Driver::hardwareEnable()
 {
-  if (hardware_enable_pin_ >= 0)
+  if (hardware_enable_pin_ != NO_PIN)
   {
     digitalWrite(hardware_enable_pin_, LOW);
   }
@@ -357,7 +364,7 @@ void Driver::hardwareEnable()
 
 void Driver::hardwareDisable()
 {
-  if (hardware_enable_pin_ >= 0)
+  if (hardware_enable_pin_ != NO_PIN)
   {
     digitalWrite(hardware_enable_pin_, HIGH);
   }

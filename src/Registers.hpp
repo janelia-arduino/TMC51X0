@@ -450,5 +450,7 @@ private:
 
   friend class ::TMC51X0;
 };
+
+const size_t NO_PIN = 255;
 }
 #endif

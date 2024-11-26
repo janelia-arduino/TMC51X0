@@ -22,6 +22,7 @@ class Driver
 public:
   Driver();
 
+  void setup();
   void setup(DriverParameters driver_parameters);
 
   // driver must be enabled before use it is disabled by default
@@ -100,7 +101,9 @@ public:
 
 private:
   Registers * registers_ptr_;
-  int16_t hardware_enable_pin_;
+  DriverParameters driver_parameters_;
+
+  size_t hardware_enable_pin_;
   uint8_t toff_;
 
   const static uint8_t STALL_GUARD_FILTER_ENABLE = 1;
