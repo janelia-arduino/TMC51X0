@@ -56,6 +56,7 @@ private:
   const static int64_t VELOCITY_SCALER = 16777216;
   const static int64_t ACCELERATION_SCALER = 2199;
   const static uint32_t DIVISOR_DEFAULT = 1;
+  const static int64_t DIVISION_SCALER = 1000;
 
   const static uint8_t PERCENT_MIN = 0;
   const static uint8_t PERCENT_MAX = 100;

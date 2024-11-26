@@ -60,7 +60,7 @@ const tmc51x0::DriverParameters driver_parameters_real =
 const tmc51x0::ControllerParameters controller_parameters_real =
 {
   tmc51x0::VELOCITY_POSITIVE, // ramp_mode
-  45, // max_velocity (rotations/min)
+  120, // max_velocity (rotations/min)
   45, // max_acceleration ((rotations/min)/s)
 };
 

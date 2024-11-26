@@ -200,8 +200,8 @@ int32_t Converter::velocityHzToChip(int32_t velocity_hz)
 int32_t Converter::velocityRealToHz(int32_t velocity_real)
 {
   int32_t velocity_hz;
-  velocity_hz = velocity_real / converter_parameters_.seconds_per_real_velocity_unit;
-  velocity_hz = positionRealToChip(velocity_hz);
+  velocity_hz = positionRealToChip(velocity_real);
+  velocity_hz = velocity_hz / converter_parameters_.seconds_per_real_velocity_unit;
   return velocity_hz;
 }
 
@@ -254,8 +254,8 @@ int32_t Converter::accelerationHzPerSToChip(int32_t acceleration_hz_per_s)
 int32_t Converter::accelerationRealToHzPerS(int32_t acceleration_real)
 {
   int32_t acceleration_hz_per_s;
-  acceleration_hz_per_s = acceleration_real / converter_parameters_.seconds_per_real_velocity_unit;
-  acceleration_hz_per_s = positionRealToChip(acceleration_hz_per_s);
+  acceleration_hz_per_s = positionRealToChip(acceleration_real);
+  acceleration_hz_per_s = acceleration_hz_per_s / converter_parameters_.seconds_per_real_velocity_unit;
   return acceleration_hz_per_s;
 }
 
