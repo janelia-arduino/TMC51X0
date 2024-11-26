@@ -33,7 +33,7 @@ const tmc51x0::ConverterParameters converter_parameters =
 
 const tmc51x0::DriverParameters driver_parameters_real =
 {
-  100, // global_current_scalar (percent)
+  100, // global_current_scaler (percent)
   50, // run_current (percent)
   0, // hold_current (percent)
   0, // hold_delay (percent)
@@ -60,8 +60,8 @@ const tmc51x0::DriverParameters driver_parameters_real =
 const tmc51x0::ControllerParameters controller_parameters_real =
 {
   tmc51x0::VELOCITY_POSITIVE, // ramp_mode
-  120, // max_velocity (rotations/min)
-  120, // max_acceleration ((rotations/min)/s)
+  45, // max_velocity (rotations/min)
+  45, // max_acceleration ((rotations/min)/s)
 };
 
 const size_t ENABLE_POWER_PIN = 15;
@@ -113,7 +113,6 @@ void loop()
 {
   TMC51X0 & prism = prisms[PRISM_INDEX];
 
-  prism.driver.enable();
   prism.printer.readClearAndPrintGstat();
   prism.printer.readAndPrintRampStat();
   prism.printer.readAndPrintDrvStatus();

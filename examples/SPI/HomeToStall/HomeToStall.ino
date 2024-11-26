@@ -29,7 +29,7 @@ const tmc51x0::ConverterParameters converter_parameters =
 
 const tmc51x0::DriverParameters driver_parameters_real =
 {
-  50, // global_current_scalar (percent)
+  50, // global_current_scaler (percent)
   20, // run_current (percent)
   0, // hold_current (percent)
   0, // hold_delay (percent)
@@ -69,7 +69,7 @@ const int32_t MAX_TARGET_POSITION = 180;  // millimeters
 const tmc51x0::Controller::RampMode RAMP_MODE = tmc51x0::Controller::POSITION;
 
 // home constants
-const uint8_t HOME_GLOBAL_CURRENT_SCALAR = 50; // percent
+const uint8_t HOME_GLOBAL_CURRENT_SCALER = 50; // percent
 const uint8_t HOME_COOL_STEP_THRESHOLD = 5; // millimeters/s
 const uint32_t HOME_START_VELOCITY = 1; // millimeters/s
 const uint32_t HOME_MAX_VELOCITY = 10; // millimeters/s
@@ -127,7 +127,7 @@ void loop()
 
   // homing
   Serial.println("Setting homing constants.");
-  tmc5160.driver.writeGlobalCurrentScaler(tmc5160.converter.percentToGlobalCurrentScaler(HOME_GLOBAL_CURRENT_SCALAR));
+  tmc5160.driver.writeGlobalCurrentScaler(tmc5160.converter.percentToGlobalCurrentScaler(HOME_GLOBAL_CURRENT_SCALER));
   tmc5160.driver.writeCoolStepThreshold(tmc5160.converter.velocityRealToTstep(HOME_COOL_STEP_THRESHOLD));
   tmc5160.controller.writeStartVelocity(tmc5160.converter.velocityRealToChip(HOME_START_VELOCITY));
   tmc5160.controller.writeMaxVelocity(tmc5160.converter.velocityRealToChip(HOME_MAX_VELOCITY));
@@ -155,7 +155,7 @@ void loop()
   }
   else
   {
-    Serial.println("Home Failed!! Try adjusting stallguard threshold or global current scalar.");
+    Serial.println("Home Failed!! Try adjusting stallguard threshold or global current scaler.");
   }
   Serial.println("Setting zero velocity.");
   tmc5160.controller.writeStartVelocity(0);
@@ -168,7 +168,7 @@ void loop()
   delay(4000);
 
   // move to posititions
-  tmc5160.driver.writeGlobalCurrentScaler(driver_parameters_chip.global_current_scalar);
+  tmc5160.driver.writeGlobalCurrentScaler(driver_parameters_chip.global_current_scaler);
   tmc5160.driver.writeCoolStepThreshold(driver_parameters_chip.cool_step_threshold);
   tmc5160.controller.writeStartVelocity(tmc5160.converter.velocityRealToChip(START_VELOCITY));
   tmc5160.controller.writeMaxVelocity(tmc5160.converter.velocityRealToChip(MAX_VELOCITY));

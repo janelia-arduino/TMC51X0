@@ -34,7 +34,7 @@ enum ChopperMode
 };
 struct DriverParameters
 {
-  uint8_t global_current_scalar = GLOBAL_CURRENT_SCALAR_DEFAULT;
+  uint8_t global_current_scaler = GLOBAL_CURRENT_SCALER_DEFAULT;
   uint8_t run_current = CURRENT_DEFAULT;
   uint8_t hold_current = CURRENT_DEFAULT;
   uint8_t hold_delay = HOLD_DELAY_DEFAULT;
@@ -57,7 +57,7 @@ struct DriverParameters
   bool stall_guard_filter_enabled = STALL_GUARD_FILTER_ENABLED_DEFAULT;
   bool short_to_ground_protection_enabled = SHORT_TO_GROUND_PROTECTION_ENABLED_DEFAULT;
 
-  DriverParameters(uint8_t global_current_scalar_ = GLOBAL_CURRENT_SCALAR_DEFAULT,
+  DriverParameters(uint8_t global_current_scaler_ = GLOBAL_CURRENT_SCALER_DEFAULT,
     uint8_t run_current_ = CURRENT_DEFAULT,
     uint8_t hold_current_ = CURRENT_DEFAULT,
     uint8_t hold_delay_ = HOLD_DELAY_DEFAULT,
@@ -80,7 +80,7 @@ struct DriverParameters
     bool stall_guard_filter_enabled_ = STALL_GUARD_FILTER_ENABLED_DEFAULT,
     bool short_to_ground_protection_enabled_ = SHORT_TO_GROUND_PROTECTION_ENABLED_DEFAULT)
   {
-    global_current_scalar = global_current_scalar_;
+    global_current_scaler = global_current_scaler_;
     run_current = run_current_;
     hold_current = hold_current_;
     hold_delay = hold_delay_;
@@ -106,7 +106,7 @@ struct DriverParameters
 
   bool operator==(const DriverParameters & rhs) const
   {
-    if ((this->global_current_scalar == rhs.global_current_scalar) &&
+    if ((this->global_current_scaler == rhs.global_current_scaler) &&
       (this->run_current == rhs.run_current) &&
       (this->hold_current == rhs.hold_current) &&
       (this->hold_delay == rhs.hold_delay) &&
@@ -139,7 +139,7 @@ struct DriverParameters
   }
 
 private:
-  const static uint8_t GLOBAL_CURRENT_SCALAR_DEFAULT = 0;
+  const static uint8_t GLOBAL_CURRENT_SCALER_DEFAULT = 0;
   const static uint8_t CURRENT_DEFAULT = 0;
   const static uint8_t HOLD_DELAY_DEFAULT = 0;
   const static uint32_t PWM_DEFAULT = 0;

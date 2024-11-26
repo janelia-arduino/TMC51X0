@@ -14,10 +14,8 @@ const tmc51x0::SpiParameters spi_parameters =
 {
   spi,
   1000000, // clock_rate
-  14 // chip_select_pin
+  8 // chip_select_pin
 };
-
-const size_t ENABLE_POWER_PIN = 15;
 
 const uint32_t SERIAL_BAUD_RATE = 115200;
 const uint16_t DELAY = 4000;
@@ -32,10 +30,6 @@ TMC51X0 stepper;
 void setup()
 {
   Serial.begin(SERIAL_BAUD_RATE);
-
-  pinMode(ENABLE_POWER_PIN, OUTPUT);
-  digitalWrite(ENABLE_POWER_PIN, HIGH);
-  delay(2000);
 
 #if defined(ARDUINO_ARCH_RP2040)
   spi.setSCK(SCK_PIN);

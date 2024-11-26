@@ -17,7 +17,7 @@ Driver::Driver()
 
 void Driver::setup()
 {
-  writeGlobalCurrentScaler(driver_parameters_.global_current_scalar);
+  writeGlobalCurrentScaler(driver_parameters_.global_current_scaler);
   writeRunCurrent(driver_parameters_.run_current);
   writeHoldCurrent(driver_parameters_.hold_current);
   writeHoldDelay(driver_parameters_.hold_delay);

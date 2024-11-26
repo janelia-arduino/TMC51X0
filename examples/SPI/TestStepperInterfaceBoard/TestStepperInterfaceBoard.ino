@@ -38,7 +38,7 @@ const tmc51x0::ConverterParameters converter_parameters =
 //     1.6 A RMS
 const tmc51x0::DriverParameters driver_parameters_real =
 {
-  100, // global_current_scalar (percent)
+  100, // global_current_scaler (percent)
   100, // run_current (percent)
   0, // hold_current (percent)
   0, // hold_delay (percent)

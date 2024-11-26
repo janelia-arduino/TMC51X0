@@ -14,26 +14,26 @@ const tmc51x0::SpiParameters spi_parameters =
 {
   spi,
   1000000, // clock_rate
-  10 // chip_select_pin
+  8 // chip_select_pin
 };
 
 const tmc51x0::ConverterParameters converter_parameters =
 {
-  12, // clock_frequency_mhz
+  16, // clock_frequency_mhz
   4881 // microsteps_per_real_unit
 };
-// internal clock is ~12MHz
+// external clock is 16MHz
 // 200 fullsteps per revolution for many steppers * 256 microsteps per fullstep
 // 10.49 millimeters per revolution leadscrew -> 51200 / 10.49 ~= 4881
 // one "real unit" in this example is one millimeters of linear travel
 
 const tmc51x0::DriverParameters driver_parameters_real =
 {
-  50, // global_current_scalar (percent)
+  100, // global_current_scaler (percent)
   20, // run_current (percent)
   0, // hold_current (percent)
   0, // hold_delay (percent)
-  20, // pwm_offset (percent)
+  15, // pwm_offset (percent)
   5, // pwm_gradient (percent)
   false, // automatic_current_control_enabled
   tmc51x0::REVERSE, // motor_direction

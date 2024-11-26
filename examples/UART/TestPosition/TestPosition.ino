@@ -32,7 +32,7 @@ const tmc51x0::ConverterParameters converter_parameters =
 
 const tmc51x0::DriverParameters driver_parameters_real =
 {
-  50, // global_current_scalar (percent)
+  50, // global_current_scaler (percent)
   20, // run_current (percent)
   0, // hold_current (percent)
   0, // hold_delay (percent)
