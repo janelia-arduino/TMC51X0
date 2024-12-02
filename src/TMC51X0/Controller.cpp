@@ -15,6 +15,13 @@ void Controller::setup(tmc51x0::ControllerParameters controller_parameters)
   writeStopMode(controller_parameters.stop_mode);
   writeMaxVelocity(controller_parameters.max_velocity);
   writeMaxAcceleration(controller_parameters.max_acceleration);
+  writeStartVelocity(controller_parameters.start_velocity);
+  writeStopVelocity(controller_parameters.stop_velocity);
+  writeFirstVelocity(controller_parameters.first_velocity);
+  writeFirstAcceleration(controller_parameters.first_acceleration);
+  writeMaxDeceleration(controller_parameters.max_deceleration);
+  writeFirstDeceleration(controller_parameters.first_deceleration);
+  writeTzerowait(controller_parameters.zero_wait_duration);
 }
 
 void Controller::writeRampMode(RampMode ramp_mode)
@@ -142,6 +149,11 @@ void Controller::writeTargetPosition(int32_t position)
   registers_ptr_->write(Registers::XTARGET, position);
 }
 
+void Controller::zeroTargetPosition()
+{
+  return writeTargetPosition(0);
+}
+
 void Controller::writeComparePosition(int32_t position)
 {
   registers_ptr_->write(Registers::X_COMPARE, position);
@@ -170,18 +182,7 @@ void Controller::initialize(Registers & registers)
 {
   registers_ptr_ = &registers;
 
-  // writeRampMode(RAMP_MODE_DEFAULT);
-  // writeMaxVelocity(MAX_VELOCITY_DEFAULT);
-  // writeMaxAcceleration(MAX_ACCELERATION_DEFAULT);
-  // writeStopMode(STOP_MODE_DEFAULT);
-  writeActualPosition(ACTUAL_POSITION_DEFAULT);
-  writeStartVelocity(START_VELOCITY_DEFAULT);
-  writeStopVelocity(STOP_VELOCITY_DEFAULT);
-  writeFirstAcceleration(FIRST_ACCELERATION_DEFAULT);
-  writeFirstVelocity(FIRST_VELOCITY_DEFAULT);
-  writeMaxDeceleration(MAX_DECELERATION_DEFAULT);
-  writeFirstDeceleration(FIRST_DECELERATION_DEFAULT);
-  writeTzerowait(TZEROWAIT_DEFAULT);
-  writeTargetPosition(TARGET_POSITION_DEFAULT);
+  zeroActualPosition();
+  zeroTargetPosition();
 }
 

@@ -48,8 +48,16 @@ ControllerParameters Converter::controllerParametersRealToChip(ControllerParamet
 {
   ControllerParameters cp_chip;
   cp_chip.ramp_mode = cp_real.ramp_mode;
+  cp_chip.stop_mode = cp_real.stop_mode;
   cp_chip.max_velocity = velocityRealToChip(cp_real.max_velocity);
   cp_chip.max_acceleration = accelerationRealToChip(cp_real.max_acceleration);
+  cp_chip.start_velocity = velocityRealToChip(cp_real.start_velocity);
+  cp_chip.stop_velocity = velocityRealToChip(cp_real.stop_velocity);
+  cp_chip.first_velocity = velocityRealToChip(cp_real.first_velocity);
+  cp_chip.first_acceleration = accelerationRealToChip(cp_real.first_acceleration);
+  cp_chip.max_deceleration = accelerationRealToChip(cp_real.max_deceleration);
+  cp_chip.first_deceleration = accelerationRealToChip(cp_real.first_deceleration);
+  cp_chip.zero_wait_duration = millisecondsToTzerowait(cp_real.zero_wait_duration);
 
   return cp_chip;
 }

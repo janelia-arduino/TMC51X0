@@ -59,23 +59,17 @@ const tmc51x0::ControllerParameters controller_parameters_real =
   tmc51x0::HARD, // stop_mode
   20, // max_velocity (millimeters/s)
   2, // max_acceleration ((millimeters/s)/s)
+  1, // start_velocity (millimeters/s)
+  5, // stop_velocity (millimeters/s)
+  10, // first_velocity (millimeters/s)
+  10, // first_acceleration ((millimeters/s)/s)
+  20, // max_deceleration ((millimeters/s)/s)
+  25, // first_deceleration ((millimeters/s)/s)
+  0 // zero_wait_duration (milliseconds)
 };
 
-// controller constants
-const uint32_t START_VELOCITY = 1; // millimeters/s
-const uint32_t FIRST_ACCELERATION = 10;  // millimeters/(s^2)
-const uint32_t FIRST_VELOCITY = 10; // millimeters/s
-// const uint32_t MAX_ACCELERATION = 2; // millimeters/(s^2)
-const uint32_t MAX_DECELERATION = 25;  // millimeters/(s^2)
-const uint32_t FIRST_DECELERATION = 20;  // millimeters/(s^2)
-// const uint32_t MAX_VELOCITY = 20; // millimeters/s
-const uint32_t STOP_VELOCITY = 5; // millimeters/s
-
 const int32_t MIN_TARGET_POSITION = 20;  // millimeters
-// const int32_t MAX_TARGET_POSITION = 180;  // millimeters
 const int32_t MAX_TARGET_POSITION = 600;  // millimeters
-// const tmc51x0::RampMode RAMP_MODE = tmc51x0::POSITION;
-// const int32_t INITIAL_POSITION = 0;
 
 // const size_t ENABLE_HARDWARE_PIN = 4;
 
@@ -107,14 +101,6 @@ void setup()
   tmc51x0::ControllerParameters controller_parameters_chip = tmc5130.converter.controllerParametersRealToChip(controller_parameters_real);
   tmc5130.controller.setup(controller_parameters_chip);
 
-  tmc5130.controller.writeFirstAcceleration(tmc5130.converter.accelerationRealToChip(FIRST_ACCELERATION));
-  tmc5130.controller.writeFirstVelocity(tmc5130.converter.velocityRealToChip(FIRST_VELOCITY));
-  // tmc5130.controller.writeMaxAcceleration(tmc5130.converter.accelerationRealToChip(MAX_ACCELERATION));
-  tmc5130.controller.writeMaxDeceleration(tmc5130.converter.accelerationRealToChip(MAX_DECELERATION));
-  tmc5130.controller.writeFirstDeceleration(tmc5130.converter.accelerationRealToChip(FIRST_DECELERATION));
-  tmc5130.controller.writeStopVelocity(tmc5130.converter.velocityRealToChip(STOP_VELOCITY));
-  // tmc5130.controller.writeRampMode(RAMP_MODE);
-
   tmc5130.driver.enable();
 
   tmc5130.controller.rampToZeroVelocity();
@@ -125,7 +111,7 @@ void setup()
   }
 
   tmc5130.controller.zeroActualPosition();
-  tmc5130.controller.writeStartVelocity(tmc5130.converter.velocityRealToChip(START_VELOCITY));
+  tmc5130.controller.writeStartVelocity(controller_parameters_chip.max_velocity);
   tmc5130.controller.writeMaxVelocity(controller_parameters_chip.max_velocity);
 
   randomSeed(analogRead(A0));

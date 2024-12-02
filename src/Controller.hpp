@@ -55,6 +55,8 @@ public:
   void writeStartVelocity(uint32_t velocity);
   // 0..(2^18)-1 microsteps/t
   // reset default: 10
+  // stop velocity should be identical or greater than start velocity
+  // do not set to zero in positioning mode!
   void writeStopVelocity(uint32_t velocity);
 
   // 0..(2^16)-1 microsteps/ta^2
@@ -69,6 +71,7 @@ public:
   void writeMaxDeceleration(uint32_t deceleration);
   // 0..(2^16)-1 microsteps/ta^2
   // reset default: 10000
+  // do not set to zero in positioning mode!
   void writeFirstDeceleration(uint32_t deceleration);
 
   // 0..(2^16)-1 *512 tclk
@@ -80,6 +83,7 @@ public:
   int32_t readTargetPosition();
   // -2^31..(2^31)-1 microsteps
   void writeTargetPosition(int32_t position);
+  void zeroTargetPosition();
 
   // -2^31..(2^31)-1 microsteps
   void writeComparePosition(int32_t position);
@@ -92,15 +96,7 @@ public:
 private:
   Registers * registers_ptr_;
 
-  const static int32_t ACTUAL_POSITION_DEFAULT = 0;
-  const static uint32_t START_VELOCITY_DEFAULT = 0;
-  const static uint32_t STOP_VELOCITY_DEFAULT = 10;
-  const static uint32_t FIRST_ACCELERATION_DEFAULT = 0;
-  const static uint32_t FIRST_VELOCITY_DEFAULT = 10;
-  const static uint32_t MAX_DECELERATION_DEFAULT = 0;
-  const static uint32_t FIRST_DECELERATION_DEFAULT = 10000;
   const static uint32_t TZEROWAIT_DEFAULT = 0;
-  const static int32_t TARGET_POSITION_DEFAULT = 0;
   const static int32_t MAX_POSITIVE_VELOCITY = 8388607;
   const static int32_t VELOCITY_SIGN_CONVERSION = 16777216;
 

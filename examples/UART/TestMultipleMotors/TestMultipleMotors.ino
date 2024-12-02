@@ -69,20 +69,23 @@ const tmc51x0::DriverParameters driver_parameters_real =
   true // short_to_ground_protection_enabled
 };
 
-// controller constants
-const uint32_t START_VELOCITY = 1; // millimeters/s
-const uint32_t FIRST_ACCELERATION = 10;  // millimeters/(s^2)
-const uint32_t FIRST_VELOCITY = 10; // millimeters/s
-const uint32_t MAX_ACCELERATION = 2; // millimeters/(s^2)
-const uint32_t MAX_DECELERATION = 25;  // millimeters/(s^2)
-const uint32_t FIRST_DECELERATION = 20;  // millimeters/(s^2)
-const uint32_t MAX_VELOCITY = 20; // millimeters/s
-const uint32_t STOP_VELOCITY = 5; // millimeters/s
+const tmc51x0::ControllerParameters controller_parameters_real =
+{
+  tmc51x0::POSITION, // ramp_mode
+  tmc51x0::HARD, // stop_mode
+  20, // max_velocity (millimeters/s)
+  2, // max_acceleration ((millimeters/s)/s)
+  1, // start_velocity (millimeters/s)
+  5, // stop_velocity (millimeters/s)
+  10, // first_velocity (millimeters/s)
+  10, // first_acceleration ((millimeters/s)/s)
+  20, // max_deceleration ((millimeters/s)/s)
+  25, // first_deceleration ((millimeters/s)/s)
+  0 // zero_wait_duration (milliseconds)
+};
 
 const int32_t MIN_TARGET_POSITION = 20;  // millimeters
 const int32_t MAX_TARGET_POSITION = 600;  // millimeters
-const tmc51x0::Controller::RampMode RAMP_MODE = tmc51x0::Controller::POSITION;
-const int32_t INITIAL_POSITION = 0;
 
 // Instantiate TMC51X0
 TMC51X0 motors[MOTOR_COUNT];
@@ -110,6 +113,7 @@ void setup()
 
   randomSeed(analogRead(A0));
 
+
   for (size_t i=0; i<MOTOR_COUNT; ++i)
   {
     TMC51X0 & motor = motors[i];
@@ -118,27 +122,18 @@ void setup()
     motor.setupUart(uart_parameters);
 
     motor.converter.setup(converter_parameters);
-    tmc51x0::DriverParameters driver_parameters_chip = motor.converter.driverParametersRealToChip(driver_parameters_real);
 
     digitalWrite(MUX_ADDRESS_0_PIN, MUX_ADDRESS_0_VALUES[i]);
     digitalWrite(MUX_ADDRESS_1_PIN, MUX_ADDRESS_1_VALUES[i]);
     digitalWrite(MUX_ADDRESS_2_PIN, MUX_ADDRESS_2_VALUES[i]);
 
+    tmc51x0::DriverParameters driver_parameters_chip = motor.converter.driverParametersRealToChip(driver_parameters_real);
     motor.driver.setup(driver_parameters_chip);
 
-    motor.controller.writeFirstAcceleration(motor.converter.accelerationRealToChip(FIRST_ACCELERATION));
-    motor.controller.writeFirstVelocity(motor.converter.velocityRealToChip(FIRST_VELOCITY));
-    motor.controller.writeMaxAcceleration(motor.converter.accelerationRealToChip(MAX_ACCELERATION));
-    motor.controller.writeMaxDeceleration(motor.converter.accelerationRealToChip(MAX_DECELERATION));
-    motor.controller.writeFirstDeceleration(motor.converter.accelerationRealToChip(FIRST_DECELERATION));
-    motor.controller.writeStopVelocity(motor.converter.velocityRealToChip(STOP_VELOCITY));
-    motor.controller.writeRampMode(RAMP_MODE);
-    motor.controller.writeActualPosition(motor.converter.positionRealToChip(INITIAL_POSITION));
+    tmc51x0::ControllerParameters controller_parameters_chip = motor.converter.controllerParametersRealToChip(controller_parameters_real);
+    motor.controller.setup(controller_parameters_chip);
 
     motor.driver.enable();
-
-    motor.controller.writeStartVelocity(motor.converter.velocityRealToChip(START_VELOCITY));
-    motor.controller.writeMaxVelocity(motor.converter.velocityRealToChip(MAX_VELOCITY));
 
     target_position = random(MIN_TARGET_POSITION, MAX_TARGET_POSITION);
     Serial.print("motor ");
