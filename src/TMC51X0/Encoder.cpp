@@ -9,7 +9,25 @@
 
 using namespace tmc51x0;
 
-void Encoder::writeFractionalMode(Encoder::FractionalMode mode)
+Encoder::Encoder()
+{
+  encoder_parameters_ = EncoderParameters{};
+}
+
+void Encoder::setup()
+{
+  writeFractionalMode(encoder_parameters_.fractional_mode);
+  writeMicrostepsPerPulse(encoder_parameters_.microsteps_per_pulse_integer,
+    encoder_parameters_.microsteps_per_pulse_fractional);
+}
+
+void Encoder::setup(tmc51x0::EncoderParameters encoder_parameters)
+{
+  encoder_parameters_ = encoder_parameters;
+  setup();
+}
+
+void Encoder::writeFractionalMode(FractionalMode mode)
 {
   Registers::Encmode encmode;
   encmode.bytes = registers_ptr_->getStored(Registers::ENCMODE);
@@ -36,6 +54,11 @@ void Encoder::writeActualPosition(int32_t position)
   return registers_ptr_->write(Registers::X_ENC, position);
 }
 
+void Encoder::zeroActualPosition()
+{
+  return writeActualPosition(0);
+}
+
 Registers::EncStatus Encoder::readAndClearStatus()
 {
   Registers::EncStatus enc_status_read, enc_status_write;
@@ -52,8 +75,6 @@ void Encoder::initialize(Registers & registers)
 {
   registers_ptr_ = &registers;
 
-  writeFractionalMode(FRACTIONAL_MODE_DEFAULT);
-  writeMicrostepsPerPulse(MICROSTEPS_PER_PULSE_INTEGER_DEFAULT, MICROSTEPS_PER_PULSE_FRACTIONAL_DEFAULT);
-  writeActualPosition(ACTUAL_POSITION_DEFAULT);
+  zeroActualPosition();
 }
 

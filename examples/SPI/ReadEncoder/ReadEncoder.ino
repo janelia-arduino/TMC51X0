@@ -14,24 +14,27 @@ const tmc51x0::SpiParameters spi_parameters =
 {
   spi,
   1000000, // clock_rate
-  10 // chip_select_pin
+  14 // chip_select_pin
 };
 
+const tmc51x0::EncoderParameters encoder_parameters =
+{
+  tmc51x0::BINARY, // fractional_mode
+  64, // microsteps_per_pulse_integer
+  0 // microsteps_per_pulse_fractional
+};
+// 200 encoder single signal pulses per revolution
+// 200*4 = 800 quadrature encoder pulses per revolution
+// 200 motor fullsteps per revolution
+// 256 microsteps per fullstep
+// 200*256 = 51200 microsteps per revolution
+// 51200/800 = 64.0 microsteps per encoder pulse
+
 const uint32_t SERIAL_BAUD_RATE = 115200;
-const uint16_t DELAY = 100;
-
-const tmc51x0::Encoder::FractionalMode FRACTIONAL_MODE = tmc51x0::Encoder::BINARY;
-// 256 encoder single signal pulses per revolution
-// 256*4 = 1024 quadrature encoder pulses per revolution
-// 51200 microsteps per revolution
-// 51200/1024 = 50.0 microsteps per encoder pulse
-const int16_t MICROSTEPS_PER_PULSE_INTEGER = 50;
-const int16_t MICROSTEPS_PER_PULSE_FRACTIONAL = 0;
-
-const int32_t INITIAL_POSITION = 0;
+const uint16_t DELAY = 500;
 
 // Instantiate TMC51X0
-TMC51X0 tmc5160;
+TMC51X0 tmc5130;
 int32_t encoder_actual_position;
 tmc51x0::Registers::EncStatus encoder_status;
 
@@ -45,22 +48,20 @@ void setup()
   spi.setRX(RX_PIN);
 #endif
   spi.begin();
-  tmc5160.setupSpi(spi_parameters);
+  tmc5130.setupSpi(spi_parameters);
 
-  tmc5160.encoder.writeFractionalMode(FRACTIONAL_MODE);
-  tmc5160.encoder.writeMicrostepsPerPulse(MICROSTEPS_PER_PULSE_INTEGER, MICROSTEPS_PER_PULSE_FRACTIONAL);
-  // tmc5160.encoder.writeActualPosition(tmc5160.converter.positionRealToEncoder(INITIAL_POSITION));
+  tmc5130.encoder.setup(encoder_parameters);
 }
 
 void loop()
 {
-  encoder_actual_position = tmc5160.encoder.readActualPosition();
+  encoder_actual_position = tmc5130.encoder.readActualPosition();
   Serial.print("encoder_actual_position: ");
   Serial.println(encoder_actual_position);
-  encoder_status = tmc5160.encoder.readAndClearStatus();
+  encoder_status = tmc5130.encoder.readAndClearStatus();
   Serial.print("encoder_status.n_event: ");
   Serial.print(encoder_status.n_event);
-  Serial.print(" , encoder_status.deviation_warn: ");
+  Serial.print(" , encoder_status.deviation_warn (only works on TMC5160): ");
   Serial.println(encoder_status.deviation_warn);
   delay(DELAY);
 }

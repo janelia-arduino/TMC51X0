@@ -9,6 +9,7 @@
 #define TMC51X0_ENCODER_HPP
 
 #include "Registers.hpp"
+#include "TMC51X0/EncoderParameters.hpp"
 
 
 class TMC51X0;
@@ -18,11 +19,11 @@ namespace tmc51x0
 class Encoder
 {
 public:
-  enum FractionalMode
-  {
-    BINARY = 0,
-    DECIMAL = 1,
-  };
+  Encoder();
+
+  void setup();
+  void setup(EncoderParameters encoder_parameters);
+
   void writeFractionalMode(FractionalMode mode);
 
   // integer: -32768..32767
@@ -38,16 +39,13 @@ public:
   int32_t readActualPosition();
   // -2^31..(2^31)-1 encoder counts
   void writeActualPosition(int32_t position);
+  void zeroActualPosition();
 
   Registers::EncStatus readAndClearStatus();
 
 private:
   Registers * registers_ptr_;
-
-  const static FractionalMode FRACTIONAL_MODE_DEFAULT = BINARY;
-  const static int32_t MICROSTEPS_PER_PULSE_INTEGER_DEFAULT = 1;
-  const static int32_t MICROSTEPS_PER_PULSE_FRACTIONAL_DEFAULT = 0;
-  const static int32_t ACTUAL_POSITION_DEFAULT = 0;
+  EncoderParameters encoder_parameters_;
 
   void initialize(Registers & registers);
 
