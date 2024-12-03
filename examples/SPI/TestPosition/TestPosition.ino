@@ -159,7 +159,7 @@ void loop()
     {
       target_position = MIN_TARGET_POSITION;
     }
-tmc5130.controller.writeTargetPosition(tmc5130.converter.positionRealToChip(target_position));
+    tmc5130.controller.writeTargetPosition(tmc5130.converter.positionRealToChip(target_position));
   }
 
   Serial.println("--------------------------");

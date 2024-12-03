@@ -97,9 +97,19 @@ public:
   // set stop mode after disabling stall stop if desired
   void disableStallStop();
 
+  void setupSwitches();
+  void setupSwitches(SwitchParameters switch_parameters);
+  bool leftSwitchActive();
+  bool rightSwitchActive();
+  bool leftLatchActive();
+  bool rightLatchActive();
+  bool leftStopEvent();
+  bool rightStopEvent();
+
 private:
   Registers * registers_ptr_;
   ControllerParameters controller_parameters_;
+  SwitchParameters switch_parameters_;
 
   const static int32_t MAX_POSITIVE_VELOCITY = 8388607;
   const static int32_t VELOCITY_SIGN_CONVERSION = 16777216;

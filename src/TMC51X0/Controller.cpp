@@ -195,6 +195,71 @@ void Controller::disableStallStop()
   registers_ptr_->write(Registers::SW_MODE, sw_mode.bytes);
 }
 
+void Controller::setupSwitches()
+{
+  Registers::SwMode sw_mode;
+  sw_mode.bytes = registers_ptr_->getStored(Registers::SW_MODE);
+  sw_mode.stop_l_enable = switch_parameters_.enable_left_stop;
+  sw_mode.stop_r_enable = switch_parameters_.enable_right_stop;
+  sw_mode.pol_stop_l = switch_parameters_.invert_left_polarity;
+  sw_mode.pol_stop_r = switch_parameters_.invert_right_polarity;
+  sw_mode.swap_lr = switch_parameters_.swap_left_right;
+  sw_mode.latch_l_active = switch_parameters_.latch_left_active;
+  sw_mode.latch_l_inactive = switch_parameters_.latch_left_inactive;
+  sw_mode.latch_r_active = switch_parameters_.latch_right_active;
+  sw_mode.latch_r_inactive = switch_parameters_.latch_right_inactive;
+  sw_mode.en_latch_encoder = switch_parameters_.enable_latch_encoder;
+  registers_ptr_->write(Registers::SW_MODE, sw_mode.bytes);
+}
+
+void Controller::setupSwitches(SwitchParameters switch_parameters)
+{
+  switch_parameters_ = switch_parameters;
+  setupSwitches();
+}
+
+bool Controller::leftSwitchActive()
+{
+  Registers::RampStat ramp_stat;
+  ramp_stat.bytes = registers_ptr_->read(Registers::RAMP_STAT);
+  return ramp_stat.status_stop_l;
+}
+
+bool Controller::rightSwitchActive()
+{
+  Registers::RampStat ramp_stat;
+  ramp_stat.bytes = registers_ptr_->read(Registers::RAMP_STAT);
+  return ramp_stat.status_stop_r;
+}
+
+bool Controller::leftLatchActive()
+{
+  Registers::RampStat ramp_stat;
+  ramp_stat.bytes = registers_ptr_->read(Registers::RAMP_STAT);
+  return ramp_stat.status_latch_l;
+}
+
+bool Controller::rightLatchActive()
+{
+  Registers::RampStat ramp_stat;
+  ramp_stat.bytes = registers_ptr_->read(Registers::RAMP_STAT);
+  return ramp_stat.status_latch_r;
+}
+
+bool Controller::leftStopEvent()
+{
+  Registers::RampStat ramp_stat;
+  ramp_stat.bytes = registers_ptr_->read(Registers::RAMP_STAT);
+  return ramp_stat.event_stop_l;
+}
+
+bool Controller::rightStopEvent()
+{
+  Registers::RampStat ramp_stat;
+  ramp_stat.bytes = registers_ptr_->read(Registers::RAMP_STAT);
+  return ramp_stat.event_stop_r;
+}
+
 // private
 
 void Controller::initialize(Registers & registers)
