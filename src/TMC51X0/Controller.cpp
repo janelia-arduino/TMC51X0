@@ -9,19 +9,30 @@
 
 using namespace tmc51x0;
 
+Controller::Controller()
+{
+  controller_parameters_ = ControllerParameters{};
+}
+
+void Controller::setup()
+{
+  writeRampMode(controller_parameters_.ramp_mode);
+  writeStopMode(controller_parameters_.stop_mode);
+  writeMaxVelocity(controller_parameters_.max_velocity);
+  writeMaxAcceleration(controller_parameters_.max_acceleration);
+  writeStartVelocity(controller_parameters_.start_velocity);
+  writeStopVelocity(controller_parameters_.stop_velocity);
+  writeFirstVelocity(controller_parameters_.first_velocity);
+  writeFirstAcceleration(controller_parameters_.first_acceleration);
+  writeMaxDeceleration(controller_parameters_.max_deceleration);
+  writeFirstDeceleration(controller_parameters_.first_deceleration);
+  writeTzerowait(controller_parameters_.zero_wait_duration);
+}
+
 void Controller::setup(tmc51x0::ControllerParameters controller_parameters)
 {
-  writeRampMode(controller_parameters.ramp_mode);
-  writeStopMode(controller_parameters.stop_mode);
-  writeMaxVelocity(controller_parameters.max_velocity);
-  writeMaxAcceleration(controller_parameters.max_acceleration);
-  writeStartVelocity(controller_parameters.start_velocity);
-  writeStopVelocity(controller_parameters.stop_velocity);
-  writeFirstVelocity(controller_parameters.first_velocity);
-  writeFirstAcceleration(controller_parameters.first_acceleration);
-  writeMaxDeceleration(controller_parameters.max_deceleration);
-  writeFirstDeceleration(controller_parameters.first_deceleration);
-  writeTzerowait(controller_parameters.zero_wait_duration);
+  controller_parameters_ = controller_parameters;
+  setup();
 }
 
 void Controller::writeRampMode(RampMode ramp_mode)

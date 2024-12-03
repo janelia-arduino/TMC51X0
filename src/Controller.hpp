@@ -19,6 +19,9 @@ namespace tmc51x0
 class Controller
 {
 public:
+  Controller();
+
+  void setup();
   void setup(ControllerParameters controller_parameters);
 
   // reset default: VELOCITY_POSITIVE
@@ -95,8 +98,8 @@ public:
 
 private:
   Registers * registers_ptr_;
+  ControllerParameters controller_parameters_;
 
-  const static uint32_t TZEROWAIT_DEFAULT = 0;
   const static int32_t MAX_POSITIVE_VELOCITY = 8388607;
   const static int32_t VELOCITY_SIGN_CONVERSION = 16777216;
 
