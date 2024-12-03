@@ -112,12 +112,13 @@ void setup()
 
   tmc5160.driver.enable();
 
-  tmc5160.controller.rampToZeroVelocity();
+  tmc5160.controller.beginRampToZeroVelocity();
   while (!tmc5160.controller.zeroVelocity())
   {
     Serial.println("Waiting for zero velocity.");
     delay(LOOP_DELAY);
   }
+  tmc5160.controller.endRampToZeroVelocity();
 }
 
 void loop()

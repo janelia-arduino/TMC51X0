@@ -92,10 +92,18 @@ bool Controller::positionReached()
   return ramp_stat.position_reached;
 }
 
-void Controller::rampToZeroVelocity()
+void Controller::beginRampToZeroVelocity()
 {
+  ramp_to_zero_settings_.start_velocity = registers_ptr_->getStored(Registers::VSTART);
+  ramp_to_zero_settings_.max_velocity = registers_ptr_->getStored(Registers::VMAX);
   writeStartVelocity(0);
   writeMaxVelocity(0);
+}
+
+void Controller::endRampToZeroVelocity()
+{
+  writeStartVelocity(ramp_to_zero_settings_.start_velocity);
+  writeMaxVelocity(ramp_to_zero_settings_.max_velocity);
 }
 
 bool Controller::zeroVelocity()

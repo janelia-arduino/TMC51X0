@@ -93,19 +93,16 @@ void setup()
 
   tmc5130.driver.enable();
 
-  tmc5130.controller.rampToZeroVelocity();
+  tmc5130.controller.beginRampToZeroVelocity();
   while (!tmc5130.controller.zeroVelocity())
   {
     Serial.println("Waiting for zero velocity.");
     delay(DELAY);
   }
-
+  tmc5130.controller.endRampToZeroVelocity();
   tmc5130.controller.zeroActualPosition();
 
   target_velocity = MIN_TARGET_VELOCITY;
-  tmc5130.controller.writeMaxVelocity(tmc5130.converter.velocityRealToChip(target_velocity));
-
-  delay(DELAY);
 }
 
 void loop()

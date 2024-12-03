@@ -116,16 +116,15 @@ void setup()
 
   tmc5160.driver.enable();
 
-  tmc5160.controller.rampToZeroVelocity();
+  tmc5160.controller.beginRampToZeroVelocity();
   while (!tmc5160.controller.zeroVelocity())
   {
     Serial.println("Waiting for zero velocity.");
     delay(LOOP_DELAY);
   }
-  delay(LOOP_DELAY);
+  tmc5160.controller.endRampToZeroVelocity();
 
   target_velocity = MIN_TARGET_VELOCITY;
-  tmc5160.controller.writeMaxVelocity(tmc5160.converter.velocityRealToChip(target_velocity));
 }
 
 void loop()

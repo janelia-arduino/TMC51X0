@@ -100,16 +100,14 @@ void setup()
 
   tmc5130.driver.enable();
 
-  tmc5130.controller.rampToZeroVelocity();
+  tmc5130.controller.beginRampToZeroVelocity();
   while (!tmc5130.controller.zeroVelocity())
   {
     Serial.println("Waiting for zero velocity.");
     delay(LOOP_DELAY);
   }
-
+  tmc5130.controller.endRampToZeroVelocity();
   tmc5130.controller.zeroActualPosition();
-  tmc5130.controller.writeStartVelocity(controller_parameters_chip.max_velocity);
-  tmc5130.controller.writeMaxVelocity(controller_parameters_chip.max_velocity);
 
   randomSeed(analogRead(A0));
   long random_delay = random(5000);

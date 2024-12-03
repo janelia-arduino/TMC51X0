@@ -43,7 +43,8 @@ public:
   bool velocityReached();
   bool positionReached();
 
-  void rampToZeroVelocity();
+  void beginRampToZeroVelocity();
+  void endRampToZeroVelocity();
   bool zeroVelocity();
 
   // 0..(2^23)-512 microsteps/t
@@ -104,6 +105,13 @@ private:
   const static int32_t VELOCITY_SIGN_CONVERSION = 16777216;
 
   void initialize(Registers & registers);
+
+  struct RampToZeroSettings
+  {
+    uint32_t start_velocity;
+    uint32_t max_velocity;
+  };
+  RampToZeroSettings ramp_to_zero_settings_;
 
   friend class ::TMC51X0;
 };
