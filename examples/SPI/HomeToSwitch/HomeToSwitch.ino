@@ -67,6 +67,21 @@ const tmc51x0::ControllerParameters controller_parameters_real =
   500, // first_deceleration ((degrees/s)/s)
   0 // zero_wait_duration (milliseconds)
 };
+
+const tmc51x0::SwitchParameters switch_parameters =
+{
+  true, // enable_left_stop
+  false, // enable_right_stop
+  false, // invert_left_polarity
+  false, // invert_right_polarity
+  false, // swap_left_right
+  false, // latch_left_active
+  false, // latch_left_inactive
+  false, // latch_right_active
+  false, // latch_right_inactive
+  false // enable_latch_encoder
+};
+
 // home constants
 // const uint8_t HOME_GLOBAL_CURRENT_SCALER = 50; // percent
 // const uint8_t HOME_COOL_STEP_THRESHOLD = 5; // (degrees/s)
@@ -105,6 +120,7 @@ void setup()
 
   controller_parameters_chip = tmc5130.converter.controllerParametersRealToChip(controller_parameters_real);
   tmc5130.controller.setup(controller_parameters_chip);
+  tmc5130.controller.setupSwitches(switch_parameters);
 
   tmc5130.driver.enable();
 

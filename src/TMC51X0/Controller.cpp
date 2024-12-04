@@ -12,6 +12,7 @@ using namespace tmc51x0;
 Controller::Controller()
 {
   controller_parameters_ = ControllerParameters{};
+  switch_parameters_ = SwitchParameters{};
 }
 
 void Controller::setup()
@@ -258,6 +259,19 @@ bool Controller::rightStopEvent()
   Registers::RampStat ramp_stat;
   ramp_stat.bytes = registers_ptr_->read(Registers::RAMP_STAT);
   return ramp_stat.event_stop_r;
+}
+
+void Controller::beginHomeToSwitch()
+{
+}
+
+void Controller::endHomeToSwitch()
+{
+}
+
+bool Controller::homedToSwitch()
+{
+  return false;
 }
 
 // private

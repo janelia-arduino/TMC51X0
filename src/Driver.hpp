@@ -92,6 +92,10 @@ public:
   void enableStallGuardFilter();
   void disableStallGuardFilter();
   bool stalled();
+  // stall guard result
+  // 0 highest load
+  // low value high load
+  // high value less load
   uint16_t readStallGuardResult();
 
   uint8_t readActualCurrentScaling();

@@ -106,6 +106,10 @@ public:
   bool leftStopEvent();
   bool rightStopEvent();
 
+  void beginHomeToSwitch();
+  void endHomeToSwitch();
+  bool homedToSwitch();
+
 private:
   Registers * registers_ptr_;
   ControllerParameters controller_parameters_;

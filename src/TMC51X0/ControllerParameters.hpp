@@ -172,5 +172,30 @@ private:
   const static bool LATCH_RIGHT_INACTIVE_DEFAULT = false;
   const static bool ENABLE_LATCH_ENCODER_DEFAULT = false;
 };
+struct HomeToSwitchParameters
+{
+  int32_t target_position = TARGET_POSITION_DEFAULT;
+
+  HomeToSwitchParameters(int32_t target_position_ = TARGET_POSITION_DEFAULT)
+  {
+    target_position = target_position_;
+  };
+
+  bool operator==(const HomeToSwitchParameters & rhs) const
+  {
+    if ((this->target_position == rhs.target_position))
+    {
+      return true;
+    }
+    return false;
+  }
+  bool operator!=(const HomeToSwitchParameters & rhs) const
+  {
+    return !(*this == rhs);
+  }
+
+private:
+  const static int32_t TARGET_POSITION_DEFAULT = 0;
+};
 }
 #endif
