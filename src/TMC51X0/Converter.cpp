@@ -64,12 +64,12 @@ ControllerParameters Converter::controllerParametersRealToChip(ControllerParamet
 
 int32_t Converter::positionChipToReal(int32_t position_chip)
 {
-  return position_chip / converter_parameters_.microsteps_per_real_position_unit;
+  return position_chip / (int32_t)converter_parameters_.microsteps_per_real_position_unit;
 }
 
 int32_t Converter::positionRealToChip(int32_t position_real)
 {
-  return position_real * converter_parameters_.microsteps_per_real_position_unit;
+  return position_real * (int32_t)converter_parameters_.microsteps_per_real_position_unit;
 }
 
 int32_t Converter::velocityChipToReal(int32_t velocity_chip)
@@ -209,14 +209,14 @@ int32_t Converter::velocityRealToHz(int32_t velocity_real)
 {
   int32_t velocity_hz;
   velocity_hz = positionRealToChip(velocity_real);
-  velocity_hz = velocity_hz / converter_parameters_.seconds_per_real_velocity_unit;
+  velocity_hz = velocity_hz / (int32_t)converter_parameters_.seconds_per_real_velocity_unit;
   return velocity_hz;
 }
 
 int32_t Converter::velocityHzToReal(int32_t velocity_hz)
 {
   int32_t velocity_real;
-  velocity_real = velocity_hz * converter_parameters_.seconds_per_real_velocity_unit;
+  velocity_real = velocity_hz * (int32_t)converter_parameters_.seconds_per_real_velocity_unit;
   velocity_real = positionChipToReal(velocity_real);
   return velocity_real;
 }
@@ -263,14 +263,14 @@ int32_t Converter::accelerationRealToHzPerS(int32_t acceleration_real)
 {
   int32_t acceleration_hz_per_s;
   acceleration_hz_per_s = positionRealToChip(acceleration_real);
-  acceleration_hz_per_s = acceleration_hz_per_s / converter_parameters_.seconds_per_real_velocity_unit;
+  acceleration_hz_per_s = acceleration_hz_per_s / (int32_t)converter_parameters_.seconds_per_real_velocity_unit;
   return acceleration_hz_per_s;
 }
 
 int32_t Converter::accelerationHzPerSToReal(int32_t acceleration_hz_per_s)
 {
   int64_t acceleration_real;
-  acceleration_real = acceleration_hz_per_s * converter_parameters_.seconds_per_real_velocity_unit;
+  acceleration_real = acceleration_hz_per_s * (int32_t)converter_parameters_.seconds_per_real_velocity_unit;
   acceleration_real = positionChipToReal(acceleration_real);
   return acceleration_real;
 }
