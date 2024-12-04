@@ -26,7 +26,7 @@ const uint16_t RESET_DELAY = 5000;
 const uint32_t SERIAL_BAUD_RATE = 115200;
 const uint16_t LOOP_DELAY = 1000;
 
-// Instantiate TMC51X0
+// global variables
 TMC51X0 prisms[PRISM_COUNT];
 
 void setup()

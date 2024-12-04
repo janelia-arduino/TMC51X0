@@ -66,7 +66,7 @@ const tmc51x0::ControllerParameters controller_parameters_real =
   50, // max_acceleration ((fullsteps/s)/s)
 };
 
-// Instantiate TMC51X0
+// global variables
 TMC51X0 tmc5130;
 uint32_t target_velocity;
 tmc51x0::RampMode ramp_mode = tmc51x0::VELOCITY_POSITIVE;

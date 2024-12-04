@@ -24,7 +24,7 @@ const uint16_t DELAY = 4000;
 const uint8_t HOLD_CURRENT = 0;
 const uint8_t HOLD_DELAY = 0;
 
-// Instantiate TMC51X0
+// global variables
 TMC51X0 tmc5130;
 
 void setup()

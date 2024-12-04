@@ -87,7 +87,7 @@ const tmc51x0::ControllerParameters controller_parameters_real =
 const int32_t MIN_TARGET_POSITION = 20;  // millimeters
 const int32_t MAX_TARGET_POSITION = 600;  // millimeters
 
-// Instantiate TMC51X0
+// global variables
 TMC51X0 motors[MOTOR_COUNT];
 uint32_t target_position;
 

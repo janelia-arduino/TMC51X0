@@ -20,7 +20,7 @@ const tmc51x0::SpiParameters spi_parameters =
 const uint32_t SERIAL_BAUD_RATE = 115200;
 const uint16_t DELAY = 1000;
 
-// Instantiate TMC51X0
+// global variables
 TMC51X0 tmc5160;
 
 void setup()

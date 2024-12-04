@@ -34,7 +34,7 @@ const tmc51x0::SwitchParameters switch_parameters =
 const uint32_t SERIAL_BAUD_RATE = 115200;
 const uint16_t LOOP_DELAY = 1000;
 
-// Instantiate TMC51X0
+// global variables
 TMC51X0 tmc5130;
 
 void setup()

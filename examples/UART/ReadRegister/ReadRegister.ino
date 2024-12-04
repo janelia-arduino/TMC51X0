@@ -20,7 +20,7 @@ const uint32_t UART_BAUD_RATE = 115200;
 const uint32_t SERIAL_BAUD_RATE = 115200;
 const uint16_t DELAY = 2000;
 
-// Instantiate TMC51X0
+// global variables
 TMC51X0 tmc5130;
 
 void setup()

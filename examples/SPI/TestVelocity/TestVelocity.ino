@@ -66,7 +66,7 @@ const tmc51x0::ControllerParameters controller_parameters_real =
 const uint32_t SERIAL_BAUD_RATE = 115200;
 const uint16_t LOOP_DELAY = 4000;
 
-// Instantiate TMC51X0
+// global variables
 TMC51X0 tmc5130;
 
 void setup()

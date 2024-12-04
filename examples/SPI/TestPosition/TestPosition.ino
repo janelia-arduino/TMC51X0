@@ -45,7 +45,7 @@ const tmc51x0::DriverParameters driver_parameters_real =
   1, // cool_step_min
   0, // cool_step_max
   true, // cool_step_enabled
-  200, // high_velocity_threshold (rotations/min)
+  200, // high_velocity_threshold (millimeters/s)
   true, // high_velocity_fullstep_enabled
   true, // high_velocity_chopper_switch_enabled
   0, // stall_guard_threshold
@@ -76,7 +76,7 @@ const int32_t MAX_TARGET_POSITION = 600;  // millimeters
 const uint32_t SERIAL_BAUD_RATE = 115200;
 const uint16_t LOOP_DELAY = 500;
 
-// Instantiate TMC51X0
+// global variables
 TMC51X0 tmc5130;
 uint32_t target_position;
 
