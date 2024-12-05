@@ -53,7 +53,6 @@ HomeParameters Converter::homeParametersRealToChip(HomeParameters hp_real)
   hp_chip.target_position = positionRealToChip(hp_real.target_position);
   hp_chip.velocity = velocityRealToChip(hp_real.velocity);
   hp_chip.acceleration = accelerationRealToChip(hp_real.acceleration);
-  hp_chip.run_current = percentToCurrentSetting(hp_real.run_current);
   hp_chip.pwm_offset = percentToPwmSetting(hp_real.pwm_offset);
 
   return hp_chip;

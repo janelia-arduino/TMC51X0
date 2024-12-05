@@ -92,7 +92,6 @@ void TMC51X0::beginHome(tmc51x0::HomeParameters home_parameters)
   driver.enableStealthChop();
   driver.disableCoolStep();
   driver.disableHighVelocityFullstep();
-  driver.writeRunCurrent(home_parameters.run_current);
   driver.writePwmOffset(home_parameters.pwm_offset);
   driver.writePwmGradient(0);
 

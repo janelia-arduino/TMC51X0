@@ -37,18 +37,18 @@ const tmc51x0::DriverParameters driver_parameters_real =
   5, // pwm_gradient (percent)
   false, // automatic_current_control_enabled
   tmc51x0::FORWARD, // motor_direction
-  tmc51x0::NORMAL, // standstill_mode
+  tmc51x0::PASSIVE_BRAKING_LS, // standstill_mode
   tmc51x0::SPREAD_CYCLE, // chopper_mode
-  200, // stealth_chop_threshold (degrees/s)
+  20, // stealth_chop_threshold (degrees/s)
   true, // stealth_chop_enabled
-  300, // cool_step_threshold (degrees/s)
+  25, // cool_step_threshold (degrees/s)
   1, // cool_step_min
   0, // cool_step_max
   true, // cool_step_enabled
-  400, // high_velocity_threshold (degrees/s)
+  100, // high_velocity_threshold (degrees/s)
   true, // high_velocity_fullstep_enabled
   true, // high_velocity_chopper_switch_enabled
-  10, // stall_guard_threshold
+  0, // stall_guard_threshold
   false, // stall_guard_filter_enabled
   true // short_to_ground_protection_enabled
 };
@@ -57,14 +57,14 @@ const tmc51x0::ControllerParameters controller_parameters_real =
 {
   tmc51x0::POSITION, // ramp_mode
   tmc51x0::HARD, // stop_mode
-  40, // max_velocity (degrees/s)
-  20, // max_acceleration ((degrees/s)/s)
-  20, // start_velocity (degrees/s)
-  30, // stop_velocity (degrees/s)
-  40, // first_velocity (degrees/s)
-  30, // first_acceleration ((degrees/s)/s)
-  40, // max_deceleration ((degrees/s)/s)
-  50, // first_deceleration ((degrees/s)/s)
+  30, // max_velocity (degrees/s)
+  5, // max_acceleration ((degrees/s)/s)
+  1, // start_velocity (degrees/s)
+  5, // stop_velocity (degrees/s)
+  15, // first_velocity (degrees/s)
+  10, // first_acceleration ((degrees/s)/s)
+  10, // max_deceleration ((degrees/s)/s)
+  15, // first_deceleration ((degrees/s)/s)
   0 // zero_wait_duration (milliseconds)
 };
 
@@ -86,9 +86,8 @@ const tmc51x0::HomeParameters home_parameters_real =
 {
   -360, // target_position (degrees)
   10, // velocity (degrees/s)
-  10, // acceleration ((degrees/s)/s)
-  25, // run_current (percent)
-  15 // pwm_offset (percent)
+  5, // acceleration ((degrees/s)/s)
+  10 // pwm_offset (percent)
 };
 
 const int32_t TARGET_POSITION = 100;  // degrees
@@ -163,8 +162,6 @@ void loop()
   tmc5130.controller.writeTargetPosition(target_position_chip);
   Serial.print("target position (degrees): ");
   Serial.println(TARGET_POSITION);
-  Serial.print("target position (chip): ");
-  Serial.println(target_position_chip);
   Serial.println("--------------------------");
 
   while (not tmc5130.controller.positionReached())
@@ -175,6 +172,8 @@ void loop()
     int32_t actual_position_real = tmc5130.converter.positionChipToReal(actual_position_chip);
     Serial.print("actual position (degrees): ");
     Serial.println(actual_position_real);
+    Serial.print("stall_guard_result: ");
+    Serial.println(tmc5130.driver.readStallGuardResult());
     delay(LOOP_DELAY);
   }
   Serial.println("Target position reached!");
