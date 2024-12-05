@@ -374,11 +374,11 @@ void Driver::cacheDriverSettings()
   cached_driver_settings_.automatic_current_control_enabled = pwmconf.pwm_autoscale;
   Registers::Gconf gconf;
   gconf.bytes = registers_ptr_->getStored(Registers::GCONF);
-  cached_driver_settings_.motor_direction = gconf.shaft;
-  cached_driver_settings_.standstill_mode = pwmconf.freewheel;
+  cached_driver_settings_.motor_direction = (MotorDirection)gconf.shaft;
+  cached_driver_settings_.standstill_mode = (StandstillMode)pwmconf.freewheel;
   Registers::Chopconf chopconf;
   chopconf.bytes = registers_ptr_->getStored(Registers::CHOPCONF);
-  cached_driver_settings_.chopper_mode = chopconf.chm;
+  cached_driver_settings_.chopper_mode = (ChopperMode)chopconf.chm;
   cached_driver_settings_.stealth_chop_threshold = registers_ptr_->getStored(Registers::TPWMTHRS);
   cached_driver_settings_.stealth_chop_enabled = gconf.en_pwm_mode;
   cached_driver_settings_.cool_step_threshold = registers_ptr_->getStored(Registers::TCOOLTHRS);

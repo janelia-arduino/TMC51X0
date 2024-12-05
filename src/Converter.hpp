@@ -10,6 +10,7 @@
 #include <Arduino.h>
 
 #include "TMC51X0/ConverterParameters.hpp"
+#include "TMC51X0/HomeParameters.hpp"
 #include "Driver.hpp"
 #include "Controller.hpp"
 
@@ -23,6 +24,7 @@ public:
 
   DriverParameters driverParametersRealToChip(DriverParameters driver_parameters);
   ControllerParameters controllerParametersRealToChip(ControllerParameters controller_parameters);
+  HomeParameters homeParametersRealToChip(HomeParameters home_parameters);
 
   int32_t positionChipToReal(int32_t position_chip);
   int32_t positionRealToChip(int32_t position_real);

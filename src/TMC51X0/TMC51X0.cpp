@@ -78,6 +78,51 @@ void TMC51X0::disablePower()
   }
 }
 
+void TMC51X0::beginHome(tmc51x0::HomeParameters home_parameters)
+{
+  driver.cacheDriverSettings();
+  controller.cacheControllerSettings();
+
+  driver.writeStandstillMode(PASSIVE_BRAKING_LS);
+
+  driver.disable();
+
+  driver.disableAutomaticCurrentControl();
+  driver.writeStealthChopThreshold(home_parameters.velocity + 1);
+  driver.enableStealthChop();
+  driver.disableCoolStep();
+  driver.disableHighVelocityFullstep();
+  driver.writeRunCurrent(home_parameters.run_current);
+  driver.writePwmOffset(home_parameters.pwm_offset);
+  driver.writePwmGradient(0);
+
+  controller.writeRampMode(POSITION);
+  controller.writeStopMode(HARD);
+  controller.zeroActualPosition();
+  controller.writeTargetPosition(home_parameters.target_position);
+  controller.writeMaxVelocity(home_parameters.velocity);
+  controller.writeStartVelocity(home_parameters.velocity);
+  controller.writeStopVelocity(home_parameters.velocity);
+  controller.writeFirstVelocity(0);
+  controller.writeMaxAcceleration(home_parameters.acceleration);
+
+  driver.enable();
+}
+
+void TMC51X0::endHome()
+{
+  controller.zeroActualPosition();
+  controller.zeroTargetPosition();
+
+  driver.restoreDriverSettings();
+  controller.restoreControllerSettings();
+}
+
+bool TMC51X0::homed()
+{
+  return controller.zeroVelocity();
+}
+
 // private
 void TMC51X0::initialize()
 {

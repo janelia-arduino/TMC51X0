@@ -237,26 +237,6 @@ bool Controller::rightStopEvent()
   return ramp_stat.event_stop_r;
 }
 
-// void Controller::beginHomeToSwitch(HomeParameters home_parameters)
-// {
-//   cached_settings_.start_velocity = registers_ptr_->getStored(Registers::VSTART);
-//   writeStartVelocity(0);
-//   cached_settings_.max_velocity = registers_ptr_->getStored(Registers::VMAX);
-//   writeMaxVelocity(0);
-
-//   zeroActualPosition();
-//   writeTargetPosition(home_parameters.target_position);
-// }
-
-// void Controller::endHomeToSwitch()
-// {
-// }
-
-// bool Controller::homedToSwitch()
-// {
-//   return false;
-// }
-
 // private
 
 void Controller::initialize(Registers & registers)
@@ -284,10 +264,10 @@ void Controller::writeControllerParameters(ControllerParameters controller_param
 
 void Controller::cacheControllerSettings()
 {
-  cached_controller_settings_.ramp_mode = registers_ptr_->getStored(Registers::RAMPMODE);
+  cached_controller_settings_.ramp_mode = (RampMode)registers_ptr_->getStored(Registers::RAMPMODE);
   Registers::SwMode sw_mode;
   sw_mode.bytes = registers_ptr_->getStored(Registers::SW_MODE);
-  cached_controller_settings_.stop_mode = sw_mode.en_softstop;
+  cached_controller_settings_.stop_mode = (StopMode)sw_mode.en_softstop;
   cached_controller_settings_.max_velocity = registers_ptr_->getStored(Registers::VMAX);
   cached_controller_settings_.max_acceleration = registers_ptr_->getStored(Registers::AMAX);
   cached_controller_settings_.start_velocity = registers_ptr_->getStored(Registers::VSTART);

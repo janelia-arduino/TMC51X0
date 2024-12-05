@@ -11,6 +11,7 @@
 
 #include "./TMC51X0/SpiInterface.hpp"
 #include "./TMC51X0/UartInterface.hpp"
+#include "./TMC51X0/HomeParameters.hpp"
 
 #include "Registers.hpp"
 #include "Converter.hpp"
@@ -22,6 +23,13 @@
 
 struct TMC51X0
 {
+  tmc51x0::Registers registers;
+  tmc51x0::Converter converter;
+  tmc51x0::Driver driver;
+  tmc51x0::Controller controller;
+  tmc51x0::Encoder encoder;
+  tmc51x0::Printer printer;
+
   TMC51X0();
 
   void setupSpi(tmc51x0::SpiParameters spi_parameters);
@@ -30,18 +38,14 @@ struct TMC51X0
   uint8_t readVersion();
   bool communicating();
 
-  // optional
   void setEnablePowerPin(size_t enable_power_pin);
   void setEnablePowerPolarity(uint8_t pin_value_when_enabled);
   void enablePower();
   void disablePower();
 
-  tmc51x0::Registers registers;
-  tmc51x0::Converter converter;
-  tmc51x0::Driver driver;
-  tmc51x0::Controller controller;
-  tmc51x0::Encoder encoder;
-  tmc51x0::Printer printer;
+  void beginHome(tmc51x0::HomeParameters home_parameters);
+  void endHome();
+  bool homed();
 
 private:
   tmc51x0::SpiInterface interface_spi_;

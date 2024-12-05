@@ -172,35 +172,5 @@ private:
   const static bool LATCH_RIGHT_INACTIVE_DEFAULT = false;
   const static bool ENABLE_LATCH_ENCODER_DEFAULT = false;
 };
-struct HomeParameters
-{
-  int32_t target_position = TARGET_POSITION_DEFAULT;
-  uint32_t velocity = VELOCITY_DEFAULT;
-
-  HomeParameters(int32_t target_position_ = TARGET_POSITION_DEFAULT,
-    uint32_t velocity_ = VELOCITY_DEFAULT)
-  {
-    target_position = target_position_;
-    velocity = velocity_;
-  };
-
-  bool operator==(const HomeParameters & rhs) const
-  {
-    if ((this->target_position == rhs.target_position) &&
-      (this->velocity == rhs.velocity))
-    {
-      return true;
-    }
-    return false;
-  }
-  bool operator!=(const HomeParameters & rhs) const
-  {
-    return !(*this == rhs);
-  }
-
-private:
-  const static int32_t TARGET_POSITION_DEFAULT = 0;
-  const static uint32_t VELOCITY_DEFAULT = 0;
-};
 }
 #endif

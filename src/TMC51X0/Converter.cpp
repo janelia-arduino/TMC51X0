@@ -47,6 +47,18 @@ ControllerParameters Converter::controllerParametersRealToChip(ControllerParamet
   return cp_chip;
 }
 
+HomeParameters Converter::homeParametersRealToChip(HomeParameters hp_real)
+{
+  HomeParameters hp_chip = hp_real;
+  hp_chip.target_position = positionRealToChip(hp_real.target_position);
+  hp_chip.velocity = velocityRealToChip(hp_real.velocity);
+  hp_chip.acceleration = accelerationRealToChip(hp_real.acceleration);
+  hp_chip.run_current = percentToCurrentSetting(hp_real.run_current);
+  hp_chip.pwm_offset = percentToPwmSetting(hp_real.pwm_offset);
+
+  return hp_chip;
+}
+
 int32_t Converter::positionChipToReal(int32_t position_chip)
 {
   return position_chip / (int32_t)converter_parameters_.microsteps_per_real_position_unit;
