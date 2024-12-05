@@ -105,7 +105,8 @@ public:
 
 private:
   Registers * registers_ptr_;
-  DriverParameters driver_parameters_;
+  DriverParameters setup_driver_parameters_;
+  DriverParameters cached_driver_settings_;
 
   size_t hardware_enable_pin_;
   uint8_t toff_;
@@ -119,6 +120,9 @@ private:
   const static uint8_t SEMIN_OFF = 0;
 
   void initialize(Registers & registers);
+  void writeDriverParameters(DriverParameters driver_parameters);
+  void cacheDriverSettings();
+  void restoreDriverSettings();
 
   void hardwareEnable();
   void hardwareDisable();

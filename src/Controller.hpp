@@ -106,26 +106,24 @@ public:
   bool leftStopEvent();
   bool rightStopEvent();
 
-  void beginHomeToSwitch();
-  void endHomeToSwitch();
-  bool homedToSwitch();
+  // void beginHomeToSwitch(HomeParameters home_parameters);
+  // void endHomeToSwitch();
+  // bool homedToSwitch();
 
 private:
   Registers * registers_ptr_;
-  ControllerParameters controller_parameters_;
-  SwitchParameters switch_parameters_;
+  ControllerParameters setup_controller_parameters_;
+  ControllerParameters cached_controller_settings_;
+  SwitchParameters setup_switch_parameters_;
 
   const static int32_t MAX_POSITIVE_VELOCITY = 8388607;
   const static int32_t VELOCITY_SIGN_CONVERSION = 16777216;
 
   void initialize(Registers & registers);
-
-  struct RampToZeroSettings
-  {
-    uint32_t start_velocity;
-    uint32_t max_velocity;
-  };
-  RampToZeroSettings ramp_to_zero_settings_;
+  void writeControllerParameters(ControllerParameters controller_parameters);
+  void cacheControllerSettings();
+  void restoreControllerSettings();
+  void writeSwitchParameters(SwitchParameters switch_parameters);
 
   friend class ::TMC51X0;
 };

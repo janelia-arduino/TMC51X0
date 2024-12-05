@@ -45,9 +45,10 @@ public:
 
 private:
   Registers * registers_ptr_;
-  EncoderParameters encoder_parameters_;
+  EncoderParameters setup_encoder_parameters_;
 
   void initialize(Registers & registers);
+  void writeEncoderParameters(EncoderParameters encoder_parameters);
 
   friend class ::TMC51X0;
 };

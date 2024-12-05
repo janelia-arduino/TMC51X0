@@ -11,19 +11,17 @@ using namespace tmc51x0;
 
 Encoder::Encoder()
 {
-  encoder_parameters_ = EncoderParameters{};
+  setup_encoder_parameters_ = EncoderParameters{};
 }
 
 void Encoder::setup()
 {
-  writeFractionalMode(encoder_parameters_.fractional_mode);
-  writeMicrostepsPerPulse(encoder_parameters_.microsteps_per_pulse_integer,
-    encoder_parameters_.microsteps_per_pulse_fractional);
+  writeEncoderParameters(setup_encoder_parameters_);
 }
 
 void Encoder::setup(tmc51x0::EncoderParameters encoder_parameters)
 {
-  encoder_parameters_ = encoder_parameters;
+  setup_encoder_parameters_ = encoder_parameters;
   setup();
 }
 
@@ -76,5 +74,12 @@ void Encoder::initialize(Registers & registers)
   registers_ptr_ = &registers;
 
   zeroActualPosition();
+}
+
+void Encoder::writeEncoderParameters(EncoderParameters encoder_parameters)
+{
+  writeFractionalMode(encoder_parameters.fractional_mode);
+  writeMicrostepsPerPulse(encoder_parameters.microsteps_per_pulse_integer,
+    encoder_parameters.microsteps_per_pulse_fractional);
 }
 

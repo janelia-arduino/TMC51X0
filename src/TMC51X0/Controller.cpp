@@ -11,28 +11,18 @@ using namespace tmc51x0;
 
 Controller::Controller()
 {
-  controller_parameters_ = ControllerParameters{};
-  switch_parameters_ = SwitchParameters{};
+  setup_controller_parameters_ = ControllerParameters{};
+  setup_switch_parameters_ = SwitchParameters{};
 }
 
 void Controller::setup()
 {
-  writeRampMode(controller_parameters_.ramp_mode);
-  writeStopMode(controller_parameters_.stop_mode);
-  writeMaxVelocity(controller_parameters_.max_velocity);
-  writeMaxAcceleration(controller_parameters_.max_acceleration);
-  writeStartVelocity(controller_parameters_.start_velocity);
-  writeStopVelocity(controller_parameters_.stop_velocity);
-  writeFirstVelocity(controller_parameters_.first_velocity);
-  writeFirstAcceleration(controller_parameters_.first_acceleration);
-  writeMaxDeceleration(controller_parameters_.max_deceleration);
-  writeFirstDeceleration(controller_parameters_.first_deceleration);
-  writeTzerowait(controller_parameters_.zero_wait_duration);
+  writeControllerParameters(setup_controller_parameters_);
 }
 
 void Controller::setup(tmc51x0::ControllerParameters controller_parameters)
 {
-  controller_parameters_ = controller_parameters;
+  setup_controller_parameters_ = controller_parameters;
   setup();
 }
 
@@ -95,16 +85,14 @@ bool Controller::positionReached()
 
 void Controller::beginRampToZeroVelocity()
 {
-  ramp_to_zero_settings_.start_velocity = registers_ptr_->getStored(Registers::VSTART);
-  ramp_to_zero_settings_.max_velocity = registers_ptr_->getStored(Registers::VMAX);
+  cacheControllerSettings();
   writeStartVelocity(0);
   writeMaxVelocity(0);
 }
 
 void Controller::endRampToZeroVelocity()
 {
-  writeStartVelocity(ramp_to_zero_settings_.start_velocity);
-  writeMaxVelocity(ramp_to_zero_settings_.max_velocity);
+  restoreControllerSettings();
 }
 
 bool Controller::zeroVelocity()
@@ -198,24 +186,12 @@ void Controller::disableStallStop()
 
 void Controller::setupSwitches()
 {
-  Registers::SwMode sw_mode;
-  sw_mode.bytes = registers_ptr_->getStored(Registers::SW_MODE);
-  sw_mode.stop_l_enable = switch_parameters_.enable_left_stop;
-  sw_mode.stop_r_enable = switch_parameters_.enable_right_stop;
-  sw_mode.pol_stop_l = switch_parameters_.invert_left_polarity;
-  sw_mode.pol_stop_r = switch_parameters_.invert_right_polarity;
-  sw_mode.swap_lr = switch_parameters_.swap_left_right;
-  sw_mode.latch_l_active = switch_parameters_.latch_left_active;
-  sw_mode.latch_l_inactive = switch_parameters_.latch_left_inactive;
-  sw_mode.latch_r_active = switch_parameters_.latch_right_active;
-  sw_mode.latch_r_inactive = switch_parameters_.latch_right_inactive;
-  sw_mode.en_latch_encoder = switch_parameters_.enable_latch_encoder;
-  registers_ptr_->write(Registers::SW_MODE, sw_mode.bytes);
+  writeSwitchParameters(setup_switch_parameters_);
 }
 
 void Controller::setupSwitches(SwitchParameters switch_parameters)
 {
-  switch_parameters_ = switch_parameters;
+  setup_switch_parameters_ = switch_parameters;
   setupSwitches();
 }
 
@@ -261,18 +237,25 @@ bool Controller::rightStopEvent()
   return ramp_stat.event_stop_r;
 }
 
-void Controller::beginHomeToSwitch()
-{
-}
+// void Controller::beginHomeToSwitch(HomeParameters home_parameters)
+// {
+//   cached_settings_.start_velocity = registers_ptr_->getStored(Registers::VSTART);
+//   writeStartVelocity(0);
+//   cached_settings_.max_velocity = registers_ptr_->getStored(Registers::VMAX);
+//   writeMaxVelocity(0);
 
-void Controller::endHomeToSwitch()
-{
-}
+//   zeroActualPosition();
+//   writeTargetPosition(home_parameters.target_position);
+// }
 
-bool Controller::homedToSwitch()
-{
-  return false;
-}
+// void Controller::endHomeToSwitch()
+// {
+// }
+
+// bool Controller::homedToSwitch()
+// {
+//   return false;
+// }
 
 // private
 
@@ -282,5 +265,59 @@ void Controller::initialize(Registers & registers)
 
   zeroActualPosition();
   zeroTargetPosition();
+}
+
+void Controller::writeControllerParameters(ControllerParameters controller_parameters)
+{
+  writeRampMode(controller_parameters.ramp_mode);
+  writeStopMode(controller_parameters.stop_mode);
+  writeMaxVelocity(controller_parameters.max_velocity);
+  writeMaxAcceleration(controller_parameters.max_acceleration);
+  writeStartVelocity(controller_parameters.start_velocity);
+  writeStopVelocity(controller_parameters.stop_velocity);
+  writeFirstVelocity(controller_parameters.first_velocity);
+  writeFirstAcceleration(controller_parameters.first_acceleration);
+  writeMaxDeceleration(controller_parameters.max_deceleration);
+  writeFirstDeceleration(controller_parameters.first_deceleration);
+  writeTzerowait(controller_parameters.zero_wait_duration);
+}
+
+void Controller::cacheControllerSettings()
+{
+  cached_controller_settings_.ramp_mode = registers_ptr_->getStored(Registers::RAMPMODE);
+  Registers::SwMode sw_mode;
+  sw_mode.bytes = registers_ptr_->getStored(Registers::SW_MODE);
+  cached_controller_settings_.stop_mode = sw_mode.en_softstop;
+  cached_controller_settings_.max_velocity = registers_ptr_->getStored(Registers::VMAX);
+  cached_controller_settings_.max_acceleration = registers_ptr_->getStored(Registers::AMAX);
+  cached_controller_settings_.start_velocity = registers_ptr_->getStored(Registers::VSTART);
+  cached_controller_settings_.stop_velocity = registers_ptr_->getStored(Registers::VSTOP);
+  cached_controller_settings_.first_velocity = registers_ptr_->getStored(Registers::V1);
+  cached_controller_settings_.first_acceleration = registers_ptr_->getStored(Registers::A1);
+  cached_controller_settings_.max_deceleration = registers_ptr_->getStored(Registers::DMAX);
+  cached_controller_settings_.first_deceleration = registers_ptr_->getStored(Registers::D1);
+  cached_controller_settings_.zero_wait_duration = registers_ptr_->getStored(Registers::TZEROWAIT);
+}
+
+void Controller::restoreControllerSettings()
+{
+  writeControllerParameters(cached_controller_settings_);
+}
+
+void Controller::writeSwitchParameters(SwitchParameters switch_parameters)
+{
+  Registers::SwMode sw_mode;
+  sw_mode.bytes = registers_ptr_->getStored(Registers::SW_MODE);
+  sw_mode.stop_l_enable = switch_parameters.enable_left_stop;
+  sw_mode.stop_r_enable = switch_parameters.enable_right_stop;
+  sw_mode.pol_stop_l = switch_parameters.invert_left_polarity;
+  sw_mode.pol_stop_r = switch_parameters.invert_right_polarity;
+  sw_mode.swap_lr = switch_parameters.swap_left_right;
+  sw_mode.latch_l_active = switch_parameters.latch_left_active;
+  sw_mode.latch_l_inactive = switch_parameters.latch_left_inactive;
+  sw_mode.latch_r_active = switch_parameters.latch_right_active;
+  sw_mode.latch_r_inactive = switch_parameters.latch_right_inactive;
+  sw_mode.en_latch_encoder = switch_parameters.enable_latch_encoder;
+  registers_ptr_->write(Registers::SW_MODE, sw_mode.bytes);
 }
 
