@@ -31,7 +31,7 @@ const tmc51x0::DriverParameters driver_parameters_real =
 {
   100, // global_current_scaler (percent)
   25, // run_current (percent)
-  0, // hold_current (percent)
+  20, // hold_current (percent)
   5, // hold_delay (percent)
   15, // pwm_offset (percent)
   5, // pwm_gradient (percent)
@@ -40,14 +40,14 @@ const tmc51x0::DriverParameters driver_parameters_real =
   tmc51x0::NORMAL, // standstill_mode
   tmc51x0::SPREAD_CYCLE, // chopper_mode
   20, // stealth_chop_threshold (degrees/s)
-  true, // stealth_chop_enabled
+  false, // stealth_chop_enabled
   25, // cool_step_threshold (degrees/s)
   1, // cool_step_min
   0, // cool_step_max
-  true, // cool_step_enabled
+  false, // cool_step_enabled
   100, // high_velocity_threshold (degrees/s)
-  true, // high_velocity_fullstep_enabled
-  true, // high_velocity_chopper_switch_enabled
+  false, // high_velocity_fullstep_enabled
+  false, // high_velocity_chopper_switch_enabled
   0, // stall_guard_threshold
   false, // stall_guard_filter_enabled
   true // short_to_ground_protection_enabled
@@ -84,10 +84,12 @@ const tmc51x0::SwitchParameters switch_parameters =
 
 const tmc51x0::HomeParameters home_parameters_real =
 {
+  25, // run_current (percent)
+  20, // hold_current (percent)
   -360, // target_position (degrees)
   10, // velocity (degrees/s)
   5, // acceleration ((degrees/s)/s)
-  10 // pwm_offset (percent)
+  0 // zero_wait_duration (milliseconds)
 };
 
 const int32_t TARGET_POSITION = 100;  // degrees

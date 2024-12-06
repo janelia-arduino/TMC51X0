@@ -10,52 +10,54 @@
 using namespace tmc51x0;
 
 
-void Converter::setup(ConverterParameters converter_parameters)
+void Converter::setup(ConverterParameters parameters)
 {
-  converter_parameters_ = converter_parameters;
+  converter_parameters_ = parameters;
 }
 
-DriverParameters Converter::driverParametersRealToChip(DriverParameters dp_real)
+DriverParameters Converter::driverParametersRealToChip(DriverParameters parameters)
 {
-  DriverParameters dp_chip = dp_real;
-  dp_chip.global_current_scaler = percentToGlobalCurrentScaler(dp_real.global_current_scaler);
-  dp_chip.run_current = percentToCurrentSetting(dp_real.run_current);
-  dp_chip.hold_current = percentToCurrentSetting(dp_real.hold_current);
-  dp_chip.hold_delay = percentToHoldDelaySetting(dp_real.hold_delay);
-  dp_chip.pwm_offset = percentToPwmSetting(dp_real.pwm_offset);
-  dp_chip.pwm_gradient = percentToPwmSetting(dp_real.pwm_gradient);
-  dp_chip.stealth_chop_threshold = velocityRealToTstep(dp_real.stealth_chop_threshold);
-  dp_chip.cool_step_threshold = velocityRealToTstep(dp_real.cool_step_threshold);
-  dp_chip.high_velocity_threshold = velocityRealToTstep(dp_real.high_velocity_threshold);
+  DriverParameters parameters_chip = parameters;
+  parameters_chip.global_current_scaler = percentToGlobalCurrentScaler(parameters.global_current_scaler);
+  parameters_chip.run_current = percentToCurrentSetting(parameters.run_current);
+  parameters_chip.hold_current = percentToCurrentSetting(parameters.hold_current);
+  parameters_chip.hold_delay = percentToHoldDelaySetting(parameters.hold_delay);
+  parameters_chip.pwm_offset = percentToPwmSetting(parameters.pwm_offset);
+  parameters_chip.pwm_gradient = percentToPwmSetting(parameters.pwm_gradient);
+  parameters_chip.stealth_chop_threshold = velocityRealToTstep(parameters.stealth_chop_threshold);
+  parameters_chip.cool_step_threshold = velocityRealToTstep(parameters.cool_step_threshold);
+  parameters_chip.high_velocity_threshold = velocityRealToTstep(parameters.high_velocity_threshold);
 
-  return dp_chip;
+  return parameters_chip;
 }
 
-ControllerParameters Converter::controllerParametersRealToChip(ControllerParameters cp_real)
+ControllerParameters Converter::controllerParametersRealToChip(ControllerParameters parameters)
 {
-  ControllerParameters cp_chip = cp_real;
-  cp_chip.max_velocity = velocityRealToChip(cp_real.max_velocity);
-  cp_chip.max_acceleration = accelerationRealToChip(cp_real.max_acceleration);
-  cp_chip.start_velocity = velocityRealToChip(cp_real.start_velocity);
-  cp_chip.stop_velocity = velocityRealToChip(cp_real.stop_velocity);
-  cp_chip.first_velocity = velocityRealToChip(cp_real.first_velocity);
-  cp_chip.first_acceleration = accelerationRealToChip(cp_real.first_acceleration);
-  cp_chip.max_deceleration = accelerationRealToChip(cp_real.max_deceleration);
-  cp_chip.first_deceleration = accelerationRealToChip(cp_real.first_deceleration);
-  cp_chip.zero_wait_duration = millisecondsToTzerowait(cp_real.zero_wait_duration);
+  ControllerParameters parameters_chip = parameters;
+  parameters_chip.max_velocity = velocityRealToChip(parameters.max_velocity);
+  parameters_chip.max_acceleration = accelerationRealToChip(parameters.max_acceleration);
+  parameters_chip.start_velocity = velocityRealToChip(parameters.start_velocity);
+  parameters_chip.stop_velocity = velocityRealToChip(parameters.stop_velocity);
+  parameters_chip.first_velocity = velocityRealToChip(parameters.first_velocity);
+  parameters_chip.first_acceleration = accelerationRealToChip(parameters.first_acceleration);
+  parameters_chip.max_deceleration = accelerationRealToChip(parameters.max_deceleration);
+  parameters_chip.first_deceleration = accelerationRealToChip(parameters.first_deceleration);
+  parameters_chip.zero_wait_duration = millisecondsToTzerowait(parameters.zero_wait_duration);
 
-  return cp_chip;
+  return parameters_chip;
 }
 
-HomeParameters Converter::homeParametersRealToChip(HomeParameters hp_real)
+HomeParameters Converter::homeParametersRealToChip(HomeParameters parameters)
 {
-  HomeParameters hp_chip = hp_real;
-  hp_chip.target_position = positionRealToChip(hp_real.target_position);
-  hp_chip.velocity = velocityRealToChip(hp_real.velocity);
-  hp_chip.acceleration = accelerationRealToChip(hp_real.acceleration);
-  hp_chip.pwm_offset = percentToPwmSetting(hp_real.pwm_offset);
+  HomeParameters parameters_chip = parameters;
+  parameters_chip.run_current = percentToCurrentSetting(parameters.run_current);
+  parameters_chip.hold_current = percentToCurrentSetting(parameters.hold_current);
+  parameters_chip.target_position = positionRealToChip(parameters.target_position);
+  parameters_chip.velocity = velocityRealToChip(parameters.velocity);
+  parameters_chip.acceleration = accelerationRealToChip(parameters.acceleration);
+  parameters_chip.zero_wait_duration = millisecondsToTzerowait(parameters.zero_wait_duration);
 
-  return hp_chip;
+  return parameters_chip;
 }
 
 int32_t Converter::positionChipToReal(int32_t position_chip)

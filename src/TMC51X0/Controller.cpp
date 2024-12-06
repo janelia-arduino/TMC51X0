@@ -20,9 +20,9 @@ void Controller::setup()
   writeControllerParameters(setup_controller_parameters_);
 }
 
-void Controller::setup(tmc51x0::ControllerParameters controller_parameters)
+void Controller::setup(tmc51x0::ControllerParameters parameters)
 {
-  setup_controller_parameters_ = controller_parameters;
+  setup_controller_parameters_ = parameters;
   setup();
 }
 
@@ -196,9 +196,9 @@ void Controller::setupSwitches()
   writeSwitchParameters(setup_switch_parameters_);
 }
 
-void Controller::setupSwitches(SwitchParameters switch_parameters)
+void Controller::setupSwitches(SwitchParameters parameters)
 {
-  setup_switch_parameters_ = switch_parameters;
+  setup_switch_parameters_ = parameters;
   setupSwitches();
 }
 
@@ -254,19 +254,19 @@ void Controller::initialize(Registers & registers)
   zeroTargetPosition();
 }
 
-void Controller::writeControllerParameters(ControllerParameters controller_parameters)
+void Controller::writeControllerParameters(ControllerParameters parameters)
 {
-  writeRampMode(controller_parameters.ramp_mode);
-  writeStopMode(controller_parameters.stop_mode);
-  writeMaxVelocity(controller_parameters.max_velocity);
-  writeMaxAcceleration(controller_parameters.max_acceleration);
-  writeStartVelocity(controller_parameters.start_velocity);
-  writeStopVelocity(controller_parameters.stop_velocity);
-  writeFirstVelocity(controller_parameters.first_velocity);
-  writeFirstAcceleration(controller_parameters.first_acceleration);
-  writeMaxDeceleration(controller_parameters.max_deceleration);
-  writeFirstDeceleration(controller_parameters.first_deceleration);
-  writeZeroWaitDuration(controller_parameters.zero_wait_duration);
+  writeRampMode(parameters.ramp_mode);
+  writeStopMode(parameters.stop_mode);
+  writeMaxVelocity(parameters.max_velocity);
+  writeMaxAcceleration(parameters.max_acceleration);
+  writeStartVelocity(parameters.start_velocity);
+  writeStopVelocity(parameters.stop_velocity);
+  writeFirstVelocity(parameters.first_velocity);
+  writeFirstAcceleration(parameters.first_acceleration);
+  writeMaxDeceleration(parameters.max_deceleration);
+  writeFirstDeceleration(parameters.first_deceleration);
+  writeZeroWaitDuration(parameters.zero_wait_duration);
 }
 
 void Controller::cacheControllerSettings()
@@ -291,20 +291,20 @@ void Controller::restoreControllerSettings()
   writeControllerParameters(cached_controller_settings_);
 }
 
-void Controller::writeSwitchParameters(SwitchParameters switch_parameters)
+void Controller::writeSwitchParameters(SwitchParameters parameters)
 {
   Registers::SwMode sw_mode;
   sw_mode.bytes = registers_ptr_->getStored(Registers::SW_MODE);
-  sw_mode.stop_l_enable = switch_parameters.enable_left_stop;
-  sw_mode.stop_r_enable = switch_parameters.enable_right_stop;
-  sw_mode.pol_stop_l = switch_parameters.invert_left_polarity;
-  sw_mode.pol_stop_r = switch_parameters.invert_right_polarity;
-  sw_mode.swap_lr = switch_parameters.swap_left_right;
-  sw_mode.latch_l_active = switch_parameters.latch_left_active;
-  sw_mode.latch_l_inactive = switch_parameters.latch_left_inactive;
-  sw_mode.latch_r_active = switch_parameters.latch_right_active;
-  sw_mode.latch_r_inactive = switch_parameters.latch_right_inactive;
-  sw_mode.en_latch_encoder = switch_parameters.enable_latch_encoder;
+  sw_mode.stop_l_enable = parameters.enable_left_stop;
+  sw_mode.stop_r_enable = parameters.enable_right_stop;
+  sw_mode.pol_stop_l = parameters.invert_left_polarity;
+  sw_mode.pol_stop_r = parameters.invert_right_polarity;
+  sw_mode.swap_lr = parameters.swap_left_right;
+  sw_mode.latch_l_active = parameters.latch_left_active;
+  sw_mode.latch_l_inactive = parameters.latch_left_inactive;
+  sw_mode.latch_r_active = parameters.latch_right_active;
+  sw_mode.latch_r_inactive = parameters.latch_right_inactive;
+  sw_mode.en_latch_encoder = parameters.enable_latch_encoder;
   registers_ptr_->write(Registers::SW_MODE, sw_mode.bytes);
 }
 

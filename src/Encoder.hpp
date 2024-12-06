@@ -22,7 +22,7 @@ public:
   Encoder();
 
   void setup();
-  void setup(EncoderParameters encoder_parameters);
+  void setup(EncoderParameters parameters);
 
   void writeFractionalMode(FractionalMode mode);
 
@@ -48,7 +48,7 @@ private:
   EncoderParameters setup_encoder_parameters_;
 
   void initialize(Registers & registers);
-  void writeEncoderParameters(EncoderParameters encoder_parameters);
+  void writeEncoderParameters(EncoderParameters parameters);
 
   friend class ::TMC51X0;
 };

@@ -23,7 +23,7 @@ public:
   Driver();
 
   void setup();
-  void setup(DriverParameters driver_parameters);
+  void setup(DriverParameters parameters);
 
   // driver must be enabled before use it is disabled by default
   void setEnableHardwarePin(size_t hardware_enable_pin);
@@ -120,7 +120,7 @@ private:
   const static uint8_t SEMIN_OFF = 0;
 
   void initialize(Registers & registers);
-  void writeDriverParameters(DriverParameters driver_parameters);
+  void writeDriverParameters(DriverParameters parameters);
   void cacheDriverSettings();
   void restoreDriverSettings();
 

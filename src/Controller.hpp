@@ -22,7 +22,7 @@ public:
   Controller();
 
   void setup();
-  void setup(ControllerParameters controller_parameters);
+  void setup(ControllerParameters parameters);
 
   // reset default: VELOCITY_POSITIVE
   void writeRampMode(RampMode ramp_mode);
@@ -99,7 +99,7 @@ public:
   void disableStallStop();
 
   void setupSwitches();
-  void setupSwitches(SwitchParameters switch_parameters);
+  void setupSwitches(SwitchParameters parameters);
   bool leftSwitchActive();
   bool rightSwitchActive();
   bool leftLatchActive();
@@ -117,10 +117,10 @@ private:
   const static int32_t VELOCITY_SIGN_CONVERSION = 16777216;
 
   void initialize(Registers & registers);
-  void writeControllerParameters(ControllerParameters controller_parameters);
+  void writeControllerParameters(ControllerParameters parameters);
   void cacheControllerSettings();
   void restoreControllerSettings();
-  void writeSwitchParameters(SwitchParameters switch_parameters);
+  void writeSwitchParameters(SwitchParameters parameters);
 
   friend class ::TMC51X0;
 };

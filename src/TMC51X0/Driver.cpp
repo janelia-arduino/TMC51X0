@@ -20,9 +20,9 @@ void Driver::setup()
   writeDriverParameters(setup_driver_parameters_);
 }
 
-void Driver::setup(tmc51x0::DriverParameters driver_parameters)
+void Driver::setup(tmc51x0::DriverParameters parameters)
 {
-  setup_driver_parameters_ = driver_parameters;
+  setup_driver_parameters_ = parameters;
   setup();
 }
 
@@ -286,15 +286,15 @@ void Driver::initialize(Registers & registers)
   disable();
 }
 
-void Driver::writeDriverParameters(DriverParameters driver_parameters)
+void Driver::writeDriverParameters(DriverParameters parameters)
 {
-  writeGlobalCurrentScaler(driver_parameters.global_current_scaler);
-  writeRunCurrent(driver_parameters.run_current);
-  writeHoldCurrent(driver_parameters.hold_current);
-  writeHoldDelay(driver_parameters.hold_delay);
-  writePwmOffset(driver_parameters.pwm_offset);
-  writePwmGradient(driver_parameters.pwm_gradient);
-  if (driver_parameters.automatic_current_control_enabled)
+  writeGlobalCurrentScaler(parameters.global_current_scaler);
+  writeRunCurrent(parameters.run_current);
+  writeHoldCurrent(parameters.hold_current);
+  writeHoldDelay(parameters.hold_delay);
+  writePwmOffset(parameters.pwm_offset);
+  writePwmGradient(parameters.pwm_gradient);
+  if (parameters.automatic_current_control_enabled)
   {
     enableAutomaticCurrentControl();
   }
@@ -302,11 +302,11 @@ void Driver::writeDriverParameters(DriverParameters driver_parameters)
   {
     disableAutomaticCurrentControl();
   }
-  writeMotorDirection(driver_parameters.motor_direction);
-  writeStandstillMode(driver_parameters.standstill_mode);
-  writeChopperMode(driver_parameters.chopper_mode);
-  writeStealthChopThreshold(driver_parameters.stealth_chop_threshold);
-  if (driver_parameters.stealth_chop_enabled)
+  writeMotorDirection(parameters.motor_direction);
+  writeStandstillMode(parameters.standstill_mode);
+  writeChopperMode(parameters.chopper_mode);
+  writeStealthChopThreshold(parameters.stealth_chop_threshold);
+  if (parameters.stealth_chop_enabled)
   {
     enableStealthChop();
   }
@@ -314,17 +314,17 @@ void Driver::writeDriverParameters(DriverParameters driver_parameters)
   {
     disableStealthChop();
   }
-  writeCoolStepThreshold(driver_parameters.cool_step_threshold);
-  if (driver_parameters.cool_step_enabled)
+  writeCoolStepThreshold(parameters.cool_step_threshold);
+  if (parameters.cool_step_enabled)
   {
-    enableCoolStep(driver_parameters.cool_step_min, driver_parameters.cool_step_max);
+    enableCoolStep(parameters.cool_step_min, parameters.cool_step_max);
   }
   else
   {
     disableCoolStep();
   }
-  writeHighVelocityThreshold(driver_parameters.high_velocity_threshold);
-  if (driver_parameters.high_velocity_fullstep_enabled)
+  writeHighVelocityThreshold(parameters.high_velocity_threshold);
+  if (parameters.high_velocity_fullstep_enabled)
   {
     enableHighVelocityFullstep();
   }
@@ -332,7 +332,7 @@ void Driver::writeDriverParameters(DriverParameters driver_parameters)
   {
     disableHighVelocityFullstep();
   }
-  if (driver_parameters.high_velocity_chopper_switch_enabled)
+  if (parameters.high_velocity_chopper_switch_enabled)
   {
     enableHighVelocityChopperSwitch();
   }
@@ -340,8 +340,8 @@ void Driver::writeDriverParameters(DriverParameters driver_parameters)
   {
     disableHighVelocityChopperSwitch();
   }
-  writeStallGuardThreshold(driver_parameters.stall_guard_threshold);
-  if (driver_parameters.stall_guard_filter_enabled)
+  writeStallGuardThreshold(parameters.stall_guard_threshold);
+  if (parameters.stall_guard_filter_enabled)
   {
     enableStallGuardFilter();
   }
@@ -349,7 +349,7 @@ void Driver::writeDriverParameters(DriverParameters driver_parameters)
   {
     disableStallGuardFilter();
   }
-  if (driver_parameters.short_to_ground_protection_enabled)
+  if (parameters.short_to_ground_protection_enabled)
   {
     enableShortToGroundProtection();
   }

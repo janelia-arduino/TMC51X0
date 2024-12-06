@@ -83,17 +83,17 @@ void TMC51X0::beginHome(tmc51x0::HomeParameters home_parameters)
   driver.cacheDriverSettings();
   controller.cacheControllerSettings();
 
+  driver.writeRunCurrent(home_parameters.run_current);
+  driver.writeHoldCurrent(home_parameters.hold_current);
   driver.writeHoldDelay(0);
   driver.writeStandstillMode(NORMAL);
+
   controller.writeRampMode(HOLD);
 
-  driver.disableAutomaticCurrentControl();
-  driver.writeStealthChopThreshold(home_parameters.velocity + 1);
-  driver.enableStealthChop();
+  driver.writeChopperMode(SPREAD_CYCLE);
+  driver.disableStealthChop();
   driver.disableCoolStep();
   driver.disableHighVelocityFullstep();
-  driver.writePwmOffset(home_parameters.pwm_offset);
-  driver.writePwmGradient(0);
 
   controller.writeStopMode(HARD);
   controller.zeroActualPosition();
@@ -103,7 +103,7 @@ void TMC51X0::beginHome(tmc51x0::HomeParameters home_parameters)
   controller.writeStopVelocity(home_parameters.velocity);
   controller.writeFirstVelocity(0);
   controller.writeMaxAcceleration(home_parameters.acceleration);
-  controller.writeZeroWaitDuration(3000); // ~100 milliseconds
+  controller.writeZeroWaitDuration(home_parameters.zero_wait_duration);
 
   controller.writeRampMode(POSITION);
 }

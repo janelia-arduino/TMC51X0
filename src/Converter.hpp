@@ -20,11 +20,11 @@ namespace tmc51x0
 class Converter
 {
 public:
-  void setup(ConverterParameters converter_parameters);
+  void setup(ConverterParameters parameters);
 
-  DriverParameters driverParametersRealToChip(DriverParameters driver_parameters);
-  ControllerParameters controllerParametersRealToChip(ControllerParameters controller_parameters);
-  HomeParameters homeParametersRealToChip(HomeParameters home_parameters);
+  DriverParameters driverParametersRealToChip(DriverParameters parameters);
+  ControllerParameters controllerParametersRealToChip(ControllerParameters parameters);
+  HomeParameters homeParametersRealToChip(HomeParameters parameters);
 
   int32_t positionChipToReal(int32_t position_chip);
   int32_t positionRealToChip(int32_t position_real);
