@@ -39,7 +39,7 @@ struct ControllerParameters
   uint32_t first_acceleration = FIRST_ACCELERATION_DEFAULT;
   uint32_t max_deceleration = MAX_DECELERATION_DEFAULT;
   uint32_t first_deceleration = FIRST_DECELERATION_DEFAULT;
-  uint16_t zero_wait_duration = ZERO_WAIT_DURATION_DEFAULT;
+  uint32_t zero_wait_duration = ZERO_WAIT_DURATION_DEFAULT;
 
   ControllerParameters(RampMode ramp_mode_ = RAMP_MODE_DEFAULT,
     StopMode stop_mode_ = STOP_MODE_DEFAULT,
@@ -51,7 +51,7 @@ struct ControllerParameters
     uint32_t first_acceleration_ = FIRST_ACCELERATION_DEFAULT,
     uint32_t max_deceleration_ = MAX_DECELERATION_DEFAULT,
     uint32_t first_deceleration_ = FIRST_DECELERATION_DEFAULT,
-    uint16_t zero_wait_duration_ = ZERO_WAIT_DURATION_DEFAULT)
+    uint32_t zero_wait_duration_ = ZERO_WAIT_DURATION_DEFAULT)
   {
     ramp_mode = ramp_mode_;
     stop_mode = stop_mode_;
@@ -100,7 +100,7 @@ private:
   const static uint32_t FIRST_ACCELERATION_DEFAULT = 0;
   const static uint32_t MAX_DECELERATION_DEFAULT = 0;
   const static uint32_t FIRST_DECELERATION_DEFAULT = 10000;
-  const static uint16_t ZERO_WAIT_DURATION_DEFAULT = 0;
+  const static uint32_t ZERO_WAIT_DURATION_DEFAULT = 0;
 };
 struct SwitchParameters
 {

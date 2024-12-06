@@ -22,14 +22,14 @@ struct HomeParameters
   int32_t target_position = TARGET_POSITION_DEFAULT;
   uint32_t velocity = VELOCITY_DEFAULT;
   uint32_t acceleration = ACCELERATION_DEFAULT;
-  uint16_t zero_wait_duration = ZERO_WAIT_DURATION_DEFAULT;
+  uint32_t zero_wait_duration = ZERO_WAIT_DURATION_DEFAULT;
 
   HomeParameters(uint8_t run_current_ = CURRENT_DEFAULT,
     uint8_t hold_current_ = CURRENT_DEFAULT,
     int32_t target_position_ = TARGET_POSITION_DEFAULT,
     uint32_t velocity_ = VELOCITY_DEFAULT,
     uint32_t acceleration_ = ACCELERATION_DEFAULT,
-    uint16_t zero_wait_duration_ = ZERO_WAIT_DURATION_DEFAULT)
+    uint32_t zero_wait_duration_ = ZERO_WAIT_DURATION_DEFAULT)
   {
     run_current = run_current_;
     hold_current = hold_current_;
@@ -62,7 +62,7 @@ private:
   const static int32_t TARGET_POSITION_DEFAULT = 0;
   const static uint32_t VELOCITY_DEFAULT = 0;
   const static uint32_t ACCELERATION_DEFAULT = 0;
-  const static uint8_t ZERO_WAIT_DURATION_DEFAULT = 3000; // ~100 milliseconds
+  const static uint32_t ZERO_WAIT_DURATION_DEFAULT = 3000; // ~100 milliseconds
 };
 }
 #endif

@@ -42,7 +42,7 @@ ControllerParameters Converter::controllerParametersRealToChip(ControllerParamet
   parameters_chip.first_acceleration = accelerationRealToChip(parameters.first_acceleration);
   parameters_chip.max_deceleration = accelerationRealToChip(parameters.max_deceleration);
   parameters_chip.first_deceleration = accelerationRealToChip(parameters.first_deceleration);
-  parameters_chip.zero_wait_duration = millisecondsToTzerowait(parameters.zero_wait_duration);
+  parameters_chip.zero_wait_duration = millisecondsToZeroWaitDuration(parameters.zero_wait_duration);
 
   return parameters_chip;
 }
@@ -55,7 +55,7 @@ HomeParameters Converter::homeParametersRealToChip(HomeParameters parameters)
   parameters_chip.target_position = positionRealToChip(parameters.target_position);
   parameters_chip.velocity = velocityRealToChip(parameters.velocity);
   parameters_chip.acceleration = accelerationRealToChip(parameters.acceleration);
-  parameters_chip.zero_wait_duration = millisecondsToTzerowait(parameters.zero_wait_duration);
+  parameters_chip.zero_wait_duration = millisecondsToZeroWaitDuration(parameters.zero_wait_duration);
 
   return parameters_chip;
 }
@@ -180,9 +180,9 @@ uint8_t Converter::percentToPwmSetting(uint8_t percent)
   return pwm_setting;
 }
 
-uint16_t Converter::millisecondsToTzerowait(uint16_t milliseconds)
+uint32_t Converter::millisecondsToZeroWaitDuration(uint32_t milliseconds)
 {
-  return ((uint32_t)milliseconds * MILLISECONDS_PER_SECOND) / (TZEROWAIT_SCALER * converter_parameters_.clock_duration_ns);
+  return (milliseconds * MILLISECONDS_PER_SECOND) / (TZEROWAIT_SCALER * converter_parameters_.clock_duration_ns);
 }
 
 // private

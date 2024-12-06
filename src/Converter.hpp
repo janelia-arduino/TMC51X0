@@ -48,7 +48,7 @@ public:
 
   uint8_t percentToPwmSetting(uint8_t percent);
 
-  uint16_t millisecondsToTzerowait(uint16_t milliseconds);
+  uint32_t millisecondsToZeroWaitDuration(uint32_t milliseconds);
 
 private:
   ConverterParameters converter_parameters_;
