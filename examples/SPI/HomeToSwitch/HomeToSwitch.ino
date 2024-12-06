@@ -147,6 +147,8 @@ void setup()
 
   controller_parameters_chip = tmc5130.converter.controllerParametersRealToChip(controller_parameters_real);
   tmc5130.controller.setup(controller_parameters_chip);
+
+  // setup home conditions
   tmc5130.controller.setupSwitches(switch_parameters_homing_to_switch);
 
   home_parameters_homing_to_switch_chip = tmc5130.converter.homeParametersRealToChip(home_parameters_homing_to_switch_real);
@@ -201,7 +203,6 @@ void loop()
 
   Serial.println("Waiting...");
   delay(PAUSE_DELAY);
-
 
   int32_t target_position_chip = tmc5130.converter.positionRealToChip(TARGET_POSITION);
   tmc5130.controller.writeTargetPosition(target_position_chip);
