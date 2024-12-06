@@ -78,10 +78,11 @@ public:
   // do not set to zero in positioning mode!
   void writeFirstDeceleration(uint32_t deceleration);
 
-  // 0..(2^16)-1 *512 tclk
+  // 0..(2^16)-1 * 512 tclk
   // ~0..2s
   // reset default: 0
-  void writeTzerowait(uint32_t tzerowait);
+  void writeZeroWaitDuration(uint32_t tzerowait);
+  bool zeroWaitActive();
 
   // -2^31..(2^31)-1 microsteps
   int32_t readTargetPosition();

@@ -142,9 +142,16 @@ void Controller::writeFirstDeceleration(uint32_t deceleration)
   registers_ptr_->write(Registers::D1, deceleration);
 }
 
-void Controller::writeTzerowait(uint32_t tzerowait)
+void Controller::writeZeroWaitDuration(uint32_t tzerowait)
 {
   registers_ptr_->write(Registers::TZEROWAIT, tzerowait);
+}
+
+bool Controller::zeroWaitActive()
+{
+  Registers::RampStat ramp_stat;
+  ramp_stat.bytes = registers_ptr_->read(Registers::RAMP_STAT);
+  return ramp_stat.t_zerowait_active;
 }
 
 int32_t Controller::readTargetPosition()
@@ -259,7 +266,7 @@ void Controller::writeControllerParameters(ControllerParameters controller_param
   writeFirstAcceleration(controller_parameters.first_acceleration);
   writeMaxDeceleration(controller_parameters.max_deceleration);
   writeFirstDeceleration(controller_parameters.first_deceleration);
-  writeTzerowait(controller_parameters.zero_wait_duration);
+  writeZeroWaitDuration(controller_parameters.zero_wait_duration);
 }
 
 void Controller::cacheControllerSettings()

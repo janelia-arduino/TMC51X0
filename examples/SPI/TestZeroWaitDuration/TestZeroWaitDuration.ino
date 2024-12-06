@@ -31,8 +31,8 @@ const tmc51x0::DriverParameters driver_parameters_real =
 {
   100, // global_current_scaler (percent)
   25, // run_current (percent)
-  0, // hold_current (percent)
-  5, // hold_delay (percent)
+  5, // hold_current (percent)
+  0, // hold_delay (percent)
   15, // pwm_offset (percent)
   5, // pwm_gradient (percent)
   false, // automatic_current_control_enabled
@@ -65,32 +65,11 @@ const tmc51x0::ControllerParameters controller_parameters_real =
   10, // first_acceleration ((degrees/s)/s)
   10, // max_deceleration ((degrees/s)/s)
   15, // first_deceleration ((degrees/s)/s)
-  0 // zero_wait_duration (milliseconds)
+  1500 // zero_wait_duration (milliseconds)
 };
 
-const tmc51x0::SwitchParameters switch_parameters =
-{
-  true, // enable_left_stop
-  false, // enable_right_stop
-  false, // invert_left_polarity
-  false, // invert_right_polarity
-  false, // swap_left_right
-  false, // latch_left_active
-  false, // latch_left_inactive
-  false, // latch_right_active
-  false, // latch_right_inactive
-  false // enable_latch_encoder
-};
-
-const tmc51x0::HomeParameters home_parameters_real =
-{
-  -360, // target_position (degrees)
-  10, // velocity (degrees/s)
-  5, // acceleration ((degrees/s)/s)
-  10 // pwm_offset (percent)
-};
-
-const int32_t TARGET_POSITION = 100;  // degrees
+const int32_t TARGET_POSITION_0 = 10;  // degrees
+const int32_t TARGET_POSITION_1 = 60;  // degrees
 
 const uint32_t SERIAL_BAUD_RATE = 115200;
 const uint16_t LOOP_DELAY = 500;
@@ -99,7 +78,11 @@ const uint16_t PAUSE_DELAY = 4000;
 // global variables
 TMC51X0 tmc5130;
 tmc51x0::ControllerParameters controller_parameters_chip;
-tmc51x0::HomeParameters home_parameters_chip;
+int32_t target_position;
+int32_t target_position_0_chip;
+int32_t target_position_1_chip;
+uint32_t time_position_reached;
+uint32_t time_zero_wait_finished;
 
 void setup()
 {
@@ -120,9 +103,6 @@ void setup()
 
   controller_parameters_chip = tmc5130.converter.controllerParametersRealToChip(controller_parameters_real);
   tmc5130.controller.setup(controller_parameters_chip);
-  tmc5130.controller.setupSwitches(switch_parameters);
-
-  home_parameters_chip = tmc5130.converter.homeParametersRealToChip(home_parameters_real);
 
   tmc5130.driver.enable();
 
@@ -133,52 +113,44 @@ void setup()
     delay(LOOP_DELAY);
   }
   tmc5130.controller.endRampToZeroVelocity();
+
+  target_position_0_chip = tmc5130.converter.positionRealToChip(TARGET_POSITION_0);
+  target_position_1_chip = tmc5130.converter.positionRealToChip(TARGET_POSITION_1);
+  target_position = target_position_0_chip;
 }
 
 void loop()
 {
-  Serial.println("Waiting...");
-  delay(PAUSE_DELAY);
-
-  Serial.println("Homing...");
-  tmc5130.beginHome(home_parameters_chip);
-  while (!tmc5130.homed())
-  {
-    // tmc5130.printer.readAndPrintRampStat();
-    // tmc5130.printer.readAndPrintDrvStatus();
-    int32_t actual_position_chip = tmc5130.controller.readActualPosition();
-    int32_t actual_position_real = tmc5130.converter.positionChipToReal(actual_position_chip);
-    Serial.print("actual position (degrees): ");
-    Serial.println(actual_position_real);
-    delay(LOOP_DELAY);
-  }
-  tmc5130.endHome();
-  Serial.println("Homed!");
-
-  Serial.println("Waiting...");
-  delay(PAUSE_DELAY);
-
-  int32_t target_position_chip = tmc5130.converter.positionRealToChip(TARGET_POSITION);
-  tmc5130.controller.writeTargetPosition(target_position_chip);
-  Serial.print("target position (degrees): ");
-  Serial.println(TARGET_POSITION);
-  Serial.println("--------------------------");
+  Serial.print("setting target_position (chip): ");
+  Serial.println(target_position);
+  tmc5130.controller.writeTargetPosition(target_position);
 
   while (not tmc5130.controller.positionReached())
   {
-    // tmc5130.printer.readAndPrintRampStat();
-    // tmc5130.printer.readAndPrintDrvStatus();
-    int32_t actual_position_chip = tmc5130.controller.readActualPosition();
-    int32_t actual_position_real = tmc5130.converter.positionChipToReal(actual_position_chip);
-    Serial.print("actual position (degrees): ");
-    Serial.println(actual_position_real);
-    Serial.print("stall_guard_result: ");
-    Serial.println(tmc5130.driver.readStallGuardResult());
-    delay(LOOP_DELAY);
   }
-  Serial.println("Target position reached!");
+  time_position_reached = millis();
+
+  while (tmc5130.controller.zeroWaitActive())
+  {
+  }
+  time_zero_wait_finished = millis();
+
+  Serial.print("zero_wait_duration (milliseconds): ");
+  Serial.println(controller_parameters_real.zero_wait_duration);
+  Serial.print("zero_wait_duration (chip): ");
+  Serial.println(controller_parameters_chip.zero_wait_duration);
+  Serial.print("measured zero_wait_duration (milliseconds): ");
+  Serial.println(time_zero_wait_finished - time_position_reached);
+  Serial.println("--------------------------");
+
   delay(PAUSE_DELAY);
 
-  Serial.println("--------------------------");
-  delay(LOOP_DELAY);
+  if (target_position == target_position_0_chip)
+  {
+    target_position = target_position_1_chip;
+  }
+  else
+  {
+    target_position = target_position_0_chip;
+  }
 }
