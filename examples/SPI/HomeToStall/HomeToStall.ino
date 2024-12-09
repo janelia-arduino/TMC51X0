@@ -48,7 +48,7 @@ const tmc51x0::DriverParameters driver_parameters_real =
   100, // high_velocity_threshold (degrees/s)
   false, // high_velocity_fullstep_enabled
   false, // high_velocity_chopper_switch_enabled
-  1, // stall_guard_threshold
+  3, // stall_guard_threshold
   false, // stall_guard_filter_enabled
   true // short_to_ground_protection_enabled
 };
@@ -73,7 +73,7 @@ const tmc51x0::HomeParameters home_parameters_real =
   25, // run_current (percent)
   20, // hold_current (percent)
   -360, // target_position (degrees)
-  10, // velocity (degrees/s)
+  20, // velocity (degrees/s)
   5, // acceleration ((degrees/s)/s)
   100 // zero_wait_duration (milliseconds)
 };

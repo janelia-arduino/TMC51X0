@@ -34,6 +34,8 @@ public:
 
   int32_t tstepToVelocityReal(int32_t tstep);
   int32_t velocityRealToTstep(int32_t velocity_real);
+  int32_t velocityChipToTstep(int32_t velocity_chip);
+  int32_t velocityTstepToChip(int32_t tstep);
 
   int32_t accelerationChipToReal(int32_t acceleration_chip);
   int32_t accelerationRealToChip(int32_t acceleration_chip);

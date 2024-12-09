@@ -48,7 +48,7 @@ const tmc51x0::DriverParameters driver_parameters_real =
   100, // high_velocity_threshold (degrees/s)
   false, // high_velocity_fullstep_enabled
   false, // high_velocity_chopper_switch_enabled
-  0, // stall_guard_threshold
+  3, // stall_guard_threshold
   false, // stall_guard_filter_enabled
   true // short_to_ground_protection_enabled
 };
@@ -178,6 +178,8 @@ void loop()
     int32_t actual_position_real = tmc5130.converter.positionChipToReal(actual_position_chip);
     Serial.print("actual position (degrees): ");
     Serial.println(actual_position_real);
+    Serial.print("stall_guard_result: ");
+    Serial.println(tmc5130.driver.readStallGuardResult());
     delay(LOOP_DELAY);
   }
   tmc5130.endHome();
@@ -195,6 +197,8 @@ void loop()
     int32_t actual_position_real = tmc5130.converter.positionChipToReal(actual_position_chip);
     Serial.print("actual position (degrees): ");
     Serial.println(actual_position_real);
+    Serial.print("stall_guard_result: ");
+    Serial.println(tmc5130.driver.readStallGuardResult());
     delay(LOOP_DELAY);
   }
   tmc5130.endHome();

@@ -90,6 +90,16 @@ int32_t Converter::velocityRealToTstep(int32_t velocity_real)
   return velocityHzToTstep(velocityRealToHz(velocity_real));
 }
 
+int32_t Converter::velocityChipToTstep(int32_t velocity_chip)
+{
+  return velocityHzToTstep(velocityChipToHz(velocity_chip));
+}
+
+int32_t Converter::velocityTstepToChip(int32_t tstep)
+{
+  return velocityHzToChip(tstepToVelocityHz(tstep));
+}
+
 int32_t Converter::accelerationChipToReal(int32_t acceleration_chip)
 {
   return accelerationHzPerSToReal(accelerationChipToHzPerS(acceleration_chip));

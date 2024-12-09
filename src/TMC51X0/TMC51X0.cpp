@@ -92,7 +92,11 @@ void TMC51X0::beginHome(tmc51x0::HomeParameters home_parameters)
 
   driver.writeChopperMode(SPREAD_CYCLE);
   driver.disableStealthChop();
-  driver.disableCoolStep();
+  // driver.disableCoolStep();
+  int32_t tstep = converter.velocityChipToTstep(home_parameters.velocity);
+  driver.writeCoolStepThreshold(tstep + 10);
+  driver.writeHighVelocityThreshold(tstep - 10);
+  driver.enableCoolStep();
   driver.disableHighVelocityFullstep();
 
   controller.writeStopMode(HARD);
@@ -123,7 +127,10 @@ void TMC51X0::endHome()
 
 bool TMC51X0::homed()
 {
-  return controller.zeroVelocity();
+  Registers::RampStat ramp_stat;
+  ramp_stat.bytes = registers.read(Registers::RAMP_STAT);
+  bool stalled = ramp_stat.event_stop_l || ramp_stat.event_stop_r || ramp_stat.event_stop_sg || ramp_stat.event_pos_reached || ramp_stat.vzero || ramp_stat.status_sg;
+  return stalled;
 }
 
 // private
