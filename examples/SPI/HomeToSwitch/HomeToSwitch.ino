@@ -178,8 +178,6 @@ void loop()
     int32_t actual_position_real = tmc5130.converter.positionChipToReal(actual_position_chip);
     Serial.print("actual position (degrees): ");
     Serial.println(actual_position_real);
-    Serial.print("stall_guard_result: ");
-    Serial.println(tmc5130.driver.readStallGuardResult());
     delay(LOOP_DELAY);
   }
   tmc5130.endHome();
@@ -197,8 +195,6 @@ void loop()
     int32_t actual_position_real = tmc5130.converter.positionChipToReal(actual_position_chip);
     Serial.print("actual position (degrees): ");
     Serial.println(actual_position_real);
-    Serial.print("stall_guard_result: ");
-    Serial.println(tmc5130.driver.readStallGuardResult());
     delay(LOOP_DELAY);
   }
   tmc5130.endHome();
@@ -216,14 +212,10 @@ void loop()
 
   while (not tmc5130.controller.positionReached())
   {
-    // tmc5130.printer.readAndPrintRampStat();
-    // tmc5130.printer.readAndPrintDrvStatus();
     int32_t actual_position_chip = tmc5130.controller.readActualPosition();
     int32_t actual_position_real = tmc5130.converter.positionChipToReal(actual_position_chip);
     Serial.print("actual position (degrees): ");
     Serial.println(actual_position_real);
-    Serial.print("stall_guard_result: ");
-    Serial.println(tmc5130.driver.readStallGuardResult());
     delay(LOOP_DELAY);
   }
   Serial.println("Target position reached!");

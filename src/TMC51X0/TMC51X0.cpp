@@ -94,8 +94,8 @@ void TMC51X0::beginHome(tmc51x0::HomeParameters home_parameters)
   driver.disableStealthChop();
   // driver.disableCoolStep();
   int32_t tstep = converter.velocityChipToTstep(home_parameters.velocity);
-  driver.writeCoolStepThreshold(tstep + 10);
-  driver.writeHighVelocityThreshold(tstep - 10);
+  driver.writeCoolStepThreshold(tstep - 100);
+  driver.writeHighVelocityThreshold(tstep + 100);
   driver.enableCoolStep();
   driver.disableHighVelocityFullstep();
 
@@ -123,13 +123,27 @@ void TMC51X0::endHome()
   controller.restoreControllerSettings();
 
   controller.writeRampMode(POSITION);
+
+  // clear ramp_stat flags
+  registers.read(Registers::RAMP_STAT);
 }
 
 bool TMC51X0::homed()
 {
+  // Registers::DrvStatus drv_status;
+  // drv_status.bytes = registers.read(Registers::DRV_STATUS);
+  // drv_status.stst triggers too early when checked immediately after move command
+  // bool stalled = drv_status.stst || drv_status.stallguard;
+  // bool stalled = drv_status.stallguard;
+  // reading ramp_stat clears stall condition and motor moves
+  // so check drv_status first
   Registers::RampStat ramp_stat;
   ramp_stat.bytes = registers.read(Registers::RAMP_STAT);
   bool stalled = ramp_stat.event_stop_l || ramp_stat.event_stop_r || ramp_stat.event_stop_sg || ramp_stat.event_pos_reached || ramp_stat.vzero || ramp_stat.status_sg;
+  if (stalled)
+  {
+    controller.writeRampMode(HOLD);
+  }
   return stalled;
 }
 

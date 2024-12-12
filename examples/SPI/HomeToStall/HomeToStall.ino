@@ -134,6 +134,7 @@ void loop()
   tmc5130.beginHome(home_parameters_chip);
   while (not tmc5130.homed())
   {
+    tmc5130.printer.readAndPrintDrvStatus();
     int32_t actual_position_chip = tmc5130.controller.readActualPosition();
     int32_t actual_position_real = tmc5130.converter.positionChipToReal(actual_position_chip);
     Serial.print("actual position (degrees): ");
