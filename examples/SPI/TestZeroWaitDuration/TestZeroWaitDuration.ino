@@ -65,7 +65,8 @@ const tmc51x0::ControllerParameters controller_parameters_real =
   10, // first_acceleration ((degrees/s)/s)
   10, // max_deceleration ((degrees/s)/s)
   15, // first_deceleration ((degrees/s)/s)
-  1500 // zero_wait_duration (milliseconds)
+  1500, // zero_wait_duration (milliseconds)
+  false // stall_stop_enabled
 };
 
 const int32_t TARGET_POSITION_0 = 10;  // degrees

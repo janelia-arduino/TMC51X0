@@ -65,7 +65,8 @@ const tmc51x0::ControllerParameters controller_parameters_real =
   10, // first_acceleration ((degrees/s)/s)
   10, // max_deceleration ((degrees/s)/s)
   15, // first_deceleration ((degrees/s)/s)
-  0 // zero_wait_duration (milliseconds)
+  0, // zero_wait_duration (milliseconds)
+  false // stall_stop_enabled
 };
 
 const tmc51x0::HomeParameters home_parameters_real =
@@ -77,6 +78,16 @@ const tmc51x0::HomeParameters home_parameters_real =
   5, // acceleration ((degrees/s)/s)
   100 // zero_wait_duration (milliseconds)
 };
+
+// const tmc51x0::StallParameters stall_parameters_real =
+// {
+//   25, // run_current (percent)
+//   20, // hold_current (percent)
+//   -360, // target_position (degrees)
+//   20, // velocity (degrees/s)
+//   5, // acceleration ((degrees/s)/s)
+//   100 // zero_wait_duration (milliseconds)
+// };
 
 const int32_t TARGET_POSITION = 100;  // degrees
 

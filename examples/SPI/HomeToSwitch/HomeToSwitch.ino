@@ -65,7 +65,8 @@ const tmc51x0::ControllerParameters controller_parameters_real =
   10, // first_acceleration ((degrees/s)/s)
   10, // max_deceleration ((degrees/s)/s)
   15, // first_deceleration ((degrees/s)/s)
-  0 // zero_wait_duration (milliseconds)
+  0, // zero_wait_duration (milliseconds)
+  false // stall_stop_enabled
 };
 
 const tmc51x0::HomeParameters home_parameters_homing_to_switch_real =
