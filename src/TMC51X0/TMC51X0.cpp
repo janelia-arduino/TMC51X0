@@ -43,7 +43,6 @@ bool TMC51X0::communicating()
     (version == Registers::VERSION_TMC5160));
 }
 
-// optional
 void TMC51X0::setEnablePowerPin(size_t enable_power_pin)
 {
   enable_power_pin_ = enable_power_pin;
@@ -76,6 +75,13 @@ void TMC51X0::disablePower()
       digitalWrite(enable_power_pin_, LOW);
     }
   }
+}
+
+void TMC51X0::reinitialize()
+{
+  driver.reinitialize();
+  controller.reinitialize();
+  encoder.reinitialize();
 }
 
 void TMC51X0::beginHomeToSwitch(tmc51x0::HomeParameters home_parameters,

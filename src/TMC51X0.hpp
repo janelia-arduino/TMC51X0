@@ -44,6 +44,9 @@ struct TMC51X0
   void enablePower();
   void disablePower();
 
+  // call reinitialize after cycling power to the chip
+  void reinitialize();
+
   void beginHomeToSwitch(tmc51x0::HomeParameters home_parameters,
     tmc51x0::SwitchParameters switch_parameters);
   void beginHomeToStall(tmc51x0::HomeParameters home_parameters);

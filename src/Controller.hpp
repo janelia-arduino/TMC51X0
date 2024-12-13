@@ -119,6 +119,7 @@ private:
   const static int32_t VELOCITY_SIGN_CONVERSION = 16777216;
 
   void initialize(Registers & registers);
+  void reinitialize();
   void writeControllerParameters(ControllerParameters parameters);
   void cacheControllerSettings();
   void restoreControllerSettings();

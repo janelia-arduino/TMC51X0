@@ -120,6 +120,7 @@ private:
   const static uint8_t SEMIN_OFF = 0;
 
   void initialize(Registers & registers);
+  void reinitialize();
   void writeDriverParameters(DriverParameters parameters);
   void cacheDriverSettings();
   void restoreDriverSettings();

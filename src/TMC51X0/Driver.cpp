@@ -285,7 +285,13 @@ void Driver::initialize(Registers & registers)
   registers_ptr_ = &registers;
   toff_ = TOFF_ENABLE_DEFAULT;
 
+  reinitialize();
+}
+
+void Driver::reinitialize()
+{
   disable();
+  setup();
 }
 
 void Driver::writeDriverParameters(DriverParameters parameters)

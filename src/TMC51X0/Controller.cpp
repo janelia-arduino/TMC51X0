@@ -253,8 +253,15 @@ void Controller::initialize(Registers & registers)
 {
   registers_ptr_ = &registers;
 
+  reinitialize();
+}
+
+void Controller::reinitialize()
+{
   zeroActualPosition();
   zeroTargetPosition();
+  setup();
+  setupSwitches();
 }
 
 void Controller::writeControllerParameters(ControllerParameters parameters)

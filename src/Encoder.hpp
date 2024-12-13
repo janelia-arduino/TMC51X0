@@ -48,6 +48,7 @@ private:
   EncoderParameters setup_encoder_parameters_;
 
   void initialize(Registers & registers);
+  void reinitialize();
   void writeEncoderParameters(EncoderParameters parameters);
 
   friend class ::TMC51X0;

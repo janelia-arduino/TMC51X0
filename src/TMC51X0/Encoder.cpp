@@ -74,7 +74,13 @@ void Encoder::initialize(Registers & registers)
 {
   registers_ptr_ = &registers;
 
+  reinitialize();
+}
+
+void Encoder::reinitialize()
+{
   zeroActualPosition();
+  setup();
 }
 
 void Encoder::writeEncoderParameters(EncoderParameters parameters)
