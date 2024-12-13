@@ -80,8 +80,8 @@ const tmc51x0::HomeParameters home_parameters_homing_to_switch_real =
 
 const tmc51x0::SwitchParameters switch_parameters_homing_to_switch =
 {
-  true, // enable_left_stop
-  false, // enable_right_stop
+  true, // left_stop_enabled
+  false, // right_stop_enabled
   false, // invert_left_polarity
   false, // invert_right_polarity
   false, // swap_left_right
@@ -89,7 +89,7 @@ const tmc51x0::SwitchParameters switch_parameters_homing_to_switch =
   false, // latch_left_inactive
   false, // latch_right_active
   false, // latch_right_inactive
-  false // enable_latch_encoder
+  false // latch_encoder_enabled
 };
 
 const tmc51x0::HomeParameters home_parameters_homing_off_switch_real =
@@ -104,8 +104,8 @@ const tmc51x0::HomeParameters home_parameters_homing_off_switch_real =
 
 const tmc51x0::SwitchParameters switch_parameters_homing_off_switch =
 {
-  false, // enable_left_stop
-  true, // enable_right_stop
+  false, // left_stop_enabled
+  true, // right_stop_enabled
   false, // invert_left_polarity
   true, // invert_right_polarity
   true, // swap_left_right
@@ -113,7 +113,7 @@ const tmc51x0::SwitchParameters switch_parameters_homing_off_switch =
   false, // latch_left_inactive
   false, // latch_right_active
   false, // latch_right_inactive
-  false // enable_latch_encoder
+  false // latch_encoder_enabled
 };
 
 const int32_t TARGET_POSITION = 100;  // degrees

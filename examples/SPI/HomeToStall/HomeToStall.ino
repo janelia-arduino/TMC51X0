@@ -109,9 +109,6 @@ void setup()
   controller_parameters_chip = tmc5130.converter.controllerParametersRealToChip(controller_parameters_real);
   tmc5130.controller.setup(controller_parameters_chip);
 
-  // setup home conditions
-  tmc5130.controller.enableStallStop();
-
   home_parameters_chip = tmc5130.converter.homeParametersRealToChip(home_parameters_real);
 
   tmc5130.driver.enable();
@@ -131,7 +128,7 @@ void loop()
   delay(PAUSE_DELAY);
 
   Serial.println("Homing to stall...");
-  tmc5130.beginHome(home_parameters_chip);
+  tmc5130.beginHomeToStall(home_parameters_chip);
   while (not tmc5130.homed())
   {
     tmc5130.printer.readAndPrintDrvStatus();

@@ -94,9 +94,11 @@ public:
   // -2^31..(2^31)-1 microsteps
   void writeComparePosition(int32_t position);
 
-  // enabling stall stop sets stop mode to hard
+  // StallGuard requires using the HARD stop mode
+  // stall detection is not stable at low speeds
+  // so use the cool step threshold or dc step threshold
+  // to disable stall stop below those speeds
   void enableStallStop();
-  // set stop mode after disabling stall stop if desired
   void disableStallStop();
 
   void setupSwitches();

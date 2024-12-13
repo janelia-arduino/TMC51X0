@@ -13,6 +13,7 @@
 #include "./TMC51X0/UartInterface.hpp"
 #include "./TMC51X0/HomeParameters.hpp"
 #include "./TMC51X0/SwitchParameters.hpp"
+#include "./TMC51X0/StallParameters.hpp"
 
 #include "Registers.hpp"
 #include "Converter.hpp"
@@ -49,7 +50,8 @@ struct TMC51X0
 
   void beginHomeToSwitch(tmc51x0::HomeParameters home_parameters,
     tmc51x0::SwitchParameters switch_parameters);
-  void beginHomeToStall(tmc51x0::HomeParameters home_parameters);
+  void beginHomeToStall(tmc51x0::HomeParameters home_parameters,
+    tmc51x0::StallParameters stall_parameters);
   void endHome();
   bool homed();
 

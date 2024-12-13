@@ -181,7 +181,6 @@ void Controller::enableStallStop()
 {
   Registers::SwMode sw_mode;
   sw_mode.bytes = registers_ptr_->getStored(Registers::SW_MODE);
-  sw_mode.en_softstop = HARD;
   sw_mode.sg_stop = 1;
   registers_ptr_->write(Registers::SW_MODE, sw_mode.bytes);
 }
@@ -260,6 +259,7 @@ void Controller::reinitialize()
 {
   zeroActualPosition();
   zeroTargetPosition();
+  disableStallStop();
   setup();
   setupSwitches();
 }
@@ -277,6 +277,14 @@ void Controller::writeControllerParameters(ControllerParameters parameters)
   writeMaxDeceleration(parameters.max_deceleration);
   writeFirstDeceleration(parameters.first_deceleration);
   writeZeroWaitDuration(parameters.zero_wait_duration);
+  if (parameters.stall_stop_enabled)
+  {
+    enableStallStop();
+  }
+  else
+  {
+    disableStallStop();
+  }
 }
 
 void Controller::cacheControllerSettings()
@@ -294,6 +302,7 @@ void Controller::cacheControllerSettings()
   cached_controller_settings_.max_deceleration = registers_ptr_->getStored(Registers::DMAX);
   cached_controller_settings_.first_deceleration = registers_ptr_->getStored(Registers::D1);
   cached_controller_settings_.zero_wait_duration = registers_ptr_->getStored(Registers::TZEROWAIT);
+  cached_controller_settings_.stall_stop_enabled = sw_mode.sg_stop;
 }
 
 void Controller::restoreControllerSettings()
@@ -305,8 +314,8 @@ void Controller::writeSwitchParameters(SwitchParameters parameters)
 {
   Registers::SwMode sw_mode;
   sw_mode.bytes = registers_ptr_->getStored(Registers::SW_MODE);
-  sw_mode.stop_l_enable = parameters.enable_left_stop;
-  sw_mode.stop_r_enable = parameters.enable_right_stop;
+  sw_mode.stop_l_enable = parameters.left_stop_enabled;
+  sw_mode.stop_r_enable = parameters.right_stop_enabled;
   sw_mode.pol_stop_l = parameters.invert_left_polarity;
   sw_mode.pol_stop_r = parameters.invert_right_polarity;
   sw_mode.swap_lr = parameters.swap_left_right;
@@ -314,7 +323,7 @@ void Controller::writeSwitchParameters(SwitchParameters parameters)
   sw_mode.latch_l_inactive = parameters.latch_left_inactive;
   sw_mode.latch_r_active = parameters.latch_right_active;
   sw_mode.latch_r_inactive = parameters.latch_right_inactive;
-  sw_mode.en_latch_encoder = parameters.enable_latch_encoder;
+  sw_mode.en_latch_encoder = parameters.latch_encoder_enabled;
   registers_ptr_->write(Registers::SW_MODE, sw_mode.bytes);
 }
 
@@ -322,8 +331,8 @@ void Controller::cacheSwitchSettings()
 {
   Registers::SwMode sw_mode;
   sw_mode.bytes = registers_ptr_->getStored(Registers::SW_MODE);
-  cached_switch_settings_.enable_left_stop = sw_mode.stop_l_enable;
-  cached_switch_settings_.enable_right_stop = sw_mode.stop_r_enable;
+  cached_switch_settings_.left_stop_enabled = sw_mode.stop_l_enable;
+  cached_switch_settings_.right_stop_enabled = sw_mode.stop_r_enable;
   cached_switch_settings_.invert_left_polarity = sw_mode.pol_stop_l;
   cached_switch_settings_.invert_right_polarity = sw_mode.pol_stop_r;
   cached_switch_settings_.swap_left_right = sw_mode.swap_lr;
@@ -331,7 +340,7 @@ void Controller::cacheSwitchSettings()
   cached_switch_settings_.latch_left_inactive = sw_mode.latch_l_inactive;
   cached_switch_settings_.latch_right_active = sw_mode.latch_r_active;
   cached_switch_settings_.latch_right_inactive = sw_mode.latch_r_inactive;
-  cached_switch_settings_.enable_latch_encoder = sw_mode.en_latch_encoder;
+  cached_switch_settings_.latch_encoder_enabled = sw_mode.en_latch_encoder;
 }
 
 void Controller::restoreSwitchSettings()
