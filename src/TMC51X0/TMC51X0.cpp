@@ -181,24 +181,18 @@ void TMC51X0::endHome()
   controller.restoreControllerSettings();
   controller.restoreSwitchSettings();
 
-  controller.writeRampMode(POSITION);
-
   // clear ramp_stat flags
   registers.read(Registers::RAMP_STAT);
+
+  controller.writeRampMode(POSITION);
 }
 
 bool TMC51X0::homed()
 {
-  // Registers::DrvStatus drv_status;
-  // drv_status.bytes = registers.read(Registers::DRV_STATUS);
-  // drv_status.stst triggers too early when checked immediately after move command
-  // bool stalled = drv_status.stst || drv_status.stallguard;
-  // bool stalled = drv_status.stallguard;
-  // reading ramp_stat clears stall condition and motor moves
-  // so check drv_status first
-  Registers::RampStat ramp_stat;
-  ramp_stat.bytes = registers.read(Registers::RAMP_STAT);
-  bool stalled = ramp_stat.event_stop_l || ramp_stat.event_stop_r || ramp_stat.event_stop_sg || ramp_stat.event_pos_reached || ramp_stat.vzero || ramp_stat.status_sg;
+  // reading ramp_stat clears flags and may cause motion after stall stop
+  // better to read actual velocity instead
+  int32_t actual_velocity = controller.readActualVelocity();
+  bool stalled = (actual_velocity == 0);
   if (stalled)
   {
     controller.writeRampMode(HOLD);
