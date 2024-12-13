@@ -11,8 +11,11 @@ using namespace tmc51x0;
 
 Controller::Controller()
 {
+  registers_ptr_ = nullptr;
   setup_controller_parameters_ = ControllerParameters{};
+  cached_controller_settings_ = ControllerParameters{};
   setup_switch_parameters_ = SwitchParameters{};
+  cached_switch_settings_ = SwitchParameters{};
 }
 
 void Controller::setup()
@@ -306,5 +309,26 @@ void Controller::writeSwitchParameters(SwitchParameters parameters)
   sw_mode.latch_r_inactive = parameters.latch_right_inactive;
   sw_mode.en_latch_encoder = parameters.enable_latch_encoder;
   registers_ptr_->write(Registers::SW_MODE, sw_mode.bytes);
+}
+
+void Controller::cacheSwitchSettings()
+{
+  Registers::SwMode sw_mode;
+  sw_mode.bytes = registers_ptr_->getStored(Registers::SW_MODE);
+  cached_switch_settings_.enable_left_stop = sw_mode.stop_l_enable;
+  cached_switch_settings_.enable_right_stop = sw_mode.stop_r_enable;
+  cached_switch_settings_.invert_left_polarity = sw_mode.pol_stop_l;
+  cached_switch_settings_.invert_right_polarity = sw_mode.pol_stop_r;
+  cached_switch_settings_.swap_left_right = sw_mode.swap_lr;
+  cached_switch_settings_.latch_left_active = sw_mode.latch_l_active;
+  cached_switch_settings_.latch_left_inactive = sw_mode.latch_l_inactive;
+  cached_switch_settings_.latch_right_active = sw_mode.latch_r_active;
+  cached_switch_settings_.latch_right_inactive = sw_mode.latch_r_inactive;
+  cached_switch_settings_.enable_latch_encoder = sw_mode.en_latch_encoder;
+}
+
+void Controller::restoreSwitchSettings()
+{
+  writeSwitchParameters(cached_switch_settings_);
 }
 

@@ -12,6 +12,7 @@
 #include "./TMC51X0/SpiInterface.hpp"
 #include "./TMC51X0/UartInterface.hpp"
 #include "./TMC51X0/HomeParameters.hpp"
+#include "./TMC51X0/SwitchParameters.hpp"
 
 #include "Registers.hpp"
 #include "Converter.hpp"
@@ -43,7 +44,9 @@ struct TMC51X0
   void enablePower();
   void disablePower();
 
-  void beginHome(tmc51x0::HomeParameters home_parameters);
+  void beginHomeToSwitch(tmc51x0::HomeParameters home_parameters,
+    tmc51x0::SwitchParameters switch_parameters);
+  void beginHomeToStall(tmc51x0::HomeParameters home_parameters);
   void endHome();
   bool homed();
 

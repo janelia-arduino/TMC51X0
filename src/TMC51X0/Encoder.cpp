@@ -11,6 +11,7 @@ using namespace tmc51x0;
 
 Encoder::Encoder()
 {
+  registers_ptr_ = nullptr;
   setup_encoder_parameters_ = EncoderParameters{};
 }
 

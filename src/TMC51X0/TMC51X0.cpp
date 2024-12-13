@@ -78,10 +78,45 @@ void TMC51X0::disablePower()
   }
 }
 
-void TMC51X0::beginHome(tmc51x0::HomeParameters home_parameters)
+void TMC51X0::beginHomeToSwitch(tmc51x0::HomeParameters home_parameters,
+  tmc51x0::SwitchParameters switch_parameters)
 {
   driver.cacheDriverSettings();
   controller.cacheControllerSettings();
+  controller.cacheSwitchSettings();
+
+  controller.setupSwitches(switch_parameters);
+
+  driver.writeRunCurrent(home_parameters.run_current);
+  driver.writeHoldCurrent(home_parameters.hold_current);
+  driver.writeHoldDelay(0);
+  driver.writeStandstillMode(NORMAL);
+
+  controller.writeRampMode(HOLD);
+
+  driver.writeChopperMode(SPREAD_CYCLE);
+  driver.disableStealthChop();
+  driver.disableCoolStep();
+  driver.disableHighVelocityFullstep();
+
+  controller.writeStopMode(HARD);
+  controller.zeroActualPosition();
+  controller.writeTargetPosition(home_parameters.target_position);
+  controller.writeMaxVelocity(home_parameters.velocity);
+  controller.writeStartVelocity(home_parameters.velocity);
+  controller.writeStopVelocity(home_parameters.velocity);
+  controller.writeFirstVelocity(0);
+  controller.writeMaxAcceleration(home_parameters.acceleration);
+  controller.writeZeroWaitDuration(home_parameters.zero_wait_duration);
+
+  controller.writeRampMode(POSITION);
+}
+
+void TMC51X0::beginHomeToStall(tmc51x0::HomeParameters home_parameters)
+{
+  driver.cacheDriverSettings();
+  controller.cacheControllerSettings();
+  controller.cacheSwitchSettings();
 
   driver.writeRunCurrent(home_parameters.run_current);
   driver.writeHoldCurrent(home_parameters.hold_current);
@@ -121,6 +156,7 @@ void TMC51X0::endHome()
 
   driver.restoreDriverSettings();
   controller.restoreControllerSettings();
+  controller.restoreSwitchSettings();
 
   controller.writeRampMode(POSITION);
 

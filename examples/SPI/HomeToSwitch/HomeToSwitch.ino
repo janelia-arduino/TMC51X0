@@ -68,6 +68,16 @@ const tmc51x0::ControllerParameters controller_parameters_real =
   0 // zero_wait_duration (milliseconds)
 };
 
+const tmc51x0::HomeParameters home_parameters_homing_to_switch_real =
+{
+  25, // run_current (percent)
+  20, // hold_current (percent)
+  -360, // target_position (degrees)
+  10, // velocity (degrees/s)
+  5, // acceleration ((degrees/s)/s)
+  100 // zero_wait_duration (milliseconds)
+};
+
 const tmc51x0::SwitchParameters switch_parameters_homing_to_switch =
 {
   true, // enable_left_stop
@@ -82,6 +92,16 @@ const tmc51x0::SwitchParameters switch_parameters_homing_to_switch =
   false // enable_latch_encoder
 };
 
+const tmc51x0::HomeParameters home_parameters_homing_off_switch_real =
+{
+  25, // run_current (percent)
+  20, // hold_current (percent)
+  60, // target_position (degrees)
+  1, // velocity (degrees/s)
+  1, // acceleration ((degrees/s)/s)
+  100 // zero_wait_duration (milliseconds)
+};
+
 const tmc51x0::SwitchParameters switch_parameters_homing_off_switch =
 {
   false, // enable_left_stop
@@ -94,26 +114,6 @@ const tmc51x0::SwitchParameters switch_parameters_homing_off_switch =
   false, // latch_right_active
   false, // latch_right_inactive
   false // enable_latch_encoder
-};
-
-const tmc51x0::HomeParameters home_parameters_homing_to_switch_real =
-{
-  25, // run_current (percent)
-  20, // hold_current (percent)
-  -360, // target_position (degrees)
-  10, // velocity (degrees/s)
-  5, // acceleration ((degrees/s)/s)
-  100 // zero_wait_duration (milliseconds)
-};
-
-const tmc51x0::HomeParameters home_parameters_homing_off_switch_real =
-{
-  25, // run_current (percent)
-  20, // hold_current (percent)
-  60, // target_position (degrees)
-  1, // velocity (degrees/s)
-  1, // acceleration ((degrees/s)/s)
-  100 // zero_wait_duration (milliseconds)
 };
 
 const int32_t TARGET_POSITION = 100;  // degrees
@@ -148,9 +148,6 @@ void setup()
   controller_parameters_chip = tmc5130.converter.controllerParametersRealToChip(controller_parameters_real);
   tmc5130.controller.setup(controller_parameters_chip);
 
-  // setup home conditions
-  tmc5130.controller.setupSwitches(switch_parameters_homing_to_switch);
-
   home_parameters_homing_to_switch_chip = tmc5130.converter.homeParametersRealToChip(home_parameters_homing_to_switch_real);
   home_parameters_homing_off_switch_chip = tmc5130.converter.homeParametersRealToChip(home_parameters_homing_off_switch_real);
 
@@ -171,7 +168,7 @@ void loop()
   delay(PAUSE_DELAY);
 
   Serial.println("Homing to switch...");
-  tmc5130.beginHome(home_parameters_homing_to_switch_chip);
+  tmc5130.beginHomeToSwitch(home_parameters_homing_to_switch_chip, switch_parameters_homing_to_switch);
   while (not tmc5130.homed())
   {
     int32_t actual_position_chip = tmc5130.controller.readActualPosition();
@@ -187,8 +184,7 @@ void loop()
   delay(PAUSE_DELAY);
 
   Serial.println("Homing off switch...");
-  tmc5130.controller.setupSwitches(switch_parameters_homing_off_switch);
-  tmc5130.beginHome(home_parameters_homing_off_switch_chip);
+  tmc5130.beginHomeToSwitch(home_parameters_homing_off_switch_chip, switch_parameters_homing_off_switch);
   while (not tmc5130.homed())
   {
     int32_t actual_position_chip = tmc5130.controller.readActualPosition();
@@ -198,7 +194,6 @@ void loop()
     delay(LOOP_DELAY);
   }
   tmc5130.endHome();
-  tmc5130.controller.setupSwitches(switch_parameters_homing_to_switch);
   Serial.println("Homed off switch!");
 
   Serial.println("Waiting...");

@@ -10,6 +10,7 @@
 
 #include "Registers.hpp"
 #include "TMC51X0/ControllerParameters.hpp"
+#include "TMC51X0/SwitchParameters.hpp"
 
 
 class TMC51X0;
@@ -112,6 +113,7 @@ private:
   ControllerParameters setup_controller_parameters_;
   ControllerParameters cached_controller_settings_;
   SwitchParameters setup_switch_parameters_;
+  SwitchParameters cached_switch_settings_;
 
   const static int32_t MAX_POSITIVE_VELOCITY = 8388607;
   const static int32_t VELOCITY_SIGN_CONVERSION = 16777216;
@@ -121,6 +123,8 @@ private:
   void cacheControllerSettings();
   void restoreControllerSettings();
   void writeSwitchParameters(SwitchParameters parameters);
+  void cacheSwitchSettings();
+  void restoreSwitchSettings();
 
   friend class ::TMC51X0;
 };

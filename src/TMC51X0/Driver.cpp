@@ -11,7 +11,9 @@ using namespace tmc51x0;
 
 Driver::Driver()
 {
+  registers_ptr_ = nullptr;
   setup_driver_parameters_ = DriverParameters{};
+  cached_driver_settings_ = DriverParameters{};
   hardware_enable_pin_ = NO_PIN;
 }
 

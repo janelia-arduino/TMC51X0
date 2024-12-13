@@ -18,6 +18,8 @@ namespace tmc51x0
 class Printer
 {
 public:
+  Printer();
+
   void setup(Print & print);
 
   void readAndPrintGconf();

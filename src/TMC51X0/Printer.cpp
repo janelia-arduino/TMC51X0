@@ -9,6 +9,12 @@
 
 using namespace tmc51x0;
 
+Printer::Printer()
+{
+  print_ptr_ = nullptr;
+  registers_ptr_ = nullptr;
+}
+
 void Printer::setup(Print & print)
 {
   print_ptr_ = &print;
