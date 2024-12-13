@@ -140,10 +140,10 @@ void TMC51X0::beginHomeToStall(tmc51x0::HomeParameters home_parameters,
 
   switch (stall_parameters.stall_mode)
   {
-    case STALL_GUARD:
+    case COOL_STEP_THRESHOLD:
     {
-      driver.writeCoolStepThreshold(tstep - 100);
-      driver.writeHighVelocityThreshold(tstep + 100);
+      driver.writeCoolStepThreshold(tstep + 100);
+      driver.writeHighVelocityThreshold(tstep - 100);
       driver.enableCoolStep();
       driver.disableHighVelocityFullstep();
       break;

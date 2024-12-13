@@ -17,7 +17,7 @@ namespace tmc51x0
 {
 enum StallMode
 {
-  STALL_GUARD,
+  COOL_STEP_THRESHOLD,
   DC_STEP
 };
 struct StallParameters
