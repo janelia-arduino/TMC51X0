@@ -41,6 +41,7 @@ struct ControllerParameters
   uint32_t first_deceleration = FIRST_DECELERATION_DEFAULT;
   uint32_t zero_wait_duration = ZERO_WAIT_DURATION_DEFAULT;
   bool stall_stop_enabled = STALL_STOP_ENABLED_DEFAULT;
+  uint32_t min_dc_step_velocity = MIN_DC_STEP_VELOCITY_DEFAULT;
 
   ControllerParameters(RampMode ramp_mode_ = RAMP_MODE_DEFAULT,
     StopMode stop_mode_ = STOP_MODE_DEFAULT,
@@ -53,7 +54,8 @@ struct ControllerParameters
     uint32_t max_deceleration_ = MAX_DECELERATION_DEFAULT,
     uint32_t first_deceleration_ = FIRST_DECELERATION_DEFAULT,
     uint32_t zero_wait_duration_ = ZERO_WAIT_DURATION_DEFAULT,
-    bool stall_stop_enabled_ = STALL_STOP_ENABLED_DEFAULT)
+    bool stall_stop_enabled_ = STALL_STOP_ENABLED_DEFAULT,
+    uint32_t min_dc_step_velocity_ = MIN_DC_STEP_VELOCITY_DEFAULT)
   {
     ramp_mode = ramp_mode_;
     stop_mode = stop_mode_;
@@ -67,6 +69,7 @@ struct ControllerParameters
     first_deceleration = first_deceleration_;
     zero_wait_duration = zero_wait_duration_;
     stall_stop_enabled = stall_stop_enabled_;
+    min_dc_step_velocity = min_dc_step_velocity_;
   };
 
   bool operator==(const ControllerParameters & rhs) const
@@ -82,7 +85,8 @@ struct ControllerParameters
       (this->max_deceleration == rhs.max_deceleration) &&
       (this->first_deceleration == rhs.first_deceleration) &&
       (this->zero_wait_duration == rhs.zero_wait_duration) &&
-      (this->stall_stop_enabled == rhs.stall_stop_enabled))
+      (this->stall_stop_enabled == rhs.stall_stop_enabled) &&
+      (this->min_dc_step_velocity == rhs.min_dc_step_velocity))
     {
       return true;
     }
@@ -106,6 +110,7 @@ private:
   const static uint32_t FIRST_DECELERATION_DEFAULT = 10000;
   const static uint32_t ZERO_WAIT_DURATION_DEFAULT = 0;
   const static bool STALL_STOP_ENABLED_DEFAULT = false;
+  const static uint32_t MIN_DC_STEP_VELOCITY_DEFAULT = 0;
 };
 }
 #endif

@@ -14,25 +14,25 @@ const tmc51x0::SpiParameters spi_parameters =
 {
   spi,
   1000000, // clock_rate
-  14 // chip_select_pin
+  8 // chip_select_pin
 };
 
 const tmc51x0::ConverterParameters converter_parameters =
 {
   16, // clock_frequency_mhz
-  4881 // microsteps_per_real_unit
+  142 // microsteps_per_real_unit
 };
 // external clock is 16MHz
 // 200 fullsteps per revolution for many steppers * 256 microsteps per fullstep
-// 10.49 millimeters per revolution leadscrew -> 51200 / 10.49 ~= 4881
-// one "real unit" in this example is one millimeters of linear travel
+// 51200 microsteps per revolution / 360 degrees per revolution ~= 142 microsteps per degree
+// one "real unit" in this example is one degree of rotation
 
 const tmc51x0::DriverParameters driver_parameters_real =
 {
   100, // global_current_scaler (percent)
-  20, // run_current (percent)
-  10, // hold_current (percent)
-  0, // hold_delay (percent)
+  25, // run_current (percent)
+  20, // hold_current (percent)
+  5, // hold_delay (percent)
   15, // pwm_offset (percent)
   5, // pwm_gradient (percent)
   false, // automatic_current_control_enabled
@@ -50,7 +50,9 @@ const tmc51x0::DriverParameters driver_parameters_real =
   false, // high_velocity_chopper_switch_enabled
   3, // stall_guard_threshold
   false, // stall_guard_filter_enabled
-  true // short_to_ground_protection_enabled
+  true, // short_to_ground_protection_enabled
+  tmc51x0::CLOCK_CYCLES_36, // comparator_blank_time
+  3 // enabled_toff
 };
 
 const tmc51x0::ControllerParameters controller_parameters_real =
@@ -74,8 +76,8 @@ const tmc51x0::HomeParameters home_parameters_real =
   25, // run_current (percent)
   20, // hold_current (percent)
   -360, // target_position (degrees)
-  20, // velocity (degrees/s)
-  5, // acceleration ((degrees/s)/s)
+  120, // velocity (degrees/s)
+  10, // acceleration ((degrees/s)/s)
   100 // zero_wait_duration (milliseconds)
 };
 

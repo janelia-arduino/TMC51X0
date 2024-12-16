@@ -18,19 +18,26 @@ namespace tmc51x0
 enum MotorDirection
 {
   FORWARD = 0,
-  REVERSE = 1,
+  REVERSE = 1
 };
 enum StandstillMode
 {
   NORMAL=0,
   FREEWHEELING=1,
   PASSIVE_BRAKING_LS=2,
-  PASSIVE_BRAKING_HS=3,
+  PASSIVE_BRAKING_HS=3
 };
 enum ChopperMode
 {
   SPREAD_CYCLE = 0,
-  CLASSIC = 1,
+  CLASSIC = 1
+};
+enum ComparatorBlankTime
+{
+  CLOCK_CYCLES_16 = 0,
+  CLOCK_CYCLES_24 = 1,
+  CLOCK_CYCLES_36 = 2,
+  CLOCK_CYCLES_54 = 3
 };
 struct DriverParameters
 {
@@ -56,6 +63,8 @@ struct DriverParameters
   int8_t stall_guard_threshold = STALL_GUARD_THRESHOLD_DEFAULT;
   bool stall_guard_filter_enabled = STALL_GUARD_FILTER_ENABLED_DEFAULT;
   bool short_to_ground_protection_enabled = SHORT_TO_GROUND_PROTECTION_ENABLED_DEFAULT;
+  ComparatorBlankTime comparator_blank_time = COMPARATOR_BLANK_TIME_DEFAULT;
+  uint8_t enabled_toff = ENABLED_TOFF_DEFAULT;
 
   DriverParameters(uint8_t global_current_scaler_ = GLOBAL_CURRENT_SCALER_DEFAULT,
     uint8_t run_current_ = CURRENT_DEFAULT,
@@ -78,7 +87,9 @@ struct DriverParameters
     bool high_velocity_chopper_switch_enabled_ = HIGH_VELOCITY_CHOPPER_SWITCH_ENABLED_DEFAULT,
     int8_t stall_guard_threshold_ = STALL_GUARD_THRESHOLD_DEFAULT,
     bool stall_guard_filter_enabled_ = STALL_GUARD_FILTER_ENABLED_DEFAULT,
-    bool short_to_ground_protection_enabled_ = SHORT_TO_GROUND_PROTECTION_ENABLED_DEFAULT)
+    bool short_to_ground_protection_enabled_ = SHORT_TO_GROUND_PROTECTION_ENABLED_DEFAULT,
+    ComparatorBlankTime comparator_blank_time_ = COMPARATOR_BLANK_TIME_DEFAULT,
+    uint8_t enabled_toff_ = ENABLED_TOFF_DEFAULT)
   {
     global_current_scaler = global_current_scaler_;
     run_current = run_current_;
@@ -102,6 +113,8 @@ struct DriverParameters
     stall_guard_threshold = stall_guard_threshold_;
     stall_guard_filter_enabled = stall_guard_filter_enabled_;
     short_to_ground_protection_enabled = short_to_ground_protection_enabled_;
+    comparator_blank_time = comparator_blank_time_;
+    enabled_toff = enabled_toff_;
   };
 
   bool operator==(const DriverParameters & rhs) const
@@ -127,7 +140,9 @@ struct DriverParameters
       (this->high_velocity_chopper_switch_enabled == rhs.high_velocity_chopper_switch_enabled) &&
       (this->stall_guard_threshold == rhs.stall_guard_threshold) &&
       (this->stall_guard_filter_enabled == rhs.stall_guard_filter_enabled) &&
-      (this->short_to_ground_protection_enabled == rhs.short_to_ground_protection_enabled))
+      (this->short_to_ground_protection_enabled == rhs.short_to_ground_protection_enabled) &&
+      (this->comparator_blank_time == rhs.comparator_blank_time) &&
+      (this->enabled_toff == rhs.enabled_toff))
     {
       return true;
     }
@@ -157,6 +172,8 @@ private:
   const static int8_t STALL_GUARD_THRESHOLD_DEFAULT = 0;
   const static bool STALL_GUARD_FILTER_ENABLED_DEFAULT = true;
   const static bool SHORT_TO_GROUND_PROTECTION_ENABLED_DEFAULT = true;
+  const static ComparatorBlankTime COMPARATOR_BLANK_TIME_DEFAULT = CLOCK_CYCLES_36;
+  const static uint8_t ENABLED_TOFF_DEFAULT = 3;
 
   friend class Driver;
 };

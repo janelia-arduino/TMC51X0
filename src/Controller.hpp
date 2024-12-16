@@ -101,6 +101,11 @@ public:
   void enableStallStop();
   void disableStallStop();
 
+  // 0..(2^22) microsteps/t
+  // reset default: 0
+  // 0 disables DcStep
+  void writeMinDcStepVelocity(uint32_t velocity);
+
   void setupSwitches();
   void setupSwitches(SwitchParameters parameters);
   bool leftSwitchActive();

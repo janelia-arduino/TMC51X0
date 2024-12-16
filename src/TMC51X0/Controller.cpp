@@ -193,6 +193,12 @@ void Controller::disableStallStop()
   registers_ptr_->write(Registers::SW_MODE, sw_mode.bytes);
 }
 
+void Controller::writeMinDcStepVelocity(uint32_t velocity)
+{
+  registers_ptr_->write(Registers::VDCMIN, velocity);
+}
+
+
 void Controller::setupSwitches()
 {
   writeSwitchParameters(setup_switch_parameters_);
@@ -285,6 +291,7 @@ void Controller::writeControllerParameters(ControllerParameters parameters)
   {
     disableStallStop();
   }
+  writeMinDcStepVelocity(parameters.min_dc_step_velocity);
 }
 
 void Controller::cacheControllerSettings()
@@ -303,6 +310,7 @@ void Controller::cacheControllerSettings()
   cached_controller_settings_.first_deceleration = registers_ptr_->getStored(Registers::D1);
   cached_controller_settings_.zero_wait_duration = registers_ptr_->getStored(Registers::TZEROWAIT);
   cached_controller_settings_.stall_stop_enabled = sw_mode.sg_stop;
+  cached_controller_settings_.min_dc_step_velocity = registers_ptr_->getStored(Registers::VDCMIN);
 }
 
 void Controller::restoreControllerSettings()

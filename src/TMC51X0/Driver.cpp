@@ -278,18 +278,43 @@ void Driver::disableShortToGroundProtection()
   registers_ptr_->write(Registers::CHOPCONF, chopconf.bytes);
 }
 
+void Driver::writeComparatorBlankTime(ComparatorBlankTime tbl)
+{
+  Registers::Chopconf chopconf;
+  chopconf.bytes = registers_ptr_->getStored(Registers::CHOPCONF);
+  chopconf.tbl = tbl;
+  registers_ptr_->write(Registers::CHOPCONF, chopconf.bytes);
+}
+
+void Driver::writeEnabledToff(uint8_t toff)
+{
+  if (toff < ENABLED_TOFF_MIN)
+  {
+    toff = ENABLED_TOFF_MIN;
+  }
+  if (toff > ENABLED_TOFF_MAX)
+  {
+    toff = ENABLED_TOFF_MAX;
+  }
+  enabled_toff_ = toff;
+  Registers::Chopconf chopconf;
+  chopconf.bytes = registers_ptr_->getStored(Registers::CHOPCONF);
+  chopconf.toff = enabled_toff_;
+  registers_ptr_->write(Registers::CHOPCONF, chopconf.bytes);
+}
+
 // private
 
 void Driver::initialize(Registers & registers)
 {
   registers_ptr_ = &registers;
-  toff_ = TOFF_ENABLE_DEFAULT;
 
   reinitialize();
 }
 
 void Driver::reinitialize()
 {
+  enabled_toff_ = DriverParameters::ENABLED_TOFF_DEFAULT;
   disable();
   setup();
 }
@@ -365,6 +390,8 @@ void Driver::writeDriverParameters(DriverParameters parameters)
   {
     disableShortToGroundProtection();
   }
+  writeComparatorBlankTime(parameters.comparator_blank_time);
+  writeEnabledToff(parameters.enabled_toff);
 }
 
 void Driver::cacheDriverSettings()
@@ -401,6 +428,8 @@ void Driver::cacheDriverSettings()
   cached_driver_settings_.stall_guard_threshold = coolconf.sgt;
   cached_driver_settings_.stall_guard_filter_enabled = coolconf.sfilt;
   cached_driver_settings_.short_to_ground_protection_enabled = chopconf.diss2g;
+  cached_driver_settings_.comparator_blank_time = (ComparatorBlankTime)chopconf.tbl;
+  cached_driver_settings_.enabled_toff = enabled_toff_;
 }
 
 void Driver::restoreDriverSettings()
@@ -428,7 +457,7 @@ void Driver::softwareEnable()
 {
   Registers::Chopconf chopconf;
   chopconf.bytes = registers_ptr_->getStored(Registers::CHOPCONF);
-  chopconf.toff = toff_;
+  chopconf.toff = enabled_toff_;
   registers_ptr_->write(Registers::CHOPCONF, chopconf.bytes);
 }
 

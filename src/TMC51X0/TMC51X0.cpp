@@ -134,26 +134,27 @@ void TMC51X0::beginHomeToStall(tmc51x0::HomeParameters home_parameters,
 
   controller.writeRampMode(HOLD);
 
-  driver.writeChopperMode(SPREAD_CYCLE);
   driver.disableStealthChop();
+  driver.disableCoolStep();
   int32_t tstep = converter.velocityChipToTstep(home_parameters.velocity);
 
   switch (stall_parameters.stall_mode)
   {
     case COOL_STEP_THRESHOLD:
     {
+      driver.writeChopperMode(SPREAD_CYCLE);
       driver.writeCoolStepThreshold(tstep + 100);
-      driver.writeHighVelocityThreshold(tstep - 100);
-      driver.enableCoolStep();
-      driver.disableHighVelocityFullstep();
       break;
     }
     case DC_STEP:
     {
-      driver.writeCoolStepThreshold(tstep - 100);
+      driver.writeChopperMode(CLASSIC);
       driver.writeHighVelocityThreshold(tstep + 100);
-      driver.enableCoolStep();
-      driver.disableHighVelocityFullstep();
+      driver.enableHighVelocityFullstep();
+      driver.enableHighVelocityChopperSwitch();
+      driver.writeComparatorBlankTime(CLOCK_CYCLES_36);
+      driver.writeEnabledToff(8);
+      controller.writeMinDcStepVelocity(home_parameters.velocity - 100);
       break;
     }
   }

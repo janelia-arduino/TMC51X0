@@ -103,19 +103,31 @@ public:
   void enableShortToGroundProtection();
   void disableShortToGroundProtection();
 
+  // CLOCK_CYCLES_36 default
+  // CLOCK_CYCLES_24 or CLOCK_CYCLES_36 for typical applications
+  // CLOCK_CYCLES_54 for higher capacitive loads
+  void writeComparatorBlankTime(ComparatorBlankTime tbl);
+
+  // 1..15
+  // 1 use only with Compator Blank Time >= 2
+  // 3 default
+  // 8 for DcStep
+  void writeEnabledToff(uint8_t toff);
+
 private:
   Registers * registers_ptr_;
   DriverParameters setup_driver_parameters_;
   DriverParameters cached_driver_settings_;
 
   size_t hardware_enable_pin_;
-  uint8_t toff_;
+  uint8_t enabled_toff_;
 
   const static uint8_t STALL_GUARD_FILTER_ENABLE = 1;
   const static uint8_t STALL_GUARD_FILTER_DISABLE = 0;
 
   const static uint8_t DISABLE_TOFF = 0b0;
-  const static uint8_t TOFF_ENABLE_DEFAULT = 3;
+  const static uint8_t ENABLED_TOFF_MIN = 1;
+  const static uint8_t ENABLED_TOFF_MAX = 15;
 
   const static uint8_t SEMIN_OFF = 0;
 

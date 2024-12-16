@@ -14,7 +14,7 @@ const tmc51x0::SpiParameters spi_parameters =
 {
   spi,
   1000000, // clock_rate
-  10 // chip_select_pin
+  8 // chip_select_pin
 };
 
 const size_t ENABLE_HARDWARE_PIN = 4;

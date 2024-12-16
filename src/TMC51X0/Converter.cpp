@@ -43,6 +43,7 @@ ControllerParameters Converter::controllerParametersRealToChip(ControllerParamet
   parameters_chip.max_deceleration = accelerationRealToChip(parameters.max_deceleration);
   parameters_chip.first_deceleration = accelerationRealToChip(parameters.first_deceleration);
   parameters_chip.zero_wait_duration = millisecondsToZeroWaitDuration(parameters.zero_wait_duration);
+  parameters_chip.min_dc_step_velocity = velocityRealToChip(parameters.min_dc_step_velocity);
 
   return parameters_chip;
 }

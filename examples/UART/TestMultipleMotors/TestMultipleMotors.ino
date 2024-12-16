@@ -61,7 +61,7 @@ const tmc51x0::DriverParameters driver_parameters_real =
   1, // cool_step_min
   0, // cool_step_max
   true, // cool_step_enabled
-  90, // high_velocity_threshold (rotations/min)
+  90, // high_velocity_threshold (millimeters/min)
   true, // high_velocity_fullstep_enabled
   true, // high_velocity_chopper_switch_enabled
   1, // stall_guard_threshold
