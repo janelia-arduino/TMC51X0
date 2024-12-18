@@ -48,7 +48,7 @@ struct Registers
     AMAX = 0x26,
     VMAX = 0x27,
     DMAX = 0x28,
-    D1 = 0x2A,
+    D1_REG = 0x2A,
     VSTOP = 0x2B,
     TZEROWAIT = 0x2C,
     XTARGET = 0x2D,
@@ -85,12 +85,12 @@ struct Registers
     ADDRESS_COUNT = 0x74,
   };
 
-  void write(RegisterAddress register_address,
+  void write(Registers::RegisterAddress register_address,
     uint32_t data);
-  uint32_t read(RegisterAddress register_address);
-  uint32_t getStored(RegisterAddress register_address);
-  bool writeable(RegisterAddress register_address);
-  bool readable(RegisterAddress register_address);
+  uint32_t read(Registers::RegisterAddress register_address);
+  uint32_t getStored(Registers::RegisterAddress register_address);
+  bool writeable(Registers::RegisterAddress register_address);
+  bool readable(Registers::RegisterAddress register_address);
 
   union Gconf
   {
@@ -439,9 +439,9 @@ struct Registers
 private:
   Interface * interface_ptr_;
 
-  uint32_t stored_[ADDRESS_COUNT] = {0};
-  bool writeable_[ADDRESS_COUNT] = {false};
-  bool readable_[ADDRESS_COUNT] = {false};
+  uint32_t stored_[Registers::ADDRESS_COUNT] = {0};
+  bool writeable_[Registers::ADDRESS_COUNT] = {false};
+  bool readable_[Registers::ADDRESS_COUNT] = {false};
 
   const static uint8_t VERSION_TMC5130 = 0x11;
   const static uint8_t VERSION_TMC5160 = 0x30;

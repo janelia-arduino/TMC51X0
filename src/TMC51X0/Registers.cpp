@@ -165,7 +165,7 @@ void Registers::initialize(Interface & interface)
 
   writeable_[DMAX] = true;
 
-  writeable_[D1] = true;
+  writeable_[D1_REG] = true;
 
   writeable_[VSTOP] = true;
 

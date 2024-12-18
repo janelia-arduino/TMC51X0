@@ -142,7 +142,7 @@ void Controller::writeMaxDeceleration(uint32_t deceleration)
 
 void Controller::writeFirstDeceleration(uint32_t deceleration)
 {
-  registers_ptr_->write(Registers::D1, deceleration);
+  registers_ptr_->write(Registers::D1_REG, deceleration);
 }
 
 void Controller::writeZeroWaitDuration(uint32_t tzerowait)
@@ -307,7 +307,7 @@ void Controller::cacheControllerSettings()
   cached_controller_settings_.first_velocity = registers_ptr_->getStored(Registers::V1);
   cached_controller_settings_.first_acceleration = registers_ptr_->getStored(Registers::A1);
   cached_controller_settings_.max_deceleration = registers_ptr_->getStored(Registers::DMAX);
-  cached_controller_settings_.first_deceleration = registers_ptr_->getStored(Registers::D1);
+  cached_controller_settings_.first_deceleration = registers_ptr_->getStored(Registers::D1_REG);
   cached_controller_settings_.zero_wait_duration = registers_ptr_->getStored(Registers::TZEROWAIT);
   cached_controller_settings_.stall_stop_enabled = sw_mode.sg_stop;
   cached_controller_settings_.min_dc_step_velocity = registers_ptr_->getStored(Registers::VDCMIN);
