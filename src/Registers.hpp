@@ -359,7 +359,7 @@ struct Registers
     uint32_t bytes;
   };
 
-  union Dcctrl
+  union DcCtrl
   {
     struct
     {

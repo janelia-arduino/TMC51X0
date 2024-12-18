@@ -51,8 +51,8 @@ const tmc51x0::DriverParameters driver_parameters_real =
   1, // stall_guard_threshold
   false, // stall_guard_filter_enabled
   true, // short_to_ground_protection_enabled
-  tmc51x0::CLOCK_CYCLES_36, // comparator_blank_time
-  3 // enabled_toff
+  3, // enabled_toff
+  tmc51x0::CLOCK_CYCLES_36 // comparator_blank_time
 };
 
 const tmc51x0::ControllerParameters controller_parameters_real =

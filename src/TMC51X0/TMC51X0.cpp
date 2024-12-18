@@ -155,8 +155,9 @@ void TMC51X0::beginHomeToStall(tmc51x0::HomeParameters home_parameters,
       driver.writeHighVelocityThreshold(tstep + 100);
       driver.enableHighVelocityFullstep();
       driver.enableHighVelocityChopperSwitch();
-      driver.writeComparatorBlankTime(CLOCK_CYCLES_36);
       driver.writeEnabledToff(8);
+      driver.writeComparatorBlankTime(CLOCK_CYCLES_36);
+      driver.writeDcTime(CLOCK_CYCLES_36);
       controller.writeMinDcStepVelocity(home_parameters.velocity - 100);
       break;
     }

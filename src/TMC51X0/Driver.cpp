@@ -303,6 +303,35 @@ void Driver::writeEnabledToff(uint8_t toff)
   registers_ptr_->write(Registers::CHOPCONF, chopconf.bytes);
 }
 
+void Driver::writeDcTime(ComparatorBlankTime tbl)
+{
+  uint16_t dc_time;
+  switch (tbl)
+  {
+    case CLOCK_CYCLES_16:
+      dc_time = 17;
+      break;
+    case CLOCK_CYCLES_24:
+      dc_time = 25;
+      break;
+    case CLOCK_CYCLES_36:
+      dc_time = 37;
+      break;
+    case CLOCK_CYCLES_54:
+      dc_time = 55;
+      break;
+  }
+  writeDcTime(dc_time);
+}
+
+void Driver::writeDcTime(uint16_t dc_time)
+{
+  Registers::DcCtrl dc_ctrl;
+  dc_ctrl.bytes = registers_ptr_->getStored(Registers::DCCTRL);
+  dc_ctrl.dc_time = dc_time;
+  registers_ptr_->write(Registers::DCCTRL, dc_ctrl.bytes);
+}
+
 // private
 
 void Driver::initialize(Registers & registers)

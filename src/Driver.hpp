@@ -103,6 +103,7 @@ public:
   void enableShortToGroundProtection();
   void disableShortToGroundProtection();
 
+  // CLOCK_CYCLES_16 min
   // CLOCK_CYCLES_36 default
   // CLOCK_CYCLES_24 or CLOCK_CYCLES_36 for typical applications
   // CLOCK_CYCLES_54 for higher capacitive loads
@@ -114,7 +115,9 @@ public:
   // 8 for DcStep
   void writeEnabledToff(uint8_t toff);
 
-  // uint16_t getDcTime
+  // Sets slightly above comparator blank time
+  void writeDcTime(ComparatorBlankTime tbl);
+  void writeDcTime(uint16_t dc_time);
 
 private:
   Registers * registers_ptr_;
