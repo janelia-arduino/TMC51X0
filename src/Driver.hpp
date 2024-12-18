@@ -115,9 +115,12 @@ public:
   // 8 for DcStep
   void writeEnabledToff(uint8_t toff);
 
-  // Sets slightly above comparator blank time
-  void writeDcTime(ComparatorBlankTime tbl);
+  // Initially set slightly above comparator blank time
   void writeDcTime(uint16_t dc_time);
+
+  // Initially set slightly above dc_time/16
+  // Increase for higher sensitivity
+  void writeDcStallGuardThreshold(uint8_t dc_stall_guard_threshold);
 
 private:
   Registers * registers_ptr_;

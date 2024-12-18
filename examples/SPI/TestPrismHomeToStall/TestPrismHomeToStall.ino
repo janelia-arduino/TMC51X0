@@ -53,7 +53,8 @@ const tmc51x0::DriverParameters driver_parameters_real =
   true, // short_to_ground_protection_enabled
   3, // enabled_toff
   tmc51x0::CLOCK_CYCLES_36, // comparator_blank_time
-  37 // dc_time
+  37, // dc_time
+  3 // dc_stall_guard_threshold
 };
 
 const tmc51x0::ControllerParameters controller_parameters_real =
@@ -84,9 +85,18 @@ const tmc51x0::HomeParameters home_parameters_real =
 
 const tmc51x0::StallParameters stall_parameters_cool_step_real =
 {
-  tmc51x0::COOL_STEP_THRESHOLD, // stall_mode
+  tmc51x0::COOL_STEP, // stall_mode
   10, // stall_guard_threshold
   15 // cool_step_threshold (millimeters/s)
+};
+
+const tmc51x0::StallParameters stall_parameters_dc_step_real =
+{
+  tmc51x0::DC_STEP, // stall_mode
+  10, // stall_guard_threshold
+  5, // cool_step_threshold (millimeters/s)
+  4, // min_dc_step_velocity (millimeters/s)
+  3 // dc_stall_guard_threshold
 };
 
 const int32_t TARGET_POSITION = 100;  // millimeters
@@ -104,8 +114,8 @@ TMC51X0 prism;
 tmc51x0::ControllerParameters controller_parameters_chip;
 tmc51x0::HomeParameters home_parameters_chip;
 tmc51x0::StallParameters stall_parameters_cool_step_chip;
+tmc51x0::StallParameters stall_parameters_dc_step_chip;
 bool stall_using_cool_step = true;
-char * stall_mode_name;
 
 void setup()
 {
@@ -136,6 +146,7 @@ void setup()
 
   home_parameters_chip = prism.converter.homeParametersRealToChip(home_parameters_real);
   stall_parameters_cool_step_chip = prism.converter.stallParametersRealToChip(stall_parameters_cool_step_real);
+  stall_parameters_dc_step_chip = prism.converter.stallParametersRealToChip(stall_parameters_dc_step_real);
 
   prism.driver.enable();
 
@@ -155,9 +166,15 @@ void loop()
 
   if (stall_using_cool_step)
   {
-    stall_mode_name = (char *)"cool step";
+    stall_using_cool_step = false;
     Serial.println("Homing to stall using cool step...");
     prism.beginHomeToStall(home_parameters_chip, stall_parameters_cool_step_chip);
+  }
+  else
+  {
+    stall_using_cool_step = true;
+    Serial.println("Homing to stall using dc step...");
+    prism.beginHomeToStall(home_parameters_chip, stall_parameters_dc_step_chip);
   }
   while (not prism.homed())
   {
@@ -166,12 +183,20 @@ void loop()
     int32_t actual_position_real = prism.converter.positionChipToReal(actual_position_chip);
     Serial.print("actual position (millimeters): ");
     Serial.println(actual_position_real);
-    Serial.print("stall guard result: ");
-    Serial.println(prism.driver.readStallGuardResult());
-    Serial.print("stall mode: ");
-    Serial.println(stall_mode_name);
-    Serial.print("stall guard threshold: ");
-    Serial.println(stall_parameters_cool_step_real.stall_guard_threshold);
+    if (stall_using_cool_step)
+    {
+      Serial.println("stall mode: COOL_STEP");
+      Serial.print("stall guard result: ");
+      Serial.println(prism.driver.readStallGuardResult());
+      Serial.print("stall guard threshold: ");
+      Serial.println(stall_parameters_cool_step_real.stall_guard_threshold);
+    }
+    else
+    {
+      Serial.println("stall mode: DC_STEP");
+      Serial.print("dc stall guard threshold: ");
+      Serial.println(stall_parameters_dc_step_real.dc_stall_guard_threshold);
+    }
     delay(LOOP_DELAY);
   }
   prism.endHome();

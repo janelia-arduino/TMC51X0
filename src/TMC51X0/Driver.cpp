@@ -303,32 +303,19 @@ void Driver::writeEnabledToff(uint8_t toff)
   registers_ptr_->write(Registers::CHOPCONF, chopconf.bytes);
 }
 
-void Driver::writeDcTime(ComparatorBlankTime tbl)
-{
-  uint16_t dc_time;
-  switch (tbl)
-  {
-    case CLOCK_CYCLES_16:
-      dc_time = 17;
-      break;
-    case CLOCK_CYCLES_24:
-      dc_time = 25;
-      break;
-    case CLOCK_CYCLES_36:
-      dc_time = 37;
-      break;
-    case CLOCK_CYCLES_54:
-      dc_time = 55;
-      break;
-  }
-  writeDcTime(dc_time);
-}
-
 void Driver::writeDcTime(uint16_t dc_time)
 {
   Registers::Dcctrl dcctrl;
   dcctrl.bytes = registers_ptr_->getStored(Registers::DCCTRL);
   dcctrl.dc_time = dc_time;
+  registers_ptr_->write(Registers::DCCTRL, dcctrl.bytes);
+}
+
+void Driver::writeDcStallGuardThreshold(uint8_t dc_stall_guard_threshold)
+{
+  Registers::Dcctrl dcctrl;
+  dcctrl.bytes = registers_ptr_->getStored(Registers::DCCTRL);
+  dcctrl.dc_sg = dc_stall_guard_threshold;
   registers_ptr_->write(Registers::DCCTRL, dcctrl.bytes);
 }
 
@@ -422,6 +409,7 @@ void Driver::writeDriverParameters(DriverParameters parameters)
   writeEnabledToff(parameters.enabled_toff);
   writeComparatorBlankTime(parameters.comparator_blank_time);
   writeDcTime(parameters.dc_time);
+  writeDcStallGuardThreshold(parameters.dc_stall_guard_threshold);
 }
 
 void Driver::cacheDriverSettings()
@@ -463,6 +451,7 @@ void Driver::cacheDriverSettings()
   Registers::Dcctrl dcctrl;
   dcctrl.bytes = registers_ptr_->getStored(Registers::DCCTRL);
   cached_driver_settings_.dc_time = dcctrl.dc_time;
+  cached_driver_settings_.dc_stall_guard_threshold = dcctrl.dc_sg;
 }
 
 void Driver::restoreDriverSettings()

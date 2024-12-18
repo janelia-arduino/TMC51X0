@@ -53,7 +53,8 @@ const tmc51x0::DriverParameters driver_parameters_real =
   true, // short_to_ground_protection_enabled
   3, // enabled_toff
   tmc51x0::CLOCK_CYCLES_36, // comparator_blank_time
-  37 // dc_time
+  37, // dc_time
+  3 // dc_stall_guard_threshold
 };
 
 const tmc51x0::ControllerParameters controller_parameters_real =
@@ -77,16 +78,25 @@ const tmc51x0::HomeParameters home_parameters_real =
   25, // run_current (percent)
   20, // hold_current (percent)
   -360, // target_position (degrees)
-  120, // velocity (degrees/s)
+  40, // velocity (degrees/s)
   10, // acceleration ((degrees/s)/s)
   100 // zero_wait_duration (milliseconds)
 };
 
-const tmc51x0::StallParameters stall_parameters =
+const tmc51x0::StallParameters stall_parameters_cool_step_real =
 {
-  tmc51x0::COOL_STEP_THRESHOLD, // stall_mode
-  10, // stall_guard_threshold
-  100 // cool_step_threshold (degrees/s)
+  tmc51x0::COOL_STEP, // stall_mode
+  3, // stall_guard_threshold
+  20 // cool_step_threshold (degrees/s)
+};
+
+const tmc51x0::StallParameters stall_parameters_dc_step_real =
+{
+  tmc51x0::DC_STEP, // stall_mode
+  0, // stall_guard_threshold
+  2, // cool_step_threshold (millimeters/s)
+  1, // min_dc_step_velocity (millimeters/s)
+  2 // dc_stall_guard_threshold
 };
 
 const int32_t TARGET_POSITION = 100;  // degrees
@@ -100,8 +110,8 @@ TMC51X0 tmc5130;
 tmc51x0::ControllerParameters controller_parameters_chip;
 tmc51x0::HomeParameters home_parameters_chip;
 tmc51x0::StallParameters stall_parameters_cool_step_chip;
+tmc51x0::StallParameters stall_parameters_dc_step_chip;
 bool stall_using_cool_step = true;
-char * stall_mode_name;
 
 void setup()
 {
@@ -124,7 +134,8 @@ void setup()
   tmc5130.controller.setup(controller_parameters_chip);
 
   home_parameters_chip = tmc5130.converter.homeParametersRealToChip(home_parameters_real);
-  stall_parameters_cool_step_chip = prism.converter.stallParametersRealToChip(stall_parameters_cool_step_real);
+  stall_parameters_cool_step_chip = tmc5130.converter.stallParametersRealToChip(stall_parameters_cool_step_real);
+  stall_parameters_dc_step_chip = tmc5130.converter.stallParametersRealToChip(stall_parameters_dc_step_real);
 
   tmc5130.driver.enable();
 
@@ -144,9 +155,13 @@ void loop()
 
   if (stall_using_cool_step)
   {
-    stall_mode_name = (char *)"cool step";
     Serial.println("Homing to stall using cool step...");
-    prism.beginHomeToStall(home_parameters_chip, stall_parameters_cool_step_chip);
+    tmc5130.beginHomeToStall(home_parameters_chip, stall_parameters_cool_step_chip);
+  }
+  else
+  {
+    Serial.println("Homing to stall using dc step...");
+    tmc5130.beginHomeToStall(home_parameters_chip, stall_parameters_dc_step_chip);
   }
   while (not tmc5130.homed())
   {
@@ -155,16 +170,25 @@ void loop()
     int32_t actual_position_real = tmc5130.converter.positionChipToReal(actual_position_chip);
     Serial.print("actual position (degrees): ");
     Serial.println(actual_position_real);
-    Serial.print("stall guard result: ");
-    Serial.println(tmc5130.driver.readStallGuardResult());
-    Serial.print("stall mode: ");
-    Serial.println(stall_mode_name);
-    Serial.print("stall guard threshold: ");
-    Serial.println(stall_parameters_cool_step_real.stall_guard_threshold);
+    if (stall_using_cool_step)
+    {
+      Serial.println("stall mode: COOL_STEP");
+      Serial.print("stall guard result: ");
+      Serial.println(tmc5130.driver.readStallGuardResult());
+      Serial.print("stall guard threshold: ");
+      Serial.println(stall_parameters_cool_step_real.stall_guard_threshold);
+    }
+    else
+    {
+      Serial.println("stall mode: DC_STEP");
+      Serial.print("dc stall guard threshold: ");
+      Serial.println(stall_parameters_dc_step_real.dc_stall_guard_threshold);
+    }
     delay(LOOP_DELAY);
   }
   tmc5130.endHome();
   Serial.println("Homed!");
+  stall_using_cool_step = not stall_using_cool_step;
 
   Serial.println("Waiting...");
   delay(PAUSE_DELAY);

@@ -66,6 +66,7 @@ struct DriverParameters
   uint8_t enabled_toff = ENABLED_TOFF_DEFAULT;
   ComparatorBlankTime comparator_blank_time = COMPARATOR_BLANK_TIME_DEFAULT;
   uint16_t dc_time = DC_TIME_DEFAULT;
+  uint8_t dc_stall_guard_threshold = DC_STALL_GUARD_THRESHOLD_DEFAULT;
 
   DriverParameters(uint8_t global_current_scaler_ = GLOBAL_CURRENT_SCALER_DEFAULT,
     uint8_t run_current_ = CURRENT_DEFAULT,
@@ -91,7 +92,8 @@ struct DriverParameters
     bool short_to_ground_protection_enabled_ = SHORT_TO_GROUND_PROTECTION_ENABLED_DEFAULT,
     uint8_t enabled_toff_ = ENABLED_TOFF_DEFAULT,
     ComparatorBlankTime comparator_blank_time_ = COMPARATOR_BLANK_TIME_DEFAULT,
-    uint16_t dc_time_ = DC_TIME_DEFAULT)
+    uint16_t dc_time_ = DC_TIME_DEFAULT,
+    uint8_t dc_stall_guard_threshold_ = DC_STALL_GUARD_THRESHOLD_DEFAULT)
   {
     global_current_scaler = global_current_scaler_;
     run_current = run_current_;
@@ -118,6 +120,7 @@ struct DriverParameters
     enabled_toff = enabled_toff_;
     comparator_blank_time = comparator_blank_time_;
     dc_time = dc_time_;
+    dc_stall_guard_threshold = dc_stall_guard_threshold_;
   };
 
   bool operator==(const DriverParameters & rhs) const
@@ -146,7 +149,8 @@ struct DriverParameters
       (this->short_to_ground_protection_enabled == rhs.short_to_ground_protection_enabled) &&
       (this->enabled_toff == rhs.enabled_toff) &&
       (this->comparator_blank_time == rhs.comparator_blank_time) &&
-      (this->dc_time == rhs.dc_time))
+      (this->dc_time == rhs.dc_time) &&
+      (this->dc_stall_guard_threshold == rhs.dc_stall_guard_threshold))
     {
       return true;
     }
@@ -179,6 +183,7 @@ private:
   const static uint8_t ENABLED_TOFF_DEFAULT = 3;
   const static ComparatorBlankTime COMPARATOR_BLANK_TIME_DEFAULT = CLOCK_CYCLES_36;
   const static uint16_t DC_TIME_DEFAULT = 0;
+  const static uint8_t DC_STALL_GUARD_THRESHOLD_DEFAULT = 0;
 
   friend class Driver;
 };
