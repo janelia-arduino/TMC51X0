@@ -326,10 +326,10 @@ void Driver::writeDcTime(ComparatorBlankTime tbl)
 
 void Driver::writeDcTime(uint16_t dc_time)
 {
-  Registers::DcCtrl dc_ctrl;
-  dc_ctrl.bytes = registers_ptr_->getStored(Registers::DCCTRL);
-  dc_ctrl.dc_time = dc_time;
-  registers_ptr_->write(Registers::DCCTRL, dc_ctrl.bytes);
+  Registers::Dcctrl dcctrl;
+  dcctrl.bytes = registers_ptr_->getStored(Registers::DCCTRL);
+  dcctrl.dc_time = dc_time;
+  registers_ptr_->write(Registers::DCCTRL, dcctrl.bytes);
 }
 
 // private
@@ -419,8 +419,9 @@ void Driver::writeDriverParameters(DriverParameters parameters)
   {
     disableShortToGroundProtection();
   }
-  writeComparatorBlankTime(parameters.comparator_blank_time);
   writeEnabledToff(parameters.enabled_toff);
+  writeComparatorBlankTime(parameters.comparator_blank_time);
+  writeDcTime(parameters.dc_time);
 }
 
 void Driver::cacheDriverSettings()
@@ -457,8 +458,11 @@ void Driver::cacheDriverSettings()
   cached_driver_settings_.stall_guard_threshold = coolconf.sgt;
   cached_driver_settings_.stall_guard_filter_enabled = coolconf.sfilt;
   cached_driver_settings_.short_to_ground_protection_enabled = chopconf.diss2g;
-  cached_driver_settings_.comparator_blank_time = (ComparatorBlankTime)chopconf.tbl;
   cached_driver_settings_.enabled_toff = enabled_toff_;
+  cached_driver_settings_.comparator_blank_time = (ComparatorBlankTime)chopconf.tbl;
+  Registers::Dcctrl dcctrl;
+  dcctrl.bytes = registers_ptr_->getStored(Registers::DCCTRL);
+  cached_driver_settings_.dc_time = dcctrl.dc_time;
 }
 
 void Driver::restoreDriverSettings()

@@ -65,6 +65,7 @@ struct DriverParameters
   bool short_to_ground_protection_enabled = SHORT_TO_GROUND_PROTECTION_ENABLED_DEFAULT;
   uint8_t enabled_toff = ENABLED_TOFF_DEFAULT;
   ComparatorBlankTime comparator_blank_time = COMPARATOR_BLANK_TIME_DEFAULT;
+  uint16_t dc_time = DC_TIME_DEFAULT;
 
   DriverParameters(uint8_t global_current_scaler_ = GLOBAL_CURRENT_SCALER_DEFAULT,
     uint8_t run_current_ = CURRENT_DEFAULT,
@@ -89,7 +90,8 @@ struct DriverParameters
     bool stall_guard_filter_enabled_ = STALL_GUARD_FILTER_ENABLED_DEFAULT,
     bool short_to_ground_protection_enabled_ = SHORT_TO_GROUND_PROTECTION_ENABLED_DEFAULT,
     uint8_t enabled_toff_ = ENABLED_TOFF_DEFAULT,
-    ComparatorBlankTime comparator_blank_time_ = COMPARATOR_BLANK_TIME_DEFAULT)
+    ComparatorBlankTime comparator_blank_time_ = COMPARATOR_BLANK_TIME_DEFAULT,
+    uint16_t dc_time_ = DC_TIME_DEFAULT)
   {
     global_current_scaler = global_current_scaler_;
     run_current = run_current_;
@@ -115,6 +117,7 @@ struct DriverParameters
     short_to_ground_protection_enabled = short_to_ground_protection_enabled_;
     enabled_toff = enabled_toff_;
     comparator_blank_time = comparator_blank_time_;
+    dc_time = dc_time_;
   };
 
   bool operator==(const DriverParameters & rhs) const
@@ -142,7 +145,8 @@ struct DriverParameters
       (this->stall_guard_filter_enabled == rhs.stall_guard_filter_enabled) &&
       (this->short_to_ground_protection_enabled == rhs.short_to_ground_protection_enabled) &&
       (this->enabled_toff == rhs.enabled_toff) &&
-      (this->comparator_blank_time == rhs.comparator_blank_time))
+      (this->comparator_blank_time == rhs.comparator_blank_time) &&
+      (this->dc_time == rhs.dc_time))
     {
       return true;
     }
@@ -174,6 +178,7 @@ private:
   const static bool SHORT_TO_GROUND_PROTECTION_ENABLED_DEFAULT = true;
   const static uint8_t ENABLED_TOFF_DEFAULT = 3;
   const static ComparatorBlankTime COMPARATOR_BLANK_TIME_DEFAULT = CLOCK_CYCLES_36;
+  const static uint16_t DC_TIME_DEFAULT = 0;
 
   friend class Driver;
 };
