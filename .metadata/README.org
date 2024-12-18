@@ -157,6 +157,7 @@ git clone https://github.com/janelia-arduino/TMC51X0.git
 #+BEGIN_SRC sh
 python3 -m venv .venv
 source .venv/bin/activate
+pip install pip --upgrade
 pip install platformio
 pio --version
 #+END_SRC

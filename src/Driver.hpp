@@ -114,6 +114,8 @@ public:
   // 8 for DcStep
   void writeEnabledToff(uint8_t toff);
 
+  // uint16_t getDcTime
+
 private:
   Registers * registers_ptr_;
   DriverParameters setup_driver_parameters_;

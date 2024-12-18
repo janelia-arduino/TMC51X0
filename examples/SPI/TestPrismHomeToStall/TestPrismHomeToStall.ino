@@ -81,9 +81,10 @@ const tmc51x0::HomeParameters home_parameters_real =
   100 // zero_wait_duration (milliseconds)
 };
 
-const tmc51x0::StallParameters stall_parameters =
+const tmc51x0::StallParameters stall_parameters_real =
 {
   tmc51x0::COOL_STEP_THRESHOLD, // stall_mode
+  15 // cool_step_threshold (millimeters/s)
 };
 
 const int32_t TARGET_POSITION = 100;  // millimeters
@@ -100,6 +101,7 @@ const uint16_t PAUSE_DELAY = 4000;
 TMC51X0 prism;
 tmc51x0::ControllerParameters controller_parameters_chip;
 tmc51x0::HomeParameters home_parameters_chip;
+tmc51x0::StallParameters stall_parameters_chip;
 
 void setup()
 {
@@ -129,6 +131,7 @@ void setup()
   prism.controller.setup(controller_parameters_chip);
 
   home_parameters_chip = prism.converter.homeParametersRealToChip(home_parameters_real);
+  stall_parameters_chip = prism.converter.stallParametersRealToChip(stall_parameters_real);
 
   prism.driver.enable();
 
@@ -147,7 +150,7 @@ void loop()
   delay(PAUSE_DELAY);
 
   Serial.println("Homing to stall...");
-  prism.beginHomeToStall(home_parameters_chip, stall_parameters);
+  prism.beginHomeToStall(home_parameters_chip, stall_parameters_chip);
   while (not prism.homed())
   {
     prism.printer.readAndPrintDrvStatus();

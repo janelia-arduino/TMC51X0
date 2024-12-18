@@ -143,7 +143,7 @@ void TMC51X0::beginHomeToStall(tmc51x0::HomeParameters home_parameters,
     case COOL_STEP_THRESHOLD:
     {
       driver.writeChopperMode(SPREAD_CYCLE);
-      driver.writeCoolStepThreshold(tstep + 100);
+      driver.writeCoolStepThreshold(stall_parameters.cool_step_threshold);
       break;
     }
     case DC_STEP:

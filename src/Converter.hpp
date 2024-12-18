@@ -11,6 +11,7 @@
 
 #include "TMC51X0/ConverterParameters.hpp"
 #include "TMC51X0/HomeParameters.hpp"
+#include "TMC51X0/StallParameters.hpp"
 #include "Driver.hpp"
 #include "Controller.hpp"
 
@@ -25,6 +26,7 @@ public:
   DriverParameters driverParametersRealToChip(DriverParameters parameters);
   ControllerParameters controllerParametersRealToChip(ControllerParameters parameters);
   HomeParameters homeParametersRealToChip(HomeParameters parameters);
+  StallParameters stallParametersRealToChip(StallParameters parameters);
 
   int32_t positionChipToReal(int32_t position_chip);
   int32_t positionRealToChip(int32_t position_real);

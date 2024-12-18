@@ -61,6 +61,14 @@ HomeParameters Converter::homeParametersRealToChip(HomeParameters parameters)
   return parameters_chip;
 }
 
+StallParameters Converter::stallParametersRealToChip(StallParameters parameters)
+{
+  StallParameters parameters_chip = parameters;
+  parameters_chip.cool_step_threshold = velocityRealToTstep(parameters.cool_step_threshold);
+
+  return parameters_chip;
+}
+
 int32_t Converter::positionChipToReal(int32_t position_chip)
 {
   return position_chip / (int32_t)converter_parameters_.microsteps_per_real_position_unit;
