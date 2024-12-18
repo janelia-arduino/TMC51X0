@@ -125,7 +125,10 @@ void TMC51X0::beginHomeToStall(tmc51x0::HomeParameters home_parameters,
   controller.cacheControllerSettings();
   controller.cacheSwitchSettings();
 
+  controller.writeStopMode(HARD);
   controller.enableStallStop();
+  driver.disableStallGuardFilter();
+  driver.writeStallGuardThreshold(stall_parameters.stall_guard_threshold);
 
   driver.writeRunCurrent(home_parameters.run_current);
   driver.writeHoldCurrent(home_parameters.hold_current);
@@ -158,7 +161,6 @@ void TMC51X0::beginHomeToStall(tmc51x0::HomeParameters home_parameters,
       break;
     }
   }
-  controller.writeStopMode(HARD);
   controller.zeroActualPosition();
   controller.writeTargetPosition(home_parameters.target_position);
   controller.writeMaxVelocity(home_parameters.velocity);

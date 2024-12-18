@@ -81,9 +81,10 @@ const tmc51x0::HomeParameters home_parameters_real =
   100 // zero_wait_duration (milliseconds)
 };
 
-const tmc51x0::StallParameters stall_parameters_real =
+const tmc51x0::StallParameters stall_parameters_cool_step_real =
 {
   tmc51x0::COOL_STEP_THRESHOLD, // stall_mode
+  10, // stall_guard_threshold
   15 // cool_step_threshold (millimeters/s)
 };
 
@@ -101,7 +102,9 @@ const uint16_t PAUSE_DELAY = 4000;
 TMC51X0 prism;
 tmc51x0::ControllerParameters controller_parameters_chip;
 tmc51x0::HomeParameters home_parameters_chip;
-tmc51x0::StallParameters stall_parameters_chip;
+tmc51x0::StallParameters stall_parameters_cool_step_chip;
+bool stall_using_cool_step = true;
+char * stall_mode_name;
 
 void setup()
 {
@@ -131,7 +134,7 @@ void setup()
   prism.controller.setup(controller_parameters_chip);
 
   home_parameters_chip = prism.converter.homeParametersRealToChip(home_parameters_real);
-  stall_parameters_chip = prism.converter.stallParametersRealToChip(stall_parameters_real);
+  stall_parameters_cool_step_chip = prism.converter.stallParametersRealToChip(stall_parameters_cool_step_real);
 
   prism.driver.enable();
 
@@ -149,8 +152,12 @@ void loop()
   Serial.println("Waiting...");
   delay(PAUSE_DELAY);
 
-  Serial.println("Homing to stall...");
-  prism.beginHomeToStall(home_parameters_chip, stall_parameters_chip);
+  if (stall_using_cool_step)
+  {
+    stall_mode_name = (char *)"cool step";
+    Serial.println("Homing to stall using cool step...");
+    prism.beginHomeToStall(home_parameters_chip, stall_parameters_cool_step_chip);
+  }
   while (not prism.homed())
   {
     prism.printer.readAndPrintDrvStatus();
@@ -160,6 +167,10 @@ void loop()
     Serial.println(actual_position_real);
     Serial.print("stall guard result: ");
     Serial.println(prism.driver.readStallGuardResult());
+    Serial.print("stall mode: ");
+    Serial.println(stall_mode_name);
+    Serial.print("stall guard threshold: ");
+    Serial.println(stall_parameters_cool_step_real.stall_guard_threshold);
     delay(LOOP_DELAY);
   }
   prism.endHome();
