@@ -93,10 +93,10 @@ const tmc51x0::StallParameters stall_parameters_cool_step_real =
 const tmc51x0::StallParameters stall_parameters_dc_step_real =
 {
   tmc51x0::DC_STEP, // stall_mode
-  0, // stall_guard_threshold
+  10, // stall_guard_threshold
   2, // cool_step_threshold (millimeters/s)
   1, // min_dc_step_velocity (millimeters/s)
-  2 // dc_stall_guard_threshold
+  10 // dc_stall_guard_threshold
 };
 
 const int32_t TARGET_POSITION = 100;  // degrees
@@ -165,7 +165,7 @@ void loop()
   }
   while (not tmc5130.homed())
   {
-    tmc5130.printer.readAndPrintDrvStatus();
+    // tmc5130.printer.readAndPrintDrvStatus();
     int32_t actual_position_chip = tmc5130.controller.readActualPosition();
     int32_t actual_position_real = tmc5130.converter.positionChipToReal(actual_position_chip);
     Serial.print("actual position (degrees): ");
