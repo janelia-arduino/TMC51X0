@@ -98,6 +98,7 @@
                 "PLATFORMIO=60116",
                 "STM32F0",
                 "STM32F051x8",
+                "ARDUINO_GENERIC_F051R8TX",
                 "ARDUINO_ARCH_STM32",
                 "ARDUINO_disco_f051r8",
                 "EXTENDED_PIN_MODE",
@@ -112,7 +113,6 @@
                 "USE_HAL_DRIVER",
                 "USE_FULL_LL_DRIVER",
                 "VARIANT_H=\"variant_DISCO_F051R8.h\"",
-                "CUSTOM_PERIPHERAL_PINS",
                 "VECT_TAB_OFFSET=0x0",
                 ""
             ],
