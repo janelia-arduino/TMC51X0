@@ -1,5 +1,5 @@
 /* Private defines -----------------------------------------------------------*/
-
+#if defined(ARDUINO_ARCH_STM32)
 #define RADEC_CLK_Pin       GPIO_PIN_8
 #define RADEC_CLK_GPIO_Port GPIOA
 #define RADEC_EN_Pin        GPIO_PIN_4
@@ -136,3 +136,18 @@
 #define ST4_RAM             PB9
 
 #define SNAP                PD2
+
+#elif defined(ESP32)
+// SPI Pins
+#define RA_CSN      33
+#define DEC_CSN     33
+#define RADEC_EN    13      // DRV_ENN pin in SPI mode
+
+#define SPI_MOSI    26
+#define SPI_MISO    32
+#define SPI_SCK     25
+
+#define SPI_CS      33      // CS pin in SPI mode
+#define SPI_DRV_ENN 13      // DRV_ENN pin in SPI mode
+
+#endif

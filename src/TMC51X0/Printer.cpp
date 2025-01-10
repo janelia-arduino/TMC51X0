@@ -80,6 +80,16 @@ void Printer::printRegister(Registers::Ioin ioin)
   print_ptr_->println("--------------------------");
 }
 
+void Printer::printRegister(Registers::IholdIrun iholdirun)
+{
+  printRegisterPortion("iholdirun", iholdirun.bytes, HEX);
+  printRegisterPortion("ihold", iholdirun.ihold, HEX);
+  printRegisterPortion("irun", iholdirun.irun, HEX);
+  printRegisterPortion("iholddelay", iholdirun.iholddelay, HEX);
+  print_ptr_->println("--------------------------");
+}
+
+
 void Printer::readAndPrintSwMode()
 {
   Registers::SwMode sw_mode;

@@ -29,6 +29,8 @@ public:
   void readAndPrintIoin();
   void printRegister(Registers::Ioin ioin);
 
+  void printRegister(Registers::IholdIrun iholdirun);
+
   void readAndPrintSwMode();
   void printRegister(Registers::SwMode sw_mode);
 

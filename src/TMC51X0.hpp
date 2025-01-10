@@ -26,6 +26,10 @@
 #define DIRECT_PIN_READ(base, pin)      digitalRead(pin)
 #endif
 
+#if defined(ARDUINO_ARCH_ESP32)
+#define pin_size_t uint16_t
+#endif
+
 #include "./TMC51X0/SpiInterface.hpp"
 #include "./TMC51X0/UartInterface.hpp"
 
