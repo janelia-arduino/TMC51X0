@@ -1,20 +1,21 @@
-- [Library Information](#org93bd722)
-- [Stepper Motors](#org3d7afaf)
-- [Stepper Motor Controllers and Drivers](#orgc0e28a9)
-- [Examples](#orgf0d2eb5)
-- [Hardware Documentation](#org5b394b1)
-- [Host Computer Setup](#org3f39ffa)
+- [Library Information](#org068e42b)
+- [Stepper Motors](#org8a313ec)
+- [Stepper Motor Controllers and Drivers](#orgdc28a25)
+- [Examples](#org9cfb30c)
+- [Hardware Documentation](#org228f04c)
+- [Registers](#orgd6e642c)
+- [Host Computer Setup](#orge434fd9)
 
     <!-- This file is generated automatically from metadata -->
     <!-- File edits may be overwritten! -->
 
 
-<a id="org93bd722"></a>
+<a id="org068e42b"></a>
 
 # Library Information
 
 -   **Name:** TMC51X0
--   **Version:** 0.1.0
+-   **Version:** 1.0.0
 -   **License:** BSD
 -   **URL:** <https://github.com/janelia-arduino/TMC51X0>
 -   **Author:** Peter Polidoro
@@ -36,7 +37,7 @@ The TMC5160 uses external MOSFETs to drive higher current motors from 1A to seve
 <img src="./images/trinamic-wiring-TMC51X0-description.svg" width="1920px">
 
 
-<a id="org3d7afaf"></a>
+<a id="org8a313ec"></a>
 
 # Stepper Motors
 
@@ -47,7 +48,7 @@ A stepper motor, also known as step motor or stepping motor, is a brushless DC e
 [Wikipedia - Stepper Motor](https://en.wikipedia.org/wiki/Stepper_motor)
 
 
-<a id="orgc0e28a9"></a>
+<a id="orgdc28a25"></a>
 
 # Stepper Motor Controllers and Drivers
 
@@ -64,7 +65,7 @@ A stepper motor controller is responsible for the commanding either the motor ki
 A stepper motor driver is responsible for commanding the electrical current through the motor coils as it changes with time to meet the requirements of the stepper motor controller.
 
 
-<a id="orgf0d2eb5"></a>
+<a id="org9cfb30c"></a>
 
 # Examples
 
@@ -100,7 +101,7 @@ A stepper motor driver is responsible for commanding the electrical current thro
     <https://github.com/janelia-kicad/trinamic-wiring>
 
 
-<a id="org5b394b1"></a>
+<a id="org228f04c"></a>
 
 # Hardware Documentation
 
@@ -110,7 +111,44 @@ A stepper motor driver is responsible for commanding the electrical current thro
 [Datasheets](./datasheet)
 
 
-<a id="org3f39ffa"></a>
+<a id="orgd6e642c"></a>
+
+# Registers
+
+
+## Driver
+
+| Name           | Address |
+|-------------- |------- |
+| GCONF          | 0x00    |
+| GLOBAL\_SCALAR | 0X0B    |
+| IHOLD\_IRUN    | 0X10    |
+| TPWMTHRS       | 0X13    |
+| TCOOLTHRS      | 0X14    |
+| THIGH          | 0X15    |
+| CHOPCONF       | 0X6C    |
+| COOLCONF       | 0x6D    |
+| PWMCONF        | 0X70    |
+
+
+## Controller
+
+| Name      | Address |
+|--------- |------- |
+| RAMPMODE  | 0x20    |
+| VSTART    | 0x23    |
+| A1        | 0x24    |
+| V1        | 0x25    |
+| AMAX      | 0x26    |
+| VMAX      | 0x27    |
+| DMAX      | 0x28    |
+| D1        | 0x2A    |
+| VSTOP     | 0x2B    |
+| TZEROWAIT | 0x2C    |
+| SW\_MODE  | 0x34    |
+
+
+<a id="orge434fd9"></a>
 
 # Host Computer Setup
 
@@ -134,6 +172,7 @@ git clone https://github.com/janelia-arduino/TMC51X0.git
 ```sh
 python3 -m venv .venv
 source .venv/bin/activate
+pip install pip --upgrade
 pip install platformio
 pio --version
 ```
