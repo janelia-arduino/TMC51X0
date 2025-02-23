@@ -85,6 +85,12 @@ int32_t Converter::velocityChipToReal(int32_t velocity_chip)
   return velocityHzToReal(velocityChipToHz(velocity_chip));
 }
 
+int32_t Converter::velocityFloatToChip(float velocity_real){
+  float velocity_chip = velocity_real * (float)converter_parameters_.microsteps_per_real_position_unit / 
+    (float)converter_parameters_.seconds_per_real_velocity_unit;
+  return (int32_t)velocity_chip;
+}
+
 int32_t Converter::velocityRealToChip(int32_t velocity_real)
 {
   return velocityHzToChip(velocityRealToHz(velocity_real));

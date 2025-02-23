@@ -33,6 +33,7 @@ public:
 
   int32_t velocityChipToReal(int32_t velocity_chip);
   int32_t velocityRealToChip(int32_t velocity_real);
+  int32_t velocityFloatToChip(float velocity_real);
 
   int32_t tstepToVelocityReal(int32_t tstep);
   int32_t velocityRealToTstep(int32_t velocity_real);
