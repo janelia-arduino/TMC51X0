@@ -13,9 +13,9 @@ void SpiInterface::setup(tmc51x0::SpiParameters spi_parameters)
 {
   interface_mode = Interface::SPI;
   spi_parameters_ = spi_parameters;
-  spi_settings_ = SPISettings((uint32_t)spi_parameters.clock_rate, 
-                              (BitOrder)spi_parameters.bit_order, 
-                              (uint8_t)spi_parameters.data_mode);
+  spi_settings_ = SPISettings(spi_parameters.clock_rate,
+                              spi_parameters.bit_order,
+                              spi_parameters.data_mode);
 
   pinMode(spi_parameters_.chip_select_pin, OUTPUT);
   disableChipSelect();

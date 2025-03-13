@@ -189,10 +189,10 @@ void digitalWriteFast(uint8_t pin, uint8_t val)
 
 void UartInterface::enableTxDisableRx()
 {
-  digitalWriteFast((PinName)uart_parameters_.enable_txrx_pin, ENABLE_TX_DISABLE_RX_PIN_VALUE);
+  digitalWriteFast(uart_parameters_.enable_txrx_pin, ENABLE_TX_DISABLE_RX_PIN_VALUE);
 }
 
 void UartInterface::disableTxEnableRx()
 {
-  digitalWriteFast((PinName)uart_parameters_.enable_txrx_pin, DISABLE_TX_ENABLE_RX_PIN_VALUE);
+  digitalWriteFast(uart_parameters_.enable_txrx_pin, DISABLE_TX_ENABLE_RX_PIN_VALUE);
 }
