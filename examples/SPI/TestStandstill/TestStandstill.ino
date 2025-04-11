@@ -12,9 +12,8 @@ SPIClass & spi = SPI;
 
 const tmc51x0::SpiParameters spi_parameters =
 {
-  spi,
-  1000000, // clock_rate
-  8 // chip_select_pin
+  .spi_ptr = &spi,
+  .chip_select_pin = 8
 };
 
 const uint32_t SERIAL_BAUD_RATE = 115200;
@@ -42,6 +41,13 @@ void setup()
   stepper.driver.enableStealthChop();
   stepper.driver.writeHoldCurrent(HOLD_CURRENT);
   stepper.driver.writeHoldDelay(HOLD_DELAY);
+
+  while (!stepper.communicating())
+  {
+    Serial.println("No communication detected, check motor power and connections.");
+    delay(DELAY);
+  }
+
   stepper.driver.enable();
 
   delay(DELAY);

@@ -208,7 +208,8 @@ uint8_t Converter::percentToPwmSetting(uint8_t percent)
 
 uint32_t Converter::millisecondsToZeroWaitDuration(uint32_t milliseconds)
 {
-  return (milliseconds * MILLISECONDS_PER_SECOND) / (TZEROWAIT_SCALER * converter_parameters_.clock_duration_ns);
+  uint8_t clock_duration_ns = CLOCK_FREQUENCY_TO_DURATION_SCALER / (uint16_t)converter_parameters_.clock_frequency_mhz;
+  return (milliseconds * MILLISECONDS_PER_SECOND) / (TZEROWAIT_SCALER * clock_duration_ns);
 }
 
 // private

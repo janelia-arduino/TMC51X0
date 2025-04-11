@@ -11,14 +11,13 @@ size_t RX_PIN = 5;
 
 const tmc51x0::UartParameters uart_parameters =
 {
-  uart,
-  0, // node_address
-  14 // enable_txrx_pin
+  .uart_ptr = &uart,
+  .enable_txrx_pin = 14
 };
 const uint32_t UART_BAUD_RATE = 115200;
 
 const uint32_t SERIAL_BAUD_RATE = 115200;
-const uint16_t DELAY = 2000;
+const uint16_t LOOP_DELAY = 2000;
 
 // global variables
 TMC51X0 tmc5130;
@@ -34,6 +33,12 @@ void setup()
   uart.begin(UART_BAUD_RATE);
 
   tmc5130.setupUart(uart_parameters);
+
+  while (!tmc5130.communicating())
+  {
+    Serial.println("No communication detected, check motor power and connections.");
+    delay(LOOP_DELAY);
+  }
 }
 
 void loop()
@@ -42,6 +47,6 @@ void loop()
   tmc5130.printer.readAndPrintRampStat();
   tmc5130.printer.readAndPrintChopconf();
 
-  delay(DELAY);
+  delay(LOOP_DELAY);
   Serial.println("--------------------------");
 }

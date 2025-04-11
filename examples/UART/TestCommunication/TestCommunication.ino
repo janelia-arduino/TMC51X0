@@ -11,14 +11,13 @@ size_t RX_PIN = 5;
 
 const tmc51x0::UartParameters uart_parameters =
 {
-  uart,
-  0, // node_address
-  14 // enable_txrx_pin
+  .uart_ptr = &uart,
+  .enable_txrx_pin = 14
 };
 const uint32_t UART_BAUD_RATE = 115200;
 
 const uint32_t SERIAL_BAUD_RATE = 115200;
-const uint16_t DELAY = 1000;
+const uint16_t LOOP_DELAY = 1000;
 
 // global variables
 TMC51X0 tmc5160;
@@ -35,6 +34,12 @@ void setup()
   uart.begin(UART_BAUD_RATE);
 
   tmc5160.setupUart(uart_parameters);
+
+  while (tmc5160.controller.stepAndDirectionMode())
+  {
+    Serial.println("Step and Direction mode enabled so SPI/UART motion commands will not work!");
+    delay(LOOP_DELAY);
+  }
 
   enabled = false;
 }
@@ -53,5 +58,5 @@ void loop()
 
   tmc5160.printer.readAndPrintIoin();
 
-  delay(DELAY);
+  delay(LOOP_DELAY);
 }

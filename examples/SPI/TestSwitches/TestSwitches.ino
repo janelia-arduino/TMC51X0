@@ -12,9 +12,8 @@ SPIClass & spi = SPI;
 
 const tmc51x0::SpiParameters spi_parameters =
 {
-  spi,
-  1000000, // clock_rate
-  8 // chip_select_pin
+  .spi_ptr = &spi,
+  .chip_select_pin = 8
 };
 
 const tmc51x0::SwitchParameters switch_parameters =

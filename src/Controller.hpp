@@ -9,8 +9,8 @@
 #define TMC51X0_CONTROLLER_HPP
 
 #include "Registers.hpp"
-#include "TMC51X0/ControllerParameters.hpp"
-#include "TMC51X0/SwitchParameters.hpp"
+#include "ControllerParameters.hpp"
+#include "SwitchParameters.hpp"
 
 
 class TMC51X0;
@@ -24,6 +24,8 @@ public:
 
   void setup();
   void setup(ControllerParameters parameters);
+
+  bool stepAndDirectionMode();
 
   // reset default: VELOCITY_POSITIVE
   void writeRampMode(RampMode ramp_mode);

@@ -11,9 +11,8 @@ size_t RX_PIN = 5;
 
 const tmc51x0::UartParameters uart_parameters =
 {
-  uart,
-  0, // node_address
-  14 // enable_txrx_pin
+  .uart_ptr = &uart,
+  .enable_txrx_pin = 14
 };
 const uint32_t UART_BAUD_RATE = 115200;
 
@@ -38,6 +37,12 @@ void setup()
   uart.begin(UART_BAUD_RATE);
 
   tmc5130.setupUart(uart_parameters);
+
+  while (!tmc5130.communicating())
+  {
+    Serial.println("No communication detected, check motor power and connections.");
+    delay(DELAY);
+  }
 
   tmc5130.driver.enableStealthChop();
   tmc5130.driver.writeHoldCurrent(HOLD_CURRENT);

@@ -330,7 +330,7 @@ void Driver::initialize(Registers & registers)
 
 void Driver::reinitialize()
 {
-  enabled_toff_ = DriverParameters::ENABLED_TOFF_DEFAULT;
+  enabled_toff_ = ENABLED_TOFF_DEFAULT;
   disable();
   setup();
 }

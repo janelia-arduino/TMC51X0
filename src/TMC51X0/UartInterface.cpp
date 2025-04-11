@@ -108,36 +108,36 @@ UartInterface::CipoDatagram UartInterface::blockingRead()
 
 int UartInterface::serialAvailable()
 {
-  if (uart_parameters_.stream_ptr != nullptr)
+  if (uart_parameters_.uart_ptr != nullptr)
   {
-    return uart_parameters_.stream_ptr->available();
+    return uart_parameters_.uart_ptr->available();
   }
   return 0;
 }
 
 size_t UartInterface::serialWrite(uint8_t c)
 {
-  if (uart_parameters_.stream_ptr != nullptr)
+  if (uart_parameters_.uart_ptr != nullptr)
   {
-    return uart_parameters_.stream_ptr->write(c);
+    return uart_parameters_.uart_ptr->write(c);
   }
   return 0;
 }
 
 int UartInterface::serialRead()
 {
-  if (uart_parameters_.stream_ptr != nullptr)
+  if (uart_parameters_.uart_ptr != nullptr)
   {
-    return uart_parameters_.stream_ptr->read();
+    return uart_parameters_.uart_ptr->read();
   }
   return 0;
 }
 
 void UartInterface::serialFlush()
 {
-  if (uart_parameters_.stream_ptr != nullptr)
+  if (uart_parameters_.uart_ptr != nullptr)
   {
-    return uart_parameters_.stream_ptr->flush();
+    return uart_parameters_.uart_ptr->flush();
   }
 }
 

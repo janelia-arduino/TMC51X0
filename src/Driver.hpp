@@ -10,7 +10,7 @@
 #include <Arduino.h>
 
 #include "Registers.hpp"
-#include "TMC51X0/DriverParameters.hpp"
+#include "DriverParameters.hpp"
 
 
 class TMC51X0;
@@ -136,6 +136,7 @@ private:
   const static uint8_t DISABLE_TOFF = 0b0;
   const static uint8_t ENABLED_TOFF_MIN = 1;
   const static uint8_t ENABLED_TOFF_MAX = 15;
+  const static uint8_t ENABLED_TOFF_DEFAULT = 3;
 
   const static uint8_t SEMIN_OFF = 0;
 

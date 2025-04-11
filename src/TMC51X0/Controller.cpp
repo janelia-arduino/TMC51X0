@@ -29,6 +29,13 @@ void Controller::setup(tmc51x0::ControllerParameters parameters)
   setup();
 }
 
+bool Controller::stepAndDirectionMode()
+{
+  Registers::Ioin ioin;
+  ioin.bytes = registers_ptr_->read(Registers::IOIN);
+  return ioin.sd_mode;
+}
+
 void Controller::writeRampMode(RampMode ramp_mode)
 {
   registers_ptr_->write(Registers::RAMPMODE, ramp_mode);

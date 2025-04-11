@@ -12,55 +12,34 @@ SPIClass & spi = SPI;
 
 const tmc51x0::SpiParameters spi_parameters =
 {
-  spi,
-  1000000, // clock_rate
-  8 // chip_select_pin
+  .spi_ptr = &spi,
+  .chip_select_pin = 8
 };
 
 const tmc51x0::ConverterParameters converter_parameters =
 {
-  16, // clock_frequency_mhz
-  51200, // microsteps_per_real_unit
-  60 // seconds_per_real_velocity_unit
+  // .clock_frequency_mhz = 16, // (typical external clock)
+  .microsteps_per_real_position_unit = 51200,
+  .seconds_per_real_velocity_unit = 60
 };
-// external clock is 16MHz
-// 200 fullsteps per revolution for many steppers * 256 microsteps per fullstep
+// clock_frequency_mhz default is 12 (internal clock)
+// set clock_frequency_mhz if using external clock instead
+// 200 fullsteps per revolution for many steppers * 256 microsteps per fullstep = 51200
 // one "real unit" in this example is one rotation of the motor shaft
 // rotations/s -> rotations/min
 // rotations/(s^2) -> (rotations/min)/s
 
 const tmc51x0::DriverParameters driver_parameters_real =
 {
-  100, // global_current_scaler (percent)
-  25, // run_current (percent)
-  0, // hold_current (percent)
-  0, // hold_delay (percent)
-  15, // pwm_offset (percent)
-  5, // pwm_gradient (percent)
-  false, // automatic_current_control_enabled
-  tmc51x0::FORWARD, // motor_direction
-  tmc51x0::NORMAL, // standstill_mode
-  tmc51x0::SPREAD_CYCLE, // chopper_mode
-  40, // stealth_chop_threshold (rotations/min)
-  true, // stealth_chop_enabled
-  50, // cool_step_threshold (rotations/min)
-  1, // cool_step_min
-  0, // cool_step_max
-  true, // cool_step_enabled
-  200, // high_velocity_threshold (rotations/min)
-  true, // high_velocity_fullstep_enabled
-  true, // high_velocity_chopper_switch_enabled
-  0, // stall_guard_threshold
-  true, // stall_guard_filter_enabled
-  true // short_to_ground_protection_enabled
+  .run_current = 10, // (percent)
+  .stealth_chop_threshold = 40, // (rotations/min)
 };
 
 const tmc51x0::ControllerParameters controller_parameters_real =
 {
-  tmc51x0::VELOCITY_POSITIVE, // ramp_mode
-  tmc51x0::HARD, // stop_mode
-  45, // max_velocity (rotations/min)
-  45, // max_acceleration ((rotations/min)/s)
+  .ramp_mode = tmc51x0::VELOCITY_POSITIVE,
+  .max_velocity = 45, // (rotations/min)
+  .max_acceleration = 45, // ((rotations/min)/s)
 };
 
 const uint32_t SERIAL_BAUD_RATE = 115200;
@@ -88,6 +67,18 @@ void setup()
 
   tmc51x0::ControllerParameters controller_parameters_chip = tmc5130.converter.controllerParametersRealToChip(controller_parameters_real);
   tmc5130.controller.setup(controller_parameters_chip);
+
+  while (!tmc5130.communicating())
+  {
+    Serial.println("No communication detected, check motor power and connections.");
+    delay(LOOP_DELAY);
+  }
+
+  while (tmc5130.controller.stepAndDirectionMode())
+  {
+    Serial.println("Step and Direction mode enabled so SPI/UART motion commands will not work!");
+    delay(LOOP_DELAY);
+  }
 
   tmc5130.driver.enable();
 

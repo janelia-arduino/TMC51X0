@@ -9,7 +9,7 @@
 #define TMC51X0_ENCODER_HPP
 
 #include "Registers.hpp"
-#include "TMC51X0/EncoderParameters.hpp"
+#include "EncoderParameters.hpp"
 
 
 class TMC51X0;

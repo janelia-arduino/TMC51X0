@@ -9,9 +9,9 @@
 #define TMC51X0_CONVERTER_HPP
 #include <Arduino.h>
 
-#include "TMC51X0/ConverterParameters.hpp"
-#include "TMC51X0/HomeParameters.hpp"
-#include "TMC51X0/StallParameters.hpp"
+#include "ConverterParameters.hpp"
+#include "HomeParameters.hpp"
+#include "StallParameters.hpp"
 #include "Driver.hpp"
 #include "Controller.hpp"
 
@@ -64,6 +64,7 @@ private:
   const static int64_t ACCELERATION_SCALER = 2199;
   const static uint32_t DIVISOR_DEFAULT = 1;
   const static int64_t DIVISION_SCALER = 1000;
+  const static uint16_t CLOCK_FREQUENCY_TO_DURATION_SCALER = 1000;
 
   const static uint8_t PERCENT_MIN = 0;
   const static uint8_t PERCENT_MAX = 100;

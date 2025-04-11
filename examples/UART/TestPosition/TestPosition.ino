@@ -11,69 +11,48 @@ size_t RX_PIN = 5;
 
 const tmc51x0::UartParameters uart_parameters =
 {
-  uart,
-  0, // node_address
-  14 // enable_txrx_pin
+  .uart_ptr = &uart,
+  .enable_txrx_pin = 14
 };
 const uint32_t UART_BAUD_RATE = 115200;
 
-const uint32_t SERIAL_BAUD_RATE = 115200;
-const uint16_t LOOP_DELAY = 2000;
-
 const tmc51x0::ConverterParameters converter_parameters =
 {
-  16, // clock_frequency_mhz
-  4881 // microsteps_per_real_unit
+  // .clock_frequency_mhz = 16, // (typical external clock)
+  .microsteps_per_real_position_unit = 4881
 };
-// external clock is 16MHz
+// clock_frequency_mhz default is 12 (internal clock)
+// set clock_frequency_mhz if using external clock instead
 // 200 fullsteps per revolution for many steppers * 256 microsteps per fullstep
 // 10.49 millimeters per revolution leadscrew -> 51200 / 10.49 ~= 4881
 // one "real unit" in this example is one millimeters of linear travel
 
 const tmc51x0::DriverParameters driver_parameters_real =
 {
-  50, // global_current_scaler (percent)
-  20, // run_current (percent)
-  0, // hold_current (percent)
-  0, // hold_delay (percent)
-  20, // pwm_offset (percent)
-  5, // pwm_gradient (percent)
-  false, // automatic_current_control_enabled
-  tmc51x0::REVERSE, // motor_direction
-  tmc51x0::NORMAL, // standstill_mode
-  tmc51x0::SPREAD_CYCLE, // chopper_mode
-  10, // stealth_chop_threshold (millimeters/s)
-  true, // stealth_chop_enabled
-  50, // cool_step_threshold (millimeters/s)
-  1, // cool_step_min
-  0, // cool_step_max
-  true, // cool_step_enabled
-  90, // high_velocity_threshold (rotations/min)
-  true, // high_velocity_fullstep_enabled
-  true, // high_velocity_chopper_switch_enabled
-  1, // stall_guard_threshold
-  false, // stall_guard_filter_enabled
-  true // short_to_ground_protection_enabled
+  .run_current = 25, // (percent)
+  .motor_direction = tmc51x0::REVERSE,
+  .stealth_chop_threshold = 100, // (millimeters/s)
+  .stealth_chop_enabled = true,
 };
 
 const tmc51x0::ControllerParameters controller_parameters_real =
 {
-  tmc51x0::POSITION, // ramp_mode
-  tmc51x0::HARD, // stop_mode
-  20, // max_velocity (millimeters/s)
-  2, // max_acceleration ((millimeters/s)/s)
-  1, // start_velocity (millimeters/s)
-  5, // stop_velocity (millimeters/s)
-  10, // first_velocity (millimeters/s)
-  10, // first_acceleration ((millimeters/s)/s)
-  20, // max_deceleration ((millimeters/s)/s)
-  25, // first_deceleration ((millimeters/s)/s)
-  0, // zero_wait_duration (milliseconds)
-  false // stall_stop_enabled
+  .ramp_mode = tmc51x0::POSITION,
+  .max_velocity = 20, // (millimeters/s)
+  .max_acceleration = 2, // ((millimeters/s)/s)
+  .start_velocity = 1, // (millimeters/s)
+  .stop_velocity = 5, // (millimeters/s)
+  .first_velocity = 10, // (millimeters/s)
+  .first_acceleration = 10, // ((millimeters/s)/s)
+  .max_deceleration = 20, // ((millimeters/s)/s)
+  .first_deceleration = 25, // ((millimeters/s)/s)
 };
 
 const int32_t MIN_TARGET_POSITION = 20;  // millimeters
 const int32_t MAX_TARGET_POSITION = 600;  // millimeters
+
+const uint32_t SERIAL_BAUD_RATE = 115200;
+const uint16_t LOOP_DELAY = 2000;
 
 // global variables
 TMC51X0 tmc5130;
@@ -95,9 +74,22 @@ void setup()
 
   tmc51x0::DriverParameters driver_parameters_chip = tmc5130.converter.driverParametersRealToChip(driver_parameters_real);
   tmc5130.driver.setup(driver_parameters_chip);
+  // tmc5130.driver.setEnableHardwarePin(ENABLE_HARDWARE_PIN);
 
   tmc51x0::ControllerParameters controller_parameters_chip = tmc5130.converter.controllerParametersRealToChip(controller_parameters_real);
   tmc5130.controller.setup(controller_parameters_chip);
+
+  while (!tmc5130.communicating())
+  {
+    Serial.println("No communication detected, check motor power and connections.");
+    delay(LOOP_DELAY);
+  }
+
+  while (tmc5130.controller.stepAndDirectionMode())
+  {
+    Serial.println("Step and Direction mode enabled so SPI/UART motion commands will not work!");
+    delay(LOOP_DELAY);
+  }
 
   tmc5130.driver.enable();
 
@@ -121,7 +113,6 @@ void setup()
 
 void loop()
 {
-  tmc5130.printer.readAndPrintGconf();
   tmc5130.printer.readAndPrintRampStat();
   tmc5130.printer.readAndPrintDrvStatus();
 
@@ -158,7 +149,7 @@ void loop()
     {
       target_position = MIN_TARGET_POSITION;
     }
-tmc5130.controller.writeTargetPosition(tmc5130.converter.positionRealToChip(target_position));
+    tmc5130.controller.writeTargetPosition(tmc5130.converter.positionRealToChip(target_position));
   }
 
   Serial.println("--------------------------");

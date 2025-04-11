@@ -9,11 +9,11 @@
 #define TMC51X0_HPP
 #include <Arduino.h>
 
-#include "./TMC51X0/SpiInterface.hpp"
-#include "./TMC51X0/UartInterface.hpp"
-#include "./TMC51X0/HomeParameters.hpp"
-#include "./TMC51X0/SwitchParameters.hpp"
-#include "./TMC51X0/StallParameters.hpp"
+#include "SpiInterface.hpp"
+#include "UartInterface.hpp"
+#include "HomeParameters.hpp"
+#include "SwitchParameters.hpp"
+#include "StallParameters.hpp"
 
 #include "Registers.hpp"
 #include "Converter.hpp"

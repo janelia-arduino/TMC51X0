@@ -1,21 +1,20 @@
-- [Library Information](#org068e42b)
-- [Stepper Motors](#org8a313ec)
-- [Stepper Motor Controllers and Drivers](#orgdc28a25)
-- [Examples](#org9cfb30c)
-- [Hardware Documentation](#org228f04c)
-- [Registers](#orgd6e642c)
-- [Host Computer Setup](#orge434fd9)
+- [Library Information](#org6d79a4e)
+- [Stepper Motors](#org1c6226c)
+- [Stepper Motor Controllers and Drivers](#orgfb5ced9)
+- [Examples](#orga4cafac)
+- [Hardware Documentation](#orga5a83b9)
+- [Host Computer Setup](#org832fd8b)
 
     <!-- This file is generated automatically from metadata -->
     <!-- File edits may be overwritten! -->
 
 
-<a id="org068e42b"></a>
+<a id="org6d79a4e"></a>
 
 # Library Information
 
 -   **Name:** TMC51X0
--   **Version:** 1.0.0
+-   **Version:** 2.0.0
 -   **License:** BSD
 -   **URL:** <https://github.com/janelia-arduino/TMC51X0>
 -   **Author:** Peter Polidoro
@@ -37,7 +36,7 @@ The TMC5160 uses external MOSFETs to drive higher current motors from 1A to seve
 <img src="./images/trinamic-wiring-TMC51X0-description.svg" width="1920px">
 
 
-<a id="org8a313ec"></a>
+<a id="org1c6226c"></a>
 
 # Stepper Motors
 
@@ -48,7 +47,7 @@ A stepper motor, also known as step motor or stepping motor, is a brushless DC e
 [Wikipedia - Stepper Motor](https://en.wikipedia.org/wiki/Stepper_motor)
 
 
-<a id="orgdc28a25"></a>
+<a id="orgfb5ced9"></a>
 
 # Stepper Motor Controllers and Drivers
 
@@ -65,7 +64,7 @@ A stepper motor controller is responsible for the commanding either the motor ki
 A stepper motor driver is responsible for commanding the electrical current through the motor coils as it changes with time to meet the requirements of the stepper motor controller.
 
 
-<a id="org9cfb30c"></a>
+<a id="orga4cafac"></a>
 
 # Examples
 
@@ -101,7 +100,7 @@ A stepper motor driver is responsible for commanding the electrical current thro
     <https://github.com/janelia-kicad/trinamic-wiring>
 
 
-<a id="org228f04c"></a>
+<a id="orga5a83b9"></a>
 
 # Hardware Documentation
 
@@ -111,44 +110,7 @@ A stepper motor driver is responsible for commanding the electrical current thro
 [Datasheets](./datasheet)
 
 
-<a id="orgd6e642c"></a>
-
-# Registers
-
-
-## Driver
-
-| Name           | Address |
-|-------------- |------- |
-| GCONF          | 0x00    |
-| GLOBAL\_SCALAR | 0X0B    |
-| IHOLD\_IRUN    | 0X10    |
-| TPWMTHRS       | 0X13    |
-| TCOOLTHRS      | 0X14    |
-| THIGH          | 0X15    |
-| CHOPCONF       | 0X6C    |
-| COOLCONF       | 0x6D    |
-| PWMCONF        | 0X70    |
-
-
-## Controller
-
-| Name      | Address |
-|--------- |------- |
-| RAMPMODE  | 0x20    |
-| VSTART    | 0x23    |
-| A1        | 0x24    |
-| V1        | 0x25    |
-| AMAX      | 0x26    |
-| VMAX      | 0x27    |
-| DMAX      | 0x28    |
-| D1        | 0x2A    |
-| VSTOP     | 0x2B    |
-| TZEROWAIT | 0x2C    |
-| SW\_MODE  | 0x34    |
-
-
-<a id="orge434fd9"></a>
+<a id="org832fd8b"></a>
 
 # Host Computer Setup
 
@@ -158,7 +120,7 @@ A stepper motor driver is responsible for commanding the electrical current thro
 <https://github.com/janelia-arduino/TMC51X0.git>
 
 ```sh
-git clone https://github.com/janelia-arduino/TMC51X0.git
+git clone https://github.com/janelia-arduino/TMC51X0
 ```
 
 
