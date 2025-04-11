@@ -18,16 +18,16 @@ const tmc51x0::SpiParameters spi_parameters =
 
 const tmc51x0::SwitchParameters switch_parameters =
 {
-  false, // left_stop_enabled
-  false, // right_stop_enabled
-  false, // invert_left_polarity
-  false, // invert_right_polarity
-  false, // swap_left_right
-  false, // latch_left_active
-  false, // latch_left_inactive
-  false, // latch_right_active
-  false, // latch_right_inactive
-  false // latch_encoder_enabled
+  .left_stop_enabled = false,
+  .right_stop_enabled = false,
+  .invert_left_polarity = false,
+  .invert_right_polarity = false,
+  .swap_left_right = false,
+  .latch_left_active = false,
+  .latch_left_inactive = false,
+  .latch_right_active = false,
+  .latch_right_inactive = false,
+  .latch_encoder_enabled = false
 };
 
 const uint32_t SERIAL_BAUD_RATE = 115200;
