@@ -22,7 +22,7 @@ struct HomeParameters
   int32_t target_position = 0;
   uint32_t velocity = 0;
   uint32_t acceleration = 0;
-  uint32_t zero_wait_duration = 3000; // ~100 milliseconds
+  uint32_t zero_wait_duration = 100;
 };
 }
 #endif

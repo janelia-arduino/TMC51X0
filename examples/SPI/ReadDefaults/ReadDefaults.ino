@@ -20,7 +20,7 @@ const uint32_t SERIAL_BAUD_RATE = 115200;
 const uint16_t LOOP_DELAY = 1000;
 
 // global variables
-TMC51X0 tmc5160;
+TMC51X0 stepper;
 uint32_t register_data;
 
 void setup()
@@ -33,9 +33,9 @@ void setup()
   spi.setRX(RX_PIN);
 #endif
   spi.begin();
-  tmc5160.setupSpi(spi_parameters);
+  stepper.setupSpi(spi_parameters);
 
-  while (!tmc5160.communicating())
+  while (!stepper.communicating())
   {
     Serial.println("No communication detected, check motor power and connections.");
     delay(LOOP_DELAY);
@@ -46,9 +46,9 @@ void loop()
 {
   for (uint8_t register_address=0; register_address < tmc51x0::Registers::ADDRESS_COUNT; ++register_address)
   {
-    if ((tmc5160.registers.readable((tmc51x0::Registers::RegisterAddress)register_address)) && (tmc5160.registers.writeable((tmc51x0::Registers::RegisterAddress)register_address)))
+    if ((stepper.registers.readable((tmc51x0::Registers::RegisterAddress)register_address)) && (stepper.registers.writeable((tmc51x0::Registers::RegisterAddress)register_address)))
     {
-      register_data = tmc5160.registers.read((tmc51x0::Registers::RegisterAddress)register_address);
+      register_data = stepper.registers.read((tmc51x0::Registers::RegisterAddress)register_address);
       if (register_data != 0)
       {
         Serial.print("register_address: 0x");

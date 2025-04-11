@@ -33,7 +33,7 @@ const uint32_t SERIAL_BAUD_RATE = 115200;
 const uint16_t LOOP_DELAY = 500;
 
 // global variables
-TMC51X0 tmc5130;
+TMC51X0 stepper;
 int32_t encoder_actual_position;
 tmc51x0::Registers::EncStatus encoder_status;
 
@@ -47,11 +47,11 @@ void setup()
   spi.setRX(RX_PIN);
 #endif
   spi.begin();
-  tmc5130.setupSpi(spi_parameters);
+  stepper.setupSpi(spi_parameters);
 
-  tmc5130.encoder.setup(encoder_parameters);
+  stepper.encoder.setup(encoder_parameters);
 
-  while (!tmc5130.communicating())
+  while (!stepper.communicating())
   {
     Serial.println("No communication detected, check motor power and connections.");
     delay(LOOP_DELAY);
@@ -60,10 +60,10 @@ void setup()
 
 void loop()
 {
-  encoder_actual_position = tmc5130.encoder.readActualPosition();
+  encoder_actual_position = stepper.encoder.readActualPosition();
   Serial.print("encoder_actual_position: ");
   Serial.println(encoder_actual_position);
-  encoder_status = tmc5130.encoder.readAndClearStatus();
+  encoder_status = stepper.encoder.readAndClearStatus();
   Serial.print("encoder_status.n_event: ");
   Serial.print(encoder_status.n_event);
   Serial.print(" , encoder_status.deviation_warn (only works on TMC5160): ");

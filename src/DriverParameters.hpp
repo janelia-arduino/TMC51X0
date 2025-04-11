@@ -42,18 +42,18 @@ enum ComparatorBlankTime
 
 struct DriverParameters
 {
-  uint8_t global_current_scaler = 100;
-  uint8_t run_current = 25;
+  uint8_t global_current_scaler = 50;
+  uint8_t run_current = 50;
   uint8_t hold_current = 20;
   uint8_t hold_delay = 5;
-  uint8_t pwm_offset = 15;
+  uint8_t pwm_offset = 25;
   uint8_t pwm_gradient = 5;
   bool automatic_current_control_enabled = false;
   MotorDirection motor_direction = FORWARD;
   StandstillMode standstill_mode = NORMAL;
   ChopperMode chopper_mode = SPREAD_CYCLE;
   uint32_t stealth_chop_threshold = 100;
-  bool stealth_chop_enabled = false;
+  bool stealth_chop_enabled = true;
   uint32_t cool_step_threshold = 150;
   uint8_t cool_step_min = 1;
   uint8_t cool_step_max = 0;

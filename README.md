@@ -1,15 +1,16 @@
-- [Library Information](#org6d79a4e)
-- [Stepper Motors](#org1c6226c)
-- [Stepper Motor Controllers and Drivers](#orgfb5ced9)
-- [Examples](#orga4cafac)
-- [Hardware Documentation](#orga5a83b9)
-- [Host Computer Setup](#org832fd8b)
+- [Library Information](#orgfbfae7e)
+- [Stepper Motors](#orgdc2c6a9)
+- [Stepper Motor Controllers and Drivers](#org7f33f9b)
+- [Motor Current](#org0035cd0)
+- [Examples](#org721cfed)
+- [Hardware Documentation](#org90d0371)
+- [Host Computer Setup](#orgfdc0cba)
 
     <!-- This file is generated automatically from metadata -->
     <!-- File edits may be overwritten! -->
 
 
-<a id="org6d79a4e"></a>
+<a id="orgfbfae7e"></a>
 
 # Library Information
 
@@ -36,7 +37,7 @@ The TMC5160 uses external MOSFETs to drive higher current motors from 1A to seve
 <img src="./images/trinamic-wiring-TMC51X0-description.svg" width="1920px">
 
 
-<a id="org1c6226c"></a>
+<a id="orgdc2c6a9"></a>
 
 # Stepper Motors
 
@@ -47,7 +48,7 @@ A stepper motor, also known as step motor or stepping motor, is a brushless DC e
 [Wikipedia - Stepper Motor](https://en.wikipedia.org/wiki/Stepper_motor)
 
 
-<a id="orgfb5ced9"></a>
+<a id="org7f33f9b"></a>
 
 # Stepper Motor Controllers and Drivers
 
@@ -64,7 +65,55 @@ A stepper motor controller is responsible for the commanding either the motor ki
 A stepper motor driver is responsible for commanding the electrical current through the motor coils as it changes with time to meet the requirements of the stepper motor controller.
 
 
-<a id="orga4cafac"></a>
+<a id="org0035cd0"></a>
+
+# Motor Current
+
+Several settings affect the magnitude of the motor current, depending on what mode the driver is in at a given velocity.
+
+
+## global\_current\_scaler
+
+Global scaling of Motor current. This value is multiplied to the current scaling to adapt a drive to a certain motor type. This value should be chosen before tuning other settings because it also influences chopper hysteresis.
+
+
+### Real Units
+
+Range 0..100 percent > 50 percent recommended for best results
+
+
+### Chip Units
+
+Range 0..255 0: full scale 1..31 not allowed for operation 32..255 32/256..255/256 of maximum current
+
+
+## run\_current
+
+
+### Automatic Current Control Enabled
+
+run\_current scales the current magnitude based on readings from the sense resistors.
+
+
+### Automatic Current Control Disabled
+
+The current magnitude are not enforced by regulation using the sense resistors, but run\_current scaled the PWM amplitude.
+
+
+## pwm\_offset and pwm\_gradient
+
+
+### Automatic Current Control Enabled
+
+pwm\_offset and pwm\_gradient are used as initial values for automatic scaling.
+
+
+### Automatic Current Control Disabled
+
+pwm\_offset and pwm\_gradient scale the PWM amplitude.
+
+
+<a id="org721cfed"></a>
 
 # Examples
 
@@ -100,7 +149,7 @@ A stepper motor driver is responsible for commanding the electrical current thro
     <https://github.com/janelia-kicad/trinamic-wiring>
 
 
-<a id="orga5a83b9"></a>
+<a id="org90d0371"></a>
 
 # Hardware Documentation
 
@@ -110,7 +159,7 @@ A stepper motor driver is responsible for commanding the electrical current thro
 [Datasheets](./datasheet)
 
 
-<a id="org832fd8b"></a>
+<a id="orgfdc0cba"></a>
 
 # Host Computer Setup
 

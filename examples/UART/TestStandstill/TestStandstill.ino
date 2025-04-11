@@ -24,7 +24,7 @@ const uint8_t HOLD_CURRENT = 0;
 const uint8_t HOLD_DELAY = 0;
 
 // global variables
-TMC51X0 tmc5130;
+TMC51X0 stepper;
 
 void setup()
 {
@@ -36,18 +36,18 @@ void setup()
 #endif
   uart.begin(UART_BAUD_RATE);
 
-  tmc5130.setupUart(uart_parameters);
+  stepper.setupUart(uart_parameters);
 
-  while (!tmc5130.communicating())
+  while (!stepper.communicating())
   {
     Serial.println("No communication detected, check motor power and connections.");
     delay(DELAY);
   }
 
-  tmc5130.driver.enableStealthChop();
-  tmc5130.driver.writeHoldCurrent(HOLD_CURRENT);
-  tmc5130.driver.writeHoldDelay(HOLD_DELAY);
-  tmc5130.driver.enable();
+  stepper.driver.enableStealthChop();
+  stepper.driver.writeHoldCurrent(HOLD_CURRENT);
+  stepper.driver.writeHoldDelay(HOLD_DELAY);
+  stepper.driver.enable();
 
   delay(DELAY);
 }
@@ -55,19 +55,19 @@ void setup()
 void loop()
 {
   Serial.println("standstill mode = NORMAL");
-  tmc5130.driver.writeStandstillMode(tmc51x0::NORMAL);
+  stepper.driver.writeStandstillMode(tmc51x0::NORMAL);
   delay(DELAY);
 
   Serial.println("standstill mode = FREEWHEELING");
-  tmc5130.driver.writeStandstillMode(tmc51x0::FREEWHEELING);
+  stepper.driver.writeStandstillMode(tmc51x0::FREEWHEELING);
   delay(DELAY);
 
   Serial.println("standstill mode = PASSIVE_BRAKING_LS");
-  tmc5130.driver.writeStandstillMode(tmc51x0::PASSIVE_BRAKING_LS);
+  stepper.driver.writeStandstillMode(tmc51x0::PASSIVE_BRAKING_LS);
   delay(DELAY);
 
   Serial.println("standstill mode = PASSIVE_BRAKING_HS");
-  tmc5130.driver.writeStandstillMode(tmc51x0::PASSIVE_BRAKING_HS);
+  stepper.driver.writeStandstillMode(tmc51x0::PASSIVE_BRAKING_HS);
   delay(DELAY);
 
   Serial.println("--------------------------");

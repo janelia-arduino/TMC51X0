@@ -20,7 +20,7 @@ const uint32_t SERIAL_BAUD_RATE = 115200;
 const uint16_t LOOP_DELAY = 1000;
 
 // global variables
-TMC51X0 tmc5160;
+TMC51X0 stepper;
 
 void setup()
 {
@@ -32,9 +32,9 @@ void setup()
   spi.setRX(RX_PIN);
 #endif
   spi.begin();
-  tmc5160.setupSpi(spi_parameters);
+  stepper.setupSpi(spi_parameters);
 
-  while (!tmc5160.communicating())
+  while (!stepper.communicating())
   {
     Serial.println("No communication detected, check motor power and connections.");
     delay(LOOP_DELAY);
@@ -43,6 +43,6 @@ void setup()
 
 void loop()
 {
-  tmc5160.printer.readAndPrintGconf();
+  stepper.printer.readAndPrintGconf();
   delay(LOOP_DELAY);
 }

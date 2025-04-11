@@ -20,7 +20,7 @@ const uint32_t SERIAL_BAUD_RATE = 115200;
 const uint16_t LOOP_DELAY = 2000;
 
 // global variables
-TMC51X0 tmc5130;
+TMC51X0 stepper;
 
 void setup()
 {
@@ -32,9 +32,9 @@ void setup()
 #endif
   uart.begin(UART_BAUD_RATE);
 
-  tmc5130.setupUart(uart_parameters);
+  stepper.setupUart(uart_parameters);
 
-  while (!tmc5130.communicating())
+  while (!stepper.communicating())
   {
     Serial.println("No communication detected, check motor power and connections.");
     delay(LOOP_DELAY);
@@ -43,9 +43,9 @@ void setup()
 
 void loop()
 {
-  tmc5130.printer.readAndPrintGconf();
-  tmc5130.printer.readAndPrintRampStat();
-  tmc5130.printer.readAndPrintChopconf();
+  stepper.printer.readAndPrintGconf();
+  stepper.printer.readAndPrintRampStat();
+  stepper.printer.readAndPrintChopconf();
 
   delay(LOOP_DELAY);
   Serial.println("--------------------------");

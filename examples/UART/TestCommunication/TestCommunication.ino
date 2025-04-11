@@ -20,7 +20,7 @@ const uint32_t SERIAL_BAUD_RATE = 115200;
 const uint16_t LOOP_DELAY = 1000;
 
 // global variables
-TMC51X0 tmc5160;
+TMC51X0 stepper;
 bool enabled;
 
 void setup()
@@ -33,9 +33,9 @@ void setup()
 #endif
   uart.begin(UART_BAUD_RATE);
 
-  tmc5160.setupUart(uart_parameters);
+  stepper.setupUart(uart_parameters);
 
-  while (tmc5160.controller.stepAndDirectionMode())
+  while (stepper.controller.stepAndDirectionMode())
   {
     Serial.println("Step and Direction mode enabled so SPI/UART motion commands will not work!");
     delay(LOOP_DELAY);
@@ -48,15 +48,15 @@ void loop()
 {
   if (enabled)
   {
-    tmc5160.driver.disable();
+    stepper.driver.disable();
   }
   else
   {
-    tmc5160.driver.enable();
+    stepper.driver.enable();
   }
   enabled = not enabled;
 
-  tmc5160.printer.readAndPrintIoin();
+  stepper.printer.readAndPrintIoin();
 
   delay(LOOP_DELAY);
 }

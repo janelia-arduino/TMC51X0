@@ -31,8 +31,11 @@ const tmc51x0::ConverterParameters converter_parameters =
 
 const tmc51x0::DriverParameters driver_parameters_real =
 {
-  .run_current = 10, // (percent)
-  .stealth_chop_threshold = 40, // (rotations/min)
+  .global_current_scaler = 50, // (percent)
+  .run_current = 100, // (percent)
+  .pwm_offset = 30, // (percent)
+  .pwm_gradient = 10, // (percent)
+  .stealth_chop_threshold = 60, // (rotations/min)
 };
 
 const tmc51x0::ControllerParameters controller_parameters_real =
@@ -46,7 +49,7 @@ const uint32_t SERIAL_BAUD_RATE = 115200;
 const uint16_t LOOP_DELAY = 4000;
 
 // global variables
-TMC51X0 tmc5130;
+TMC51X0 stepper;
 
 void setup()
 {
@@ -58,66 +61,66 @@ void setup()
   spi.setRX(RX_PIN);
 #endif
   spi.begin();
-  tmc5130.setupSpi(spi_parameters);
+  stepper.setupSpi(spi_parameters);
 
-  tmc5130.converter.setup(converter_parameters);
+  stepper.converter.setup(converter_parameters);
 
-  tmc51x0::DriverParameters driver_parameters_chip = tmc5130.converter.driverParametersRealToChip(driver_parameters_real);
-  tmc5130.driver.setup(driver_parameters_chip);
+  tmc51x0::DriverParameters driver_parameters_chip = stepper.converter.driverParametersRealToChip(driver_parameters_real);
+  stepper.driver.setup(driver_parameters_chip);
 
-  tmc51x0::ControllerParameters controller_parameters_chip = tmc5130.converter.controllerParametersRealToChip(controller_parameters_real);
-  tmc5130.controller.setup(controller_parameters_chip);
+  tmc51x0::ControllerParameters controller_parameters_chip = stepper.converter.controllerParametersRealToChip(controller_parameters_real);
+  stepper.controller.setup(controller_parameters_chip);
 
-  while (!tmc5130.communicating())
+  while (!stepper.communicating())
   {
     Serial.println("No communication detected, check motor power and connections.");
     delay(LOOP_DELAY);
   }
 
-  while (tmc5130.controller.stepAndDirectionMode())
+  while (stepper.controller.stepAndDirectionMode())
   {
     Serial.println("Step and Direction mode enabled so SPI/UART motion commands will not work!");
     delay(LOOP_DELAY);
   }
 
-  tmc5130.driver.enable();
+  stepper.driver.enable();
 
-  tmc5130.controller.beginRampToZeroVelocity();
-  while (!tmc5130.controller.zeroVelocity())
+  stepper.controller.beginRampToZeroVelocity();
+  while (!stepper.controller.zeroVelocity())
   {
     Serial.println("Waiting for zero velocity.");
     delay(LOOP_DELAY);
   }
-  tmc5130.controller.endRampToZeroVelocity();
-  tmc5130.controller.zeroActualPosition();
+  stepper.controller.endRampToZeroVelocity();
+  stepper.controller.zeroActualPosition();
 }
 
 void loop()
 {
-  tmc5130.printer.readClearAndPrintGstat();
-  tmc5130.printer.readAndPrintRampStat();
-  tmc5130.printer.readAndPrintDrvStatus();
-  tmc5130.printer.readAndPrintPwmScale();
+  stepper.printer.readClearAndPrintGstat();
+  stepper.printer.readAndPrintRampStat();
+  stepper.printer.readAndPrintDrvStatus();
+  stepper.printer.readAndPrintPwmScale();
 
   Serial.print("target_velocity (rotations per minute): ");
   Serial.println(controller_parameters_real.max_velocity);
-  uint32_t chip_velocity = tmc5130.converter.velocityRealToChip(controller_parameters_real.max_velocity);
+  uint32_t chip_velocity = stepper.converter.velocityRealToChip(controller_parameters_real.max_velocity);
   Serial.print("chip_velocity (chip units): ");
   Serial.println(chip_velocity);
   Serial.println("--------------------------");
 
-  uint32_t actual_velocity_chip = tmc5130.controller.readActualVelocity();
+  uint32_t actual_velocity_chip = stepper.controller.readActualVelocity();
   Serial.print("actual_velocity (chip units): ");
   Serial.println(actual_velocity_chip);
-  uint32_t actual_velocity_real = tmc5130.converter.velocityChipToReal(actual_velocity_chip);
+  uint32_t actual_velocity_real = stepper.converter.velocityChipToReal(actual_velocity_chip);
   Serial.print("actual_velocity (rotations per minute): ");
   Serial.println(actual_velocity_real);
   Serial.println("--------------------------");
 
-  int32_t actual_position_chip = tmc5130.controller.readActualPosition();
+  int32_t actual_position_chip = stepper.controller.readActualPosition();
   Serial.print("actual position (chip units): ");
   Serial.println(actual_position_chip);
-  int32_t actual_position_real = tmc5130.converter.positionChipToReal(actual_position_chip);
+  int32_t actual_position_real = stepper.converter.positionChipToReal(actual_position_chip);
   Serial.print("actual position (rotations): ");
   Serial.println(actual_position_real);
   Serial.println("--------------------------");

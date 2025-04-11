@@ -70,6 +70,51 @@ A stepper motor driver is responsible for commanding the electrical current
 through the motor coils as it changes with time to meet the requirements of the
 stepper motor controller.
 
+* Motor Current
+
+Several settings affect the magnitude of the motor current, depending on what
+mode the driver is in at a given velocity.
+
+** global_current_scaler
+
+Global scaling of Motor current. This value is multiplied to the current scaling
+to adapt a drive to a certain motor type. This value should be chosen before
+tuning other settings because it also influences chopper hysteresis.
+
+*** Real Units
+
+Range 0..100 percent
+> 50 percent recommended for best results
+
+*** Chip Units
+
+Range 0..255
+0: full scale
+1..31 not allowed for operation
+32..255 32/256..255/256 of maximum current
+
+** run_current
+
+*** Automatic Current Control Enabled
+
+run_current scales the current magnitude based on readings from the sense
+resistors.
+
+*** Automatic Current Control Disabled
+
+The current magnitude are not enforced by regulation using the sense resistors,
+but run_current scaled the PWM amplitude.
+
+** pwm_offset and pwm_gradient
+
+*** Automatic Current Control Enabled
+
+pwm_offset and pwm_gradient are used as initial values for automatic scaling.
+
+*** Automatic Current Control Disabled
+
+pwm_offset and pwm_gradient scale the PWM amplitude.
+
 * Examples
 
 ** Wiring

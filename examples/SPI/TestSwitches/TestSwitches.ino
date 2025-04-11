@@ -34,7 +34,7 @@ const uint32_t SERIAL_BAUD_RATE = 115200;
 const uint16_t LOOP_DELAY = 1000;
 
 // global variables
-TMC51X0 tmc5130;
+TMC51X0 stepper;
 
 void setup()
 {
@@ -46,36 +46,36 @@ void setup()
   spi.setRX(RX_PIN);
 #endif
   spi.begin();
-  tmc5130.setupSpi(spi_parameters);
+  stepper.setupSpi(spi_parameters);
 
-  tmc5130.controller.setupSwitches(switch_parameters);
+  stepper.controller.setupSwitches(switch_parameters);
 }
 
 void loop()
 {
-  tmc5130.printer.readAndPrintRampStat();
+  stepper.printer.readAndPrintRampStat();
 
-  bool left_switch_active = tmc5130.controller.leftSwitchActive();
+  bool left_switch_active = stepper.controller.leftSwitchActive();
   Serial.print("left_switch_active = ");
   Serial.println(left_switch_active);
 
-  bool right_switch_active = tmc5130.controller.rightSwitchActive();
+  bool right_switch_active = stepper.controller.rightSwitchActive();
   Serial.print("right_switch_active = ");
   Serial.println(right_switch_active);
 
-  bool left_latch_active = tmc5130.controller.leftLatchActive();
+  bool left_latch_active = stepper.controller.leftLatchActive();
   Serial.print("left_latch_active = ");
   Serial.println(left_latch_active);
 
-  bool right_latch_active = tmc5130.controller.rightLatchActive();
+  bool right_latch_active = stepper.controller.rightLatchActive();
   Serial.print("right_latch_active = ");
   Serial.println(right_latch_active);
 
-  bool left_stop_event = tmc5130.controller.leftStopEvent();
+  bool left_stop_event = stepper.controller.leftStopEvent();
   Serial.print("left_stop_event = ");
   Serial.println(left_stop_event);
 
-  bool right_stop_event = tmc5130.controller.rightStopEvent();
+  bool right_stop_event = stepper.controller.rightStopEvent();
   Serial.print("right_stop_event = ");
   Serial.println(right_stop_event);
 

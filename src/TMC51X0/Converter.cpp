@@ -65,7 +65,6 @@ StallParameters Converter::stallParametersRealToChip(StallParameters parameters)
 {
   StallParameters parameters_chip = parameters;
   parameters_chip.cool_step_threshold = velocityRealToTstep(parameters.cool_step_threshold);
-  parameters_chip.min_dc_step_velocity = velocityRealToChip(parameters.min_dc_step_velocity);
 
   return parameters_chip;
 }
