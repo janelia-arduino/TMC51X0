@@ -48,7 +48,7 @@ struct Registers
     AMAX = 0x26,
     VMAX = 0x27,
     DMAX = 0x28,
-    D1 = 0x2A,
+    D1_REG = 0x2A,
     VSTOP = 0x2B,
     TZEROWAIT = 0x2C,
     XTARGET = 0x2D,

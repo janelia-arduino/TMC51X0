@@ -185,6 +185,11 @@ void digitalWriteFast(uint8_t pin, uint8_t val)
 {
   val ? GPIO.out_w1ts = (1 << pin) : GPIO.out_w1tc = (1 << pin);
 }
+#elif defined(ARDUINO_ARCH_MBED)
+void digitalWriteFast(uint8_t pin, uint8_t val)
+{
+  digitalWrite(pin, val);
+}
 #endif
 
 void UartInterface::enableTxDisableRx()
