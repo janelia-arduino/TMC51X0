@@ -9,8 +9,8 @@
 #define TMC51X0_HPP
 #include <Arduino.h>
 
-#include "SpiInterface.hpp"
-#include "UartInterface.hpp"
+#include "TMC51X0/SpiInterface.hpp"
+#include "TMC51X0/UartInterface.hpp"
 #include "HomeParameters.hpp"
 #include "SwitchParameters.hpp"
 #include "StallParameters.hpp"
