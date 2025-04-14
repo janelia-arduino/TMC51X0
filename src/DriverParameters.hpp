@@ -17,27 +17,27 @@ namespace tmc51x0
 {
 enum MotorDirection
 {
-  FORWARD = 0,
-  REVERSE = 1
+  ForwardDirection = 0,
+  ReverseDirection = 1
 };
 enum StandstillMode
 {
-  NORMAL=0,
-  FREEWHEELING=1,
-  PASSIVE_BRAKING_LS=2,
-  PASSIVE_BRAKING_HS=3
+  NormalMode=0,
+  FreewheelingMode=1,
+  PassiveBrakingLsMode=2,
+  PassiveBrakingHsMode=3
 };
 enum ChopperMode
 {
-  SPREAD_CYCLE = 0,
-  CLASSIC = 1
+  SpreadCycleMode = 0,
+  ClassicMode = 1
 };
 enum ComparatorBlankTime
 {
-  CLOCK_CYCLES_16 = 0,
-  CLOCK_CYCLES_24 = 1,
-  CLOCK_CYCLES_36 = 2,
-  CLOCK_CYCLES_54 = 3
+  ClockCycles16 = 0,
+  ClockCycles24 = 1,
+  ClockCycles36 = 2,
+  ClockCycles54 = 3
 };
 
 struct DriverParameters
@@ -49,9 +49,9 @@ struct DriverParameters
   uint8_t pwm_offset = 25;
   uint8_t pwm_gradient = 5;
   bool automatic_current_control_enabled = false;
-  MotorDirection motor_direction = FORWARD;
-  StandstillMode standstill_mode = NORMAL;
-  ChopperMode chopper_mode = SPREAD_CYCLE;
+  MotorDirection motor_direction = ForwardDirection;
+  StandstillMode standstill_mode = NormalMode;
+  ChopperMode chopper_mode = SpreadCycleMode;
   uint32_t stealth_chop_threshold = 100;
   bool stealth_chop_enabled = true;
   uint32_t cool_step_threshold = 150;
@@ -65,7 +65,7 @@ struct DriverParameters
   bool stall_guard_filter_enabled = false;
   bool short_to_ground_protection_enabled = true;
   uint8_t enabled_toff = 3;
-  ComparatorBlankTime comparator_blank_time = CLOCK_CYCLES_36;
+  ComparatorBlankTime comparator_blank_time = ClockCycles36;
   uint16_t dc_time = 0;
   uint8_t dc_stall_guard_threshold = 0;
 };

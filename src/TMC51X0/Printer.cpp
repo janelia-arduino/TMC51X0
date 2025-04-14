@@ -23,7 +23,7 @@ void Printer::setup(Print & print)
 void Printer::readAndPrintGconf()
 {
   Registers::Gconf gconf;
-  gconf.bytes = registers_ptr_->read(Registers::GCONF);
+  gconf.bytes = registers_ptr_->read(Registers::GconfAddress);
   printRegister(gconf);
 }
 
@@ -67,7 +67,7 @@ void Printer::printRegister(Registers::Gstat gstat)
 void Printer::readAndPrintIoin()
 {
   Registers::Ioin ioin;
-  ioin.bytes = registers_ptr_->read(Registers::IOIN);
+  ioin.bytes = registers_ptr_->read(Registers::IoinAddress);
   printRegister(ioin);
 }
 
@@ -89,7 +89,7 @@ void Printer::printRegister(Registers::Ioin ioin)
 void Printer::readAndPrintSwMode()
 {
   Registers::SwMode sw_mode;
-  sw_mode.bytes = registers_ptr_->read(Registers::SW_MODE);
+  sw_mode.bytes = registers_ptr_->read(Registers::SwModeAddress);
   printRegister(sw_mode);
 }
 
@@ -114,7 +114,7 @@ void Printer::printRegister(Registers::SwMode sw_mode)
 void Printer::readAndPrintRampStat()
 {
   Registers::RampStat ramp_stat;
-  ramp_stat.bytes = registers_ptr_->read(Registers::RAMP_STAT);
+  ramp_stat.bytes = registers_ptr_->read(Registers::RampStatAddress);
   printRegister(ramp_stat);
 }
 
@@ -140,7 +140,7 @@ void Printer::printRegister(Registers::RampStat ramp_stat)
 void Printer::readAndPrintChopconf()
 {
   Registers::Chopconf chopconf;
-  chopconf.bytes = registers_ptr_->read(Registers::CHOPCONF);
+  chopconf.bytes = registers_ptr_->read(Registers::ChopconfAddress);
   printRegister(chopconf);
 }
 
@@ -168,7 +168,7 @@ void Printer::printRegister(Registers::Chopconf chopconf)
 void Printer::readAndPrintDrvStatus()
 {
   Registers::DrvStatus drv_status;
-  drv_status.bytes = registers_ptr_->read(Registers::DRV_STATUS);
+  drv_status.bytes = registers_ptr_->read(Registers::DrvStatusAddress);
   printRegister(drv_status);
 }
 
@@ -195,7 +195,7 @@ void Printer::printRegister(Registers::DrvStatus drv_status)
 void Printer::getStoredAndPrintPwmconf()
 {
   Registers::Pwmconf pwmconf;
-  pwmconf.bytes = registers_ptr_->getStored(Registers::PWMCONF);
+  pwmconf.bytes = registers_ptr_->getStored(Registers::PwmconfAddress);
   printRegister(pwmconf);
 }
 
@@ -216,7 +216,7 @@ void Printer::printRegister(Registers::Pwmconf pwmconf)
 void Printer::readAndPrintPwmScale()
 {
   Registers::PwmScale pwm_scale;
-  pwm_scale.bytes = registers_ptr_->read(Registers::PWM_SCALE);
+  pwm_scale.bytes = registers_ptr_->read(Registers::PwmScaleAddress);
   printRegister(pwm_scale);
 }
 
@@ -236,7 +236,7 @@ void Printer::printRegister(Registers::PwmScale pwm_scale)
 void Printer::readAndPrintPwmAuto()
 {
   Registers::PwmAuto pwm_auto;
-  pwm_auto.bytes = registers_ptr_->read(Registers::PWM_AUTO);
+  pwm_auto.bytes = registers_ptr_->read(Registers::PwmAutoAddress);
   printRegister(pwm_auto);
 }
 

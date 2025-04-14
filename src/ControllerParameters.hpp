@@ -17,20 +17,20 @@ namespace tmc51x0
 {
 enum RampMode
 {
-  POSITION = 0,
-  VELOCITY_POSITIVE = 1,
-  VELOCITY_NEGATIVE = 2,
-  HOLD = 3,
+  PositionMode = 0,
+  VelocityPositiveMode = 1,
+  VelocityNegativeMode = 2,
+  HoldMode = 3,
 };
 enum StopMode
 {
-  HARD = 0,
-  SOFT = 1,
+  HardMode = 0,
+  SoftMode = 1,
 };
 struct ControllerParameters
 {
-  RampMode ramp_mode = VELOCITY_POSITIVE;
-  StopMode stop_mode = HARD;
+  RampMode ramp_mode = VelocityPositiveMode;
+  StopMode stop_mode = HardMode;
   uint32_t max_velocity = 10;
   uint32_t max_acceleration = 10;
   uint32_t start_velocity = 1;

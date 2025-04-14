@@ -27,10 +27,10 @@ public:
 
   bool stepAndDirectionMode();
 
-  // reset default: VELOCITY_POSITIVE
+  // reset default: VelocityPositiveMode
   void writeRampMode(RampMode ramp_mode);
 
-  // reset default: HARD
+  // reset default: HardMode
   void writeStopMode(StopMode stop_mode);
 
   uint32_t readTstep();
@@ -96,7 +96,7 @@ public:
   // -2^31..(2^31)-1 microsteps
   void writeComparePosition(int32_t position);
 
-  // StallGuard requires using the HARD stop mode
+  // StallGuard requires using the HardMode stop mode
   // stall detection is not stable at low speeds
   // so use the cool step threshold or dc step threshold
   // to disable stall stop below those speeds

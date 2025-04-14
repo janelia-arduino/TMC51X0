@@ -17,12 +17,12 @@ namespace tmc51x0
 {
 enum FractionalMode
 {
-  BINARY = 0,
-  DECIMAL = 1,
+  BinaryMode = 0,
+  DecimalMode = 1,
 };
 struct EncoderParameters
 {
-  FractionalMode fractional_mode = BINARY;
+  FractionalMode fractional_mode = BinaryMode;
   int32_t microsteps_per_pulse_integer = 1;
   int32_t microsteps_per_pulse_fractional = 0;
 };

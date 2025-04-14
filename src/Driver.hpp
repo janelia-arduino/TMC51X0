@@ -103,10 +103,10 @@ public:
   void enableShortToGroundProtection();
   void disableShortToGroundProtection();
 
-  // CLOCK_CYCLES_16 min
-  // CLOCK_CYCLES_36 default
-  // CLOCK_CYCLES_24 or CLOCK_CYCLES_36 for typical applications
-  // CLOCK_CYCLES_54 for higher capacitive loads
+  // ClockCycles16 min
+  // ClockCycles36 default
+  // ClockCycles24 or ClockCycles36 for typical applications
+  // ClockCycles54 for higher capacitive loads
   void writeComparatorBlankTime(ComparatorBlankTime tbl);
 
   // 1..15

@@ -54,20 +54,20 @@ void setup()
 
 void loop()
 {
-  Serial.println("standstill mode = NORMAL");
-  stepper.driver.writeStandstillMode(tmc51x0::NORMAL);
+  Serial.println("standstill mode = NormalMode");
+  stepper.driver.writeStandstillMode(tmc51x0::NormalMode);
   delay(DELAY);
 
-  Serial.println("standstill mode = FREEWHEELING");
-  stepper.driver.writeStandstillMode(tmc51x0::FREEWHEELING);
+  Serial.println("standstill mode = FreewheelingMode");
+  stepper.driver.writeStandstillMode(tmc51x0::FreewheelingMode);
   delay(DELAY);
 
-  Serial.println("standstill mode = PASSIVE_BRAKING_LS");
-  stepper.driver.writeStandstillMode(tmc51x0::PASSIVE_BRAKING_LS);
+  Serial.println("standstill mode = PassiveBrakingLsMode");
+  stepper.driver.writeStandstillMode(tmc51x0::PassiveBrakingLsMode);
   delay(DELAY);
 
-  Serial.println("standstill mode = PASSIVE_BRAKING_HS");
-  stepper.driver.writeStandstillMode(tmc51x0::PASSIVE_BRAKING_HS);
+  Serial.println("standstill mode = PassiveBrakingHsMode");
+  stepper.driver.writeStandstillMode(tmc51x0::PassiveBrakingHsMode);
   delay(DELAY);
 
   Serial.println("--------------------------");

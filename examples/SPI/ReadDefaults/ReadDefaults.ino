@@ -44,7 +44,7 @@ void setup()
 
 void loop()
 {
-  for (uint8_t register_address=0; register_address < tmc51x0::Registers::ADDRESS_COUNT; ++register_address)
+  for (uint8_t register_address=0; register_address < tmc51x0::Registers::AddressCount; ++register_address)
   {
     if ((stepper.registers.readable((tmc51x0::Registers::RegisterAddress)register_address)) && (stepper.registers.writeable((tmc51x0::Registers::RegisterAddress)register_address)))
     {

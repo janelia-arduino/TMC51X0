@@ -33,13 +33,13 @@ const tmc51x0::DriverParameters driver_parameters_real =
   .run_current = 100, // (percent)
   .pwm_offset = 30, // (percent)
   .pwm_gradient = 10, // (percent)
-  .motor_direction = tmc51x0::REVERSE,
+  .motor_direction = tmc51x0::ReverseDirection,
   .stealth_chop_threshold = 100, // (millimeters/s)
 };
 
 const tmc51x0::ControllerParameters controller_parameters_real =
 {
-  .ramp_mode = tmc51x0::POSITION,
+  .ramp_mode = tmc51x0::PositionMode,
   .max_velocity = 20, // (millimeters/s)
   .max_acceleration = 2, // ((millimeters/s)/s)
   .start_velocity = 1, // (millimeters/s)

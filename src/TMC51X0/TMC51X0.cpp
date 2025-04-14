@@ -32,7 +32,7 @@ void TMC51X0::setupUart(UartParameters uart_parameters)
 uint8_t TMC51X0::readVersion()
 {
   Registers::Ioin ioin;
-  ioin.bytes = registers.read(Registers::IOIN);
+  ioin.bytes = registers.read(Registers::IoinAddress);
   return ioin.version;
 }
 
@@ -96,16 +96,16 @@ void TMC51X0::beginHomeToSwitch(tmc51x0::HomeParameters home_parameters,
   driver.writeRunCurrent(home_parameters.run_current);
   driver.writeHoldCurrent(home_parameters.hold_current);
   driver.writeHoldDelay(0);
-  driver.writeStandstillMode(NORMAL);
+  driver.writeStandstillMode(NormalMode);
 
-  controller.writeRampMode(HOLD);
+  controller.writeRampMode(HoldMode);
 
-  driver.writeChopperMode(SPREAD_CYCLE);
+  driver.writeChopperMode(SpreadCycleMode);
   driver.disableStealthChop();
   driver.disableCoolStep();
   driver.disableHighVelocityFullstep();
 
-  controller.writeStopMode(HARD);
+  controller.writeStopMode(HardMode);
   controller.zeroActualPosition();
   controller.writeTargetPosition(home_parameters.target_position);
   controller.writeMaxVelocity(home_parameters.velocity);
@@ -115,7 +115,7 @@ void TMC51X0::beginHomeToSwitch(tmc51x0::HomeParameters home_parameters,
   controller.writeMaxAcceleration(home_parameters.acceleration);
   controller.writeZeroWaitDuration(home_parameters.zero_wait_duration);
 
-  controller.writeRampMode(POSITION);
+  controller.writeRampMode(PositionMode);
 }
 
 void TMC51X0::beginHomeToStall(tmc51x0::HomeParameters home_parameters,
@@ -125,7 +125,7 @@ void TMC51X0::beginHomeToStall(tmc51x0::HomeParameters home_parameters,
   controller.cacheControllerSettings();
   controller.cacheSwitchSettings();
 
-  controller.writeStopMode(HARD);
+  controller.writeStopMode(HardMode);
   controller.enableStallStop();
   driver.disableStallGuardFilter();
   driver.writeStallGuardThreshold(stall_parameters.stall_guard_threshold);
@@ -133,15 +133,15 @@ void TMC51X0::beginHomeToStall(tmc51x0::HomeParameters home_parameters,
   driver.writeRunCurrent(home_parameters.run_current);
   driver.writeHoldCurrent(home_parameters.hold_current);
   driver.writeHoldDelay(0);
-  driver.writeStandstillMode(NORMAL);
+  driver.writeStandstillMode(NormalMode);
 
-  controller.writeRampMode(HOLD);
+  controller.writeRampMode(HoldMode);
 
   driver.disableStealthChop();
   driver.disableCoolStep();
   driver.writeCoolStepThreshold(stall_parameters.cool_step_threshold);
 
-  driver.writeChopperMode(SPREAD_CYCLE);
+  driver.writeChopperMode(SpreadCycleMode);
 
   controller.zeroActualPosition();
   controller.writeTargetPosition(home_parameters.target_position);
@@ -152,12 +152,12 @@ void TMC51X0::beginHomeToStall(tmc51x0::HomeParameters home_parameters,
   controller.writeMaxAcceleration(home_parameters.acceleration);
   controller.writeZeroWaitDuration(home_parameters.zero_wait_duration);
 
-  controller.writeRampMode(POSITION);
+  controller.writeRampMode(PositionMode);
 }
 
 void TMC51X0::endHome()
 {
-  controller.writeRampMode(HOLD);
+  controller.writeRampMode(HoldMode);
 
   controller.zeroActualPosition();
   controller.zeroTargetPosition();
@@ -167,9 +167,9 @@ void TMC51X0::endHome()
   controller.restoreSwitchSettings();
 
   // clear ramp_stat flags
-  registers.read(Registers::RAMP_STAT);
+  registers.read(Registers::RampStatAddress);
 
-  controller.writeRampMode(POSITION);
+  controller.writeRampMode(PositionMode);
 }
 
 bool TMC51X0::homed()
@@ -180,7 +180,7 @@ bool TMC51X0::homed()
   bool stalled = (actual_velocity == 0);
   if (stalled)
   {
-    controller.writeRampMode(HOLD);
+    controller.writeRampMode(HoldMode);
   }
   return stalled;
 }

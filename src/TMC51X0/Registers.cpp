@@ -12,7 +12,7 @@ using namespace tmc51x0;
 void Registers::write(RegisterAddress register_address,
   uint32_t data)
 {
-  if ((register_address < ADDRESS_COUNT) && (writeable_[register_address]))
+  if ((register_address < AddressCount) && (writeable_[register_address]))
   {
     interface_ptr_->writeRegister(register_address, data);
     stored_[register_address] = data;
@@ -21,7 +21,7 @@ void Registers::write(RegisterAddress register_address,
 
 uint32_t Registers::read(RegisterAddress register_address)
 {
-  if ((register_address < ADDRESS_COUNT) && (readable_[register_address]))
+  if ((register_address < AddressCount) && (readable_[register_address]))
   {
     uint32_t data = interface_ptr_->readRegister(register_address);
     stored_[register_address] = data;
@@ -35,7 +35,7 @@ uint32_t Registers::read(RegisterAddress register_address)
 
 uint32_t Registers::getStored(RegisterAddress register_address)
 {
-  if (register_address < ADDRESS_COUNT)
+  if (register_address < AddressCount)
   {
     return stored_[register_address];
   }
@@ -47,7 +47,7 @@ uint32_t Registers::getStored(RegisterAddress register_address)
 
 bool Registers::writeable(RegisterAddress register_address)
 {
-  if (register_address < ADDRESS_COUNT)
+  if (register_address < AddressCount)
   {
     return writeable_[register_address];
   }
@@ -59,7 +59,7 @@ bool Registers::writeable(RegisterAddress register_address)
 
 bool Registers::readable(RegisterAddress register_address)
 {
-  if (register_address < ADDRESS_COUNT)
+  if (register_address < AddressCount)
   {
     return readable_[register_address];
   }
@@ -73,11 +73,11 @@ bool Registers::readable(RegisterAddress register_address)
 Registers::Gstat Registers::readAndClearGstat()
 {
   Gstat gstat_read, gstat_write;
-  gstat_read.bytes = read(tmc51x0::Registers::GSTAT);
+  gstat_read.bytes = read(tmc51x0::Registers::GstatAddress);
   gstat_write.reset = 1;
   gstat_write.drv_err = 1;
   gstat_write.uv_cp = 1;
-  write(GSTAT, gstat_write.bytes);
+  write(GstatAddress, gstat_write.bytes);
   return gstat_read;
 }
 
@@ -86,168 +86,168 @@ void Registers::initialize(Interface & interface)
 {
   interface_ptr_ = &interface;
 
-  for (uint8_t register_address=0; register_address<ADDRESS_COUNT; ++register_address)
+  for (uint8_t register_address=0; register_address<AddressCount; ++register_address)
   {
     stored_[register_address] = 0;
     writeable_[register_address] = false;
     readable_[register_address] = false;
   }
 
-  stored_[GCONF] = 0x0;
-  writeable_[GCONF] = true;
-  readable_[GCONF] = true;
+  stored_[GconfAddress] = 0x0;
+  writeable_[GconfAddress] = true;
+  readable_[GconfAddress] = true;
 
-  stored_[GSTAT] = 0x5;
-  writeable_[GSTAT] = true;
-  readable_[GSTAT] = true;
+  stored_[GstatAddress] = 0x5;
+  writeable_[GstatAddress] = true;
+  readable_[GstatAddress] = true;
 
-  readable_[IFCNT] = true;
+  readable_[IfcntAddress] = true;
 
-  writeable_[NODECONF] = true;
+  writeable_[NodeconfAddress] = true;
 
-  readable_[IOIN] = true;
+  readable_[IoinAddress] = true;
 
-  writeable_[X_COMPARE] = true;
+  writeable_[XCompareAddress] = true;
 
-  writeable_[OTP_PROG] = true;
+  writeable_[OtpProgAddress] = true;
 
-  readable_[OTP_READ] = true;
+  readable_[OtpReadAddress] = true;
 
-  stored_[FACTORY_CONF] = 0xE;
-  writeable_[FACTORY_CONF] = true;
-  readable_[FACTORY_CONF] = true;
+  stored_[FactoryConfAddress] = 0xE;
+  writeable_[FactoryConfAddress] = true;
+  readable_[FactoryConfAddress] = true;
 
-  writeable_[SHORT_CONF] = true;
+  writeable_[ShortConfAddress] = true;
 
-  writeable_[DRV_CONF] = true;
+  writeable_[DrvConfAddress] = true;
 
-  writeable_[GLOBAL_SCALER] = true;
+  writeable_[GlobalScalerAddress] = true;
 
-  readable_[OFFSET_READ] = true;
+  readable_[OffsetReadAddress] = true;
 
-  writeable_[IHOLD_IRUN] = true;
+  writeable_[IholdIrunAddress] = true;
 
-  writeable_[TPOWER_DOWN] = true;
+  writeable_[TpowerDownAddress] = true;
 
-  readable_[TSTEP] = true;
+  readable_[TstepAddress] = true;
 
-  writeable_[TPWMTHRS] = true;
+  writeable_[TpwmthrsAddress] = true;
 
-  writeable_[TCOOLTHRS] = true;
+  writeable_[TcoolthrsAddress] = true;
 
-  writeable_[THIGH] = true;
+  writeable_[ThighAddress] = true;
 
-  writeable_[RAMPMODE] = true;
-  readable_[RAMPMODE] = true;
+  writeable_[RampmodeAddress] = true;
+  readable_[RampmodeAddress] = true;
 
-  writeable_[XACTUAL] = true;
+  writeable_[XactualAddress] = true;
   // Refer to datasheet "Errata in Read Access"
-  if (interface_ptr_->interface_mode == Interface::SPI)
+  if (interface_ptr_->interface_mode == Interface::SpiMode)
   {
-    readable_[XACTUAL] = true;
+    readable_[XactualAddress] = true;
   }
 
   // Refer to datasheet "Errata in Read Access"
-  if (interface_ptr_->interface_mode == Interface::SPI)
+  if (interface_ptr_->interface_mode == Interface::SpiMode)
   {
-    readable_[VACTUAL] = true;
+    readable_[VactualAddress] = true;
   }
 
-  writeable_[VSTART] = true;
+  writeable_[VstartAddress] = true;
 
-  writeable_[A1] = true;
+  writeable_[Acceleration1Address] = true;
 
-  writeable_[V1] = true;
+  writeable_[Velocity1Address] = true;
 
-  writeable_[AMAX] = true;
+  writeable_[AmaxAddress] = true;
 
-  writeable_[VMAX] = true;
+  writeable_[VmaxAddress] = true;
 
-  writeable_[DMAX] = true;
+  writeable_[DmaxAddress] = true;
 
-  writeable_[D1_REG] = true;
+  writeable_[Deceleration1Address] = true;
 
-  writeable_[VSTOP] = true;
+  writeable_[VstopAddress] = true;
 
-  writeable_[TZEROWAIT] = true;
+  writeable_[TzerowaitAddress] = true;
 
-  writeable_[XTARGET] = true;
-  readable_[XTARGET] = true;
+  writeable_[XtargetAddress] = true;
+  readable_[XtargetAddress] = true;
 
-  writeable_[VDCMIN] = true;
+  writeable_[VdcminAddress] = true;
 
-  writeable_[SW_MODE] = true;
-  readable_[SW_MODE] = true;
+  writeable_[SwModeAddress] = true;
+  readable_[SwModeAddress] = true;
 
-  stored_[RAMP_STAT] = 0x780;
-  writeable_[RAMP_STAT] = true;
-  readable_[RAMP_STAT] = true;
+  stored_[RampStatAddress] = 0x780;
+  writeable_[RampStatAddress] = true;
+  readable_[RampStatAddress] = true;
 
-  readable_[XLATCH] = true;
+  readable_[XlatchAddress] = true;
 
-  writeable_[ENCMODE] = true;
-  readable_[ENCMODE] = true;
+  writeable_[EncmodeAddress] = true;
+  readable_[EncmodeAddress] = true;
 
-  writeable_[X_ENC] = true;
+  writeable_[XencAddress] = true;
   // Refer to datasheet "Errata in Read Access"
-  if (interface_ptr_->interface_mode == Interface::SPI)
+  if (interface_ptr_->interface_mode == Interface::SpiMode)
   {
-    readable_[X_ENC] = true;
+    readable_[XencAddress] = true;
   }
 
-  writeable_[ENC_CONST] = true;
+  writeable_[EncConstAddress] = true;
 
-  writeable_[ENC_STATUS] = true;
-  readable_[ENC_STATUS] = true;
+  writeable_[EncStatusAddress] = true;
+  readable_[EncStatusAddress] = true;
 
-  readable_[ENC_LATCH] = true;
+  readable_[EncLatchAddress] = true;
 
-  writeable_[ENC_DEVIATION] = true;
+  writeable_[EncDeviationAddress] = true;
 
-  writeable_[MSLUT_0] = true;
+  writeable_[Mslut0Address] = true;
 
-  writeable_[MSLUT_1] = true;
+  writeable_[Mslut1Address] = true;
 
-  writeable_[MSLUT_2] = true;
+  writeable_[Mslut2Address] = true;
 
-  writeable_[MSLUT_3] = true;
+  writeable_[Mslut3Address] = true;
 
-  writeable_[MSLUT_4] = true;
+  writeable_[Mslut4Address] = true;
 
-  writeable_[MSLUT_5] = true;
+  writeable_[Mslut5Address] = true;
 
-  writeable_[MSLUT_6] = true;
+  writeable_[Mslut6Address] = true;
 
-  writeable_[MSLUT_7] = true;
+  writeable_[Mslut7Address] = true;
 
-  writeable_[MSLUTSEL] = true;
+  writeable_[MslutselAddress] = true;
 
   writeable_[MSLUTSTART] = true;
 
   // Refer to datasheet "Errata in Read Access"
-  if (interface_ptr_->interface_mode == Interface::SPI)
+  if (interface_ptr_->interface_mode == Interface::SpiMode)
   {
-    readable_[MSCNT] = true;
+    readable_[MscntAddress] = true;
   }
 
-  readable_[MSCURACT] = true;
+  readable_[MscuractAddress] = true;
 
-  stored_[CHOPCONF] = 0x10410150;
-  writeable_[CHOPCONF] = true;
-  readable_[CHOPCONF] = true;
+  stored_[ChopconfAddress] = 0x10410150;
+  writeable_[ChopconfAddress] = true;
+  readable_[ChopconfAddress] = true;
 
-  writeable_[COOLCONF] = true;
+  writeable_[CoolconfAddress] = true;
 
-  writeable_[DCCTRL] = true;
+  writeable_[DcctrlAddress] = true;
 
-  readable_[DRV_STATUS] = true;
+  readable_[DrvStatusAddress] = true;
 
-  stored_[PWMCONF] = 0xC40C001E;
-  writeable_[PWMCONF] = true;
+  stored_[PwmconfAddress] = 0xC40C001E;
+  writeable_[PwmconfAddress] = true;
 
-  readable_[PWM_SCALE] = true;
+  readable_[PwmScaleAddress] = true;
 
-  readable_[PWM_AUTO] = true;
+  readable_[PwmAutoAddress] = true;
 
-  readable_[LOST_STEPS] = true;
+  readable_[LostStepsAddress] = true;
 }

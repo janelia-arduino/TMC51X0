@@ -11,7 +11,7 @@ using namespace tmc51x0;
 
 void UartInterface::setup(UartParameters uart_parameters)
 {
-  interface_mode = UART;
+  interface_mode = UartMode;
   uart_parameters_ = uart_parameters;
 
   pinMode(uart_parameters_.enable_txrx_pin, OUTPUT);

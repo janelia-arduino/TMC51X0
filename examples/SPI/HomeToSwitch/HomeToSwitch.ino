@@ -39,7 +39,7 @@ const tmc51x0::DriverParameters driver_parameters_real =
 
 const tmc51x0::ControllerParameters controller_parameters_real =
 {
-  .ramp_mode = tmc51x0::POSITION,
+  .ramp_mode = tmc51x0::PositionMode,
   .max_velocity = 20, // (radians/s)
   .max_acceleration = 2, // ((radians/s)/s)
 };

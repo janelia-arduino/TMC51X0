@@ -18,7 +18,7 @@ const tmc51x0::SpiParameters spi_parameters =
 
 const tmc51x0::EncoderParameters encoder_parameters =
 {
-  .fractional_mode = tmc51x0::BINARY,
+  .fractional_mode = tmc51x0::BinaryMode,
   .microsteps_per_pulse_integer = 64,
   .microsteps_per_pulse_fractional = 0
 };

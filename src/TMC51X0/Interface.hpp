@@ -16,8 +16,8 @@ class Interface
 public:
   enum InterfaceMode
   {
-    SPI,
-    UART
+    SpiMode,
+    UartMode
   };
   InterfaceMode interface_mode;
 
