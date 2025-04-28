@@ -12,7 +12,7 @@
 
 * Library Information
 - Name :: TMC51X0
-- Version :: 2.0.0
+- Version :: 2.1.1
 - License :: BSD
 - URL :: https://github.com/janelia-arduino/TMC51X0
 - Author :: Peter Polidoro
@@ -21,20 +21,27 @@
 ** Description
 
 TMC5130 and TMC5160 are high-performance ICs combining both a stepper motor
-controller and driver.
+controller and driver into a single chip.
 
-Both have serial communication interfaces, either SPI or UART, and combine a
-flexible ramp generator for automatic target positioning with an advanced
-stepper motor driver.
+Both versions have two serial communication interface options for communicating
+with a microcontroller, either SPI or UART, and both combine a flexible ramp
+generator for automatic target positioning with an advanced stepper motor
+driver.
 
-The TMC5130 and TMC5160 are register compatible allowing the same driver library
-to work with both.
+The TMC5130 and TMC5160 are register compatible, with a few exceptions, allowing
+the same driver library to work with both.
 
-The TMC5130 includes MOSFETs inside the IC to reduce part count and circuit
-size for driving motors up to 1.64A RMS per coil.
+Both versions have encoder inputs and reference switch inputs for optional
+position feedback and both have 256 microsteps per full step high resolution
+positioning.
+
+The TMC5130 includes MOSFETs inside the IC to reduce part count and circuit size
+for driving motors up to 1.64A RMS per coil at a voltage supply range from 4.75
+to 46V.
 
 The TMC5160 uses external MOSFETs to drive higher current motors from 1A to
-several 10A per coil.
+several 10A per coil and may be driven at higher voltages than the MOFSFETs
+included in the TMC5130.
 
 #+html: <img src="./images/trinamic-wiring-TMC51X0-description.svg" width="1920px">
 
@@ -52,11 +59,7 @@ is correctly sized to the application in respect to torque and speed.
 
 * Stepper Motor Controllers and Drivers
 
-Stepper motors need both a controller and a driver. These may be combined into a
-single component or separated into multiple components that communicate with
-each other, as is the case with the TMC51X0 stepper motor driver. One controller
-may be connected to more than one driver for coordinated multi-axis motion
-control.
+Stepper motors need both a controller and a driver.
 
 ** Stepper Motor Controller
 
@@ -70,12 +73,94 @@ A stepper motor driver is responsible for commanding the electrical current
 through the motor coils as it changes with time to meet the requirements of the
 stepper motor controller.
 
+** Separate Controller and Driver
+
+In some systems, the controller (e.g. TMC429) and driver (e.g. TMC2209) may be
+separate components which communicate over an interface, such as step and
+direction signals from the controller to the driver or perhaps serial lines.
+
+This type of setup makes it easy to coordinate multiple axes of motion by
+connecting several drivers to a single multi-axis controller. It also makes it
+easy to swap one driver for another if necessary as long as they both use the
+same communication interface.
+
+** Combined Controller and Driver
+
+The TMC5130 and TMC5160 chips combine the controller and driver into a single
+component, which both reduces the circuit board part count and allows more
+sophisticated coordination between the controller and driver than the motion
+commands from simple step and direction signals.
+
+For example, combining the controller and driver allows the chip to modify the
+drive current and current regulation mode automatically at different motor
+velocities or reduce the motor velocity automatically if the driver senses that
+the motor may be about to miss steps or stall.
+
+* Modes of Operation
+
+The TMC5130 and TMC5160 chips have many settings and several modes of operation.
+These modes may be switched externally or they may be switched automatically
+depending on motor velocity or other measured parameters.
+
+** StealthChop (DriverParameters.stealth_chop_enabled = true)
+
+StealChop is an extremely quiet mode of operation based on voltage control. It
+is ideal for standstill and low velocities. The motor current is applied by
+setting the voltage on each coil using pulse width modulation (PWM).
+
+The pulse width of the voltage supplied to each motor coil sets the current
+through each motor coil and the magnitude depends on the motor resistance, the
+back EMF of the motor, and the voltage supply level.
+
+The resistance of the motor coil windings tends to be constant, but the back EMF
+of the motor increases with motor velocity requiring the pulse width to increase
+as the motor velocity increases. The voltage supply level may or may not remain
+constant. Some power supplies may have reduced voltage at increased current
+output or if a battery is used, the voltage may drop over time as the battery
+drains.
+
+Two algoritm options are provided for setting the current based on the voltage,
+either a manual mode or an automatic mode.
+
+*** Manual Current Regulation (DriverParameters.automatic_current_control_enabled = false)
+
+In manual mode, the motor current is not measured directly rather it is set in
+an open-loop fashion using feed-forward velocity control. Manual mode is not
+able to react to supply voltage changes or events like a motor stall, but it
+provides a very stable amplitude.
+
+This mode is ideal when the motor type and the supply voltage are well known.
+
+*** Automatic Current Regulation (DriverParameters.automatic_current_control_enabled = true)
+
+In automatic mode, the motor current is measured through the current sense
+resistors and is set in a closed-loop fashion allowing it to automatically
+adjust to environmental changes. Automatic mode requires a calibration routine
+in order to function properly.
+
+*** DriverParameters.pwm_offset
+
+In order to calculate the voltage pulse width magnitude given the desired motor
+current, the pwm_offset is used to scale the magnitude based on the constant
+dependencies, such as the motor resistance and the power supply voltage.
+
+*** DriverParameters.pwm_gradient
+
+In order to calculate the voltage pulse width magnitude given the desired motor
+current, the pwm_gradient is used to scale the magnitude based on the
+dependencies that change with the motor velocity, such as the motor back-EMF.
+
+** SpreadCycle (DriverParameters.chopper_mode = SpreadCycleMode)
+
+While StealthChop uses voltage control, SpreadCycle uses current control,
+allowing it to quickly react to changes in motor velocity or motor load.
+
 * Motor Current
 
 Several settings affect the magnitude of the motor current, depending on what
 mode the driver is in at a given velocity.
 
-** global_current_scaler
+** DriverParameters.global_current_scaler
 
 Global scaling of Motor current. This value is multiplied to the current scaling
 to adapt a drive to a certain motor type. This value should be chosen before
@@ -93,7 +178,7 @@ Range 0..255
 1..31 not allowed for operation
 32..255 32/256..255/256 of maximum current
 
-** run_current
+** DriverParameters.run_current
 
 *** Automatic Current Control Enabled
 
@@ -102,10 +187,10 @@ resistors.
 
 *** Automatic Current Control Disabled
 
-The current magnitude are not enforced by regulation using the sense resistors,
-but run_current scaled the PWM amplitude.
+The current magnitude is not enforced by regulation using the sense resistors,
+but run_current still scales the PWM amplitude.
 
-** pwm_offset and pwm_gradient
+** DriverParameters.pwm_offset and DriverParameters.pwm_gradient
 
 *** Automatic Current Control Enabled
 
