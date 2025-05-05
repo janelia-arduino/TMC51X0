@@ -177,12 +177,12 @@ bool TMC51X0::homed()
   // reading ramp_stat clears flags and may cause motion after stall stop
   // better to read actual velocity instead
   int32_t actual_velocity = controller.readActualVelocity();
-  bool stalled = (actual_velocity == 0);
-  if (stalled)
+  bool still = (actual_velocity == 0);
+  if (still)
   {
     controller.writeRampMode(HoldMode);
   }
-  return stalled;
+  return still;
 }
 
 // private
