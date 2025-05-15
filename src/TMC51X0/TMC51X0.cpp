@@ -91,6 +91,11 @@ void TMC51X0::beginHomeToSwitch(tmc51x0::HomeParameters home_parameters,
   controller.cacheControllerSettings();
   controller.cacheSwitchSettings();
 
+  DriverParameters driver_parameters;
+  driver.setup(driver_parameters);
+  ControllerParameters controller_parameters;
+  controller.setup(controller_parameters);
+
   controller.setupSwitches(switch_parameters);
 
   driver.writeRunCurrent(home_parameters.run_current);
@@ -109,9 +114,6 @@ void TMC51X0::beginHomeToSwitch(tmc51x0::HomeParameters home_parameters,
   controller.zeroActualPosition();
   controller.writeTargetPosition(home_parameters.target_position);
   controller.writeMaxVelocity(home_parameters.velocity);
-  controller.writeStartVelocity(home_parameters.velocity);
-  controller.writeStopVelocity(home_parameters.velocity);
-  controller.writeFirstVelocity(0);
   controller.writeMaxAcceleration(home_parameters.acceleration);
   controller.writeZeroWaitDuration(home_parameters.zero_wait_duration);
 
@@ -124,6 +126,11 @@ void TMC51X0::beginHomeToStall(tmc51x0::HomeParameters home_parameters,
   driver.cacheDriverSettings();
   controller.cacheControllerSettings();
   controller.cacheSwitchSettings();
+
+  DriverParameters driver_parameters;
+  driver.setup(driver_parameters);
+  ControllerParameters controller_parameters;
+  controller.setup(controller_parameters);
 
   controller.writeStopMode(HardMode);
   controller.enableStallStop();
@@ -146,9 +153,6 @@ void TMC51X0::beginHomeToStall(tmc51x0::HomeParameters home_parameters,
   controller.zeroActualPosition();
   controller.writeTargetPosition(home_parameters.target_position);
   controller.writeMaxVelocity(home_parameters.velocity);
-  controller.writeStartVelocity(home_parameters.velocity);
-  controller.writeStopVelocity(home_parameters.velocity);
-  controller.writeFirstVelocity(0);
   controller.writeMaxAcceleration(home_parameters.acceleration);
   controller.writeZeroWaitDuration(home_parameters.zero_wait_duration);
 
