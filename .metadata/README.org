@@ -12,7 +12,7 @@
 
 * Library Information
 - Name :: TMC51X0
-- Version :: 2.3.0
+- Version :: 2.4.0
 - License :: BSD
 - URL :: https://github.com/janelia-arduino/TMC51X0
 - Author :: Peter Polidoro
@@ -161,6 +161,8 @@ Several settings affect the magnitude of the motor current, depending on what
 mode the driver is in at a given velocity.
 
 ** DriverParameters.global_current_scaler
+
+Only available on TMC5160.
 
 Global scaling of Motor current. This value is multiplied to the current scaling
 to adapt a drive to a certain motor type. This value should be chosen before

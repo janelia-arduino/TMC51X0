@@ -34,7 +34,6 @@ const tmc51x0::ConverterParameters converter_parameters =
 
 const tmc51x0::DriverParameters driver_parameters_real =
 {
-  .global_current_scaler = 50, // (percent)
   .run_current = 100, // (percent)
   .pwm_offset = 30, // (percent)
   .pwm_gradient = 10, // (percent)

@@ -42,7 +42,8 @@ enum ComparatorBlankTime
 
 struct DriverParameters
 {
-  uint8_t global_current_scaler = 50;
+  // global_current_scaler only available on TMC5160
+  uint8_t global_current_scaler = 100;
   uint8_t run_current = 50;
   uint8_t hold_current = 20;
   uint8_t hold_delay = 5;
