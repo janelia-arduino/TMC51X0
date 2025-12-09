@@ -1,22 +1,22 @@
-- [Library Information](#orgf319379)
-- [Stepper Motors](#org052ac36)
-- [Stepper Motor Controllers and Drivers](#org0024cf4)
-- [Modes of Operation](#orgb20a9e5)
-- [Motor Current](#org7912e66)
-- [Examples](#org6db5650)
-- [Hardware Documentation](#org0890252)
-- [Host Computer Setup](#org02d0fa2)
+- [Library Information](#org5561573)
+- [Stepper Motors](#orga9feb54)
+- [Stepper Motor Controllers and Drivers](#orgc3021d4)
+- [Modes of Operation](#orgf76a918)
+- [Motor Current](#orgecf4767)
+- [Examples](#orgc329608)
+- [Hardware Documentation](#org1f34bf2)
+- [Host Computer Setup](#org9cb30ae)
 
     <!-- This file is generated automatically from metadata -->
     <!-- File edits may be overwritten! -->
 
 
-<a id="orgf319379"></a>
+<a id="org5561573"></a>
 
 # Library Information
 
 -   **Name:** TMC51X0
--   **Version:** 2.4.0
+-   **Version:** 2.4.1
 -   **License:** BSD
 -   **URL:** <https://github.com/janelia-arduino/TMC51X0>
 -   **Author:** Peter Polidoro
@@ -40,7 +40,7 @@ The TMC5160 uses external MOSFETs to drive higher current motors from 1A to seve
 <img src="./images/trinamic-wiring-TMC51X0-description.svg" width="1920px">
 
 
-<a id="org052ac36"></a>
+<a id="orga9feb54"></a>
 
 # Stepper Motors
 
@@ -51,7 +51,7 @@ A stepper motor, also known as step motor or stepping motor, is a brushless DC e
 [Wikipedia - Stepper Motor](https://en.wikipedia.org/wiki/Stepper_motor)
 
 
-<a id="org0024cf4"></a>
+<a id="orgc3021d4"></a>
 
 # Stepper Motor Controllers and Drivers
 
@@ -82,7 +82,7 @@ The TMC5130 and TMC5160 chips combine the controller and driver into a single co
 For example, combining the controller and driver allows the chip to modify the drive current and current regulation mode automatically at different motor velocities or reduce the motor velocity automatically if the driver senses that the motor may be about to miss steps or stall.
 
 
-<a id="orgb20a9e5"></a>
+<a id="orgf76a918"></a>
 
 # Modes of Operation
 
@@ -127,7 +127,7 @@ In order to calculate the voltage pulse width magnitude given the desired motor 
 While StealthChop uses voltage control, SpreadCycle uses current control, allowing it to quickly react to changes in motor velocity or motor load.
 
 
-<a id="org7912e66"></a>
+<a id="orgecf4767"></a>
 
 # Motor Current
 
@@ -177,7 +177,7 @@ pwm\_offset and pwm\_gradient are used as initial values for automatic scaling.
 pwm\_offset and pwm\_gradient scale the PWM amplitude.
 
 
-<a id="org6db5650"></a>
+<a id="orgc329608"></a>
 
 # Examples
 
@@ -213,7 +213,7 @@ pwm\_offset and pwm\_gradient scale the PWM amplitude.
     <https://github.com/janelia-kicad/trinamic-wiring>
 
 
-<a id="org0890252"></a>
+<a id="org1f34bf2"></a>
 
 # Hardware Documentation
 
@@ -223,7 +223,7 @@ pwm\_offset and pwm\_gradient scale the PWM amplitude.
 [Datasheets](./datasheet)
 
 
-<a id="org02d0fa2"></a>
+<a id="org9cb30ae"></a>
 
 # Host Computer Setup
 
