@@ -180,24 +180,12 @@ uint8_t UartInterface::calculateCrc(Datagram & datagram,
   return crc;
 }
 
-#if defined(ARDUINO_ARCH_ESP32)
-void digitalWriteFast(uint8_t pin, uint8_t val)
-{
-  val ? GPIO.out_w1ts = (1 << pin) : GPIO.out_w1tc = (1 << pin);
-}
-#elif defined(ARDUINO_ARCH_MBED)
-void digitalWriteFast(uint8_t pin, uint8_t val)
-{
-  digitalWrite(pin, val);
-}
-#endif
-
 void UartInterface::enableTxDisableRx()
 {
-  digitalWriteFast(uart_parameters_.enable_txrx_pin, ENABLE_TX_DISABLE_RX_PIN_VALUE);
+  digitalWrite(uart_parameters_.enable_txrx_pin, ENABLE_TX_DISABLE_RX_PIN_VALUE);
 }
 
 void UartInterface::disableTxEnableRx()
 {
-  digitalWriteFast(uart_parameters_.enable_txrx_pin, DISABLE_TX_ENABLE_RX_PIN_VALUE);
+  digitalWrite(uart_parameters_.enable_txrx_pin, DISABLE_TX_ENABLE_RX_PIN_VALUE);
 }

@@ -26,6 +26,10 @@ feather-firmware: clean
 feather-upload: clean
 	pio run -e feather --target upload
 
+.PHONY: nano-firmware
+nano-firmware: clean
+	pio run -e nanoatmega328
+
 .PHONY: monitor
 monitor:
 	pio device monitor
