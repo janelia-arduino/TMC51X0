@@ -10,11 +10,10 @@ size_t RX_PIN = 12;
 SPIClass & spi = SPI;
 #endif
 
-const tmc51x0::SpiParameters spi_parameters =
-{
-  .spi_ptr = &spi,
-  .chip_select_pin = 8
-};
+const auto spi_parameters =
+  tmc51x0::SpiParameters{}
+    .withSpi(&spi)
+    .withChipSelectPin(8);
 
 const uint32_t SERIAL_BAUD_RATE = 115200;
 const uint16_t DELAY = 4000;

@@ -9,11 +9,11 @@ size_t TX_PIN = 4;
 size_t RX_PIN = 5;
 #endif
 
-const tmc51x0::UartParameters uart_parameters =
-{
-  .uart_ptr = &uart,
-  .enable_txrx_pin = 14
-};
+const auto uart_parameters =
+  tmc51x0::UartParameters{}
+    .withUart(&uart)
+    .withEnableTxRxPin(14);
+
 const uint32_t UART_BAUD_RATE = 115200;
 
 const tmc51x0::ConverterParameters converter_parameters =

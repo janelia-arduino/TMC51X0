@@ -10,12 +10,6 @@ size_t RX_PIN = 20;
 SPIClass & spi = SPI;
 #endif
 
-// const tmc51x0::SpiParameters spi_parameters =
-// {
-//   .spi_ptr = &spi,
-//   .chip_select_pin = 8
-// };
-
 const auto spi_parameters =
   tmc51x0::SpiParameters{}
     .withSpi(&spi)
