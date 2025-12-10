@@ -15,12 +15,11 @@ const auto spi_parameters =
     .withSpi(&spi)
     .withChipSelectPin(8);
 
-const tmc51x0::EncoderParameters encoder_parameters =
-{
-  .fractional_mode = tmc51x0::BinaryMode,
-  .microsteps_per_pulse_integer = 64,
-  .microsteps_per_pulse_fractional = 0
-};
+const auto encoder_parameters =
+  tmc51x0::EncoderParameters{}
+    .withFractionalMode(tmc51x0::BinaryMode)
+    .withMicrostepsPerPulseInteger(64)
+    .withMicrostepsPerPulseFractional(0);
 // 200 encoder single signal pulses per revolution
 // 200*4 = 800 quadrature encoder pulses per revolution
 // 200 motor fullsteps per revolution
