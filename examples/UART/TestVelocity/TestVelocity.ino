@@ -32,13 +32,12 @@ const tmc51x0::ConverterParameters converter_parameters =
 // rotations/s -> rotations/min
 // rotations/(s^2) -> (rotations/min)/s
 
-const tmc51x0::DriverParameters driver_parameters_real =
-{
-  .run_current = 100, // (percent)
-  .pwm_offset = 30, // (percent)
-  .pwm_gradient = 10, // (percent)
-  .stealth_chop_threshold = 60, // (rotations/min)
-};
+const auto driver_parameters_real =
+  tmc51x0::DriverParameters{}
+    .withRunCurrent(100) // (percent)
+    .withPwmOffset(30) // (percent)
+    .withPwmGradient(10) // (percent)
+    .withStealthChopThreshold(60); // (rotations/s)
 
 const tmc51x0::ControllerParameters controller_parameters_real =
 {

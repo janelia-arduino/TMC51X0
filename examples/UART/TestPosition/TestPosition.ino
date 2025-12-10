@@ -27,14 +27,13 @@ const tmc51x0::ConverterParameters converter_parameters =
 // 10.49 millimeters per revolution leadscrew -> 51200 / 10.49 ~= 4881
 // one "real unit" in this example is one millimeters of linear travel
 
-const tmc51x0::DriverParameters driver_parameters_real =
-{
-  .run_current = 100, // (percent)
-  .pwm_offset = 30, // (percent)
-  .pwm_gradient = 10, // (percent)
-  .motor_direction = tmc51x0::ReverseDirection,
-  .stealth_chop_threshold = 100, // (millimeters/s)
-};
+const auto driver_parameters_real =
+  tmc51x0::DriverParameters{}
+    .withRunCurrent(100) // (percent)
+    .withPwmOffset(30) // (percent)
+    .withPwmGradient(10) // (percent)
+    .withMotorDirection(tmc51x0::ReverseDirection)
+    .withStealthChopThreshold(100); // (millimeters/s)
 
 const tmc51x0::ControllerParameters controller_parameters_real =
 {

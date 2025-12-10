@@ -26,14 +26,13 @@ const tmc51x0::ConverterParameters converter_parameters =
 // 51200 microsteps per revolution / 6.283 radians per revolution ~= 8149 microsteps per radian
 // one "real unit" in this example is one radian of rotation
 
-const tmc51x0::DriverParameters driver_parameters_real =
-{
-  .run_current = 50, // (percent)
-  .hold_current = 10, // (percent)
-  .pwm_offset = 30, // (percent)
-  .pwm_gradient = 10, // (percent)
-  .stealth_chop_threshold = 100, // (radians/s)
-};
+const auto driver_parameters_real =
+  tmc51x0::DriverParameters{}
+    .withRunCurrent(50) // (percent)
+    .withHoldCurrent(10) // (percent)
+    .withPwmOffset(30) // (percent)
+    .withPwmGradient(10) // (percent)
+    .withStealthChopThreshold(100); // (radians/s)
 
 const tmc51x0::ControllerParameters controller_parameters_real =
 {
