@@ -15,19 +15,18 @@ const auto spi_parameters =
     .withSpi(&spi)
     .withChipSelectPin(8);
 
-const tmc51x0::SwitchParameters switch_parameters =
-{
-  .left_stop_enabled = false,
-  .right_stop_enabled = false,
-  .invert_left_polarity = false,
-  .invert_right_polarity = false,
-  .swap_left_right = false,
-  .latch_left_active = false,
-  .latch_left_inactive = false,
-  .latch_right_active = false,
-  .latch_right_inactive = false,
-  .latch_encoder_enabled = false
-};
+const auto switch_parameters =
+  tmc51x0::SwitchParameters{}
+    .withLeftStopEnabled(false)
+    .withRightStopEnabled(false)
+    .withInvertLeftPolarity(false)
+    .withInvertRightPolarity(false)
+    .withSwapLeftRight(false)
+    .withLatchLeftActive(false)
+    .withLatchLeftInactive(false)
+    .withLatchRightActive(false)
+    .withLatchRightInactive(false)
+    .withLatchEncoderEnabled(false);
 
 const uint32_t SERIAL_BAUD_RATE = 115200;
 const uint16_t LOOP_DELAY = 1000;

@@ -40,21 +40,19 @@ const auto controller_parameters_real =
     .withMaxVelocity(45) // (rotations/min)
     .withMaxAcceleration(45); // ((rotations/min)/s)
 
-const tmc51x0::SwitchParameters switch_parameters_running =
-{
-  .left_stop_enabled = false,
-  .right_stop_enabled = false,
-  .invert_left_polarity = false, // left switch permanently tied to ground
-  .invert_right_polarity = false, // right switch permanently tied to ground
-};
+const auto switch_parameters_running =
+  tmc51x0::SwitchParameters{}
+    .withLeftStopEnabled(false)
+    .withRightStopEnabled(false)
+    .withInvertLeftPolarity(false) // left switch permanently tied to ground
+    .withInvertRightPolarity(false); // right switch permanently tied to ground
 
-const tmc51x0::SwitchParameters switch_parameters_paused =
-{
-  .left_stop_enabled = true,
-  .right_stop_enabled = true,
-  .invert_left_polarity = true, // left switch permanently tied to ground
-  .invert_right_polarity = true, // right switch permanently tied to ground
-};
+const auto switch_parameters_paused =
+  tmc51x0::SwitchParameters{}
+    .withLeftStopEnabled(true)
+    .withRightStopEnabled(true)
+    .withInvertLeftPolarity(true) // left switch permanently tied to ground
+    .withInvertRightPolarity(true); // right switch permanently tied to ground
 
 const uint32_t SERIAL_BAUD_RATE = 115200;
 const uint16_t LOOP_DELAY = 4000;

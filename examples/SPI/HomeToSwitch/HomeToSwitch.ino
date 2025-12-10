@@ -47,10 +47,9 @@ const auto home_parameters_homing_to_switch_real =
     .withVelocity(20) // (radians/s)
     .withAcceleration(2); // ((radians/s)/s)
 
-const tmc51x0::SwitchParameters switch_parameters_homing_to_switch =
-{
-  .left_stop_enabled = true,
-};
+const auto switch_parameters_homing_to_switch =
+  tmc51x0::SwitchParameters{}
+    .withLeftStopEnabled(true);
 
 const auto home_parameters_homing_off_switch_real =
   tmc51x0::HomeParameters{}
@@ -60,12 +59,11 @@ const auto home_parameters_homing_off_switch_real =
     .withVelocity(1) // (radians/s)
     .withAcceleration(1); // ((radians/s)/s)
 
-const tmc51x0::SwitchParameters switch_parameters_homing_off_switch =
-{
-  .right_stop_enabled = true,
-  .invert_right_polarity = true,
-  .swap_left_right = true,
-};
+const auto switch_parameters_homing_off_switch =
+  tmc51x0::SwitchParameters{}
+    .withRightStopEnabled(true)
+    .withInvertRightPolarity(true)
+    .withSwapLeftRight(true);
 
 const int32_t MOVE_POSITION = 100;  // degrees
 
