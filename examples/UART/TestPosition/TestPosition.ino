@@ -35,18 +35,17 @@ const auto driver_parameters_real =
     .withMotorDirection(tmc51x0::ReverseDirection)
     .withStealthChopThreshold(100); // (millimeters/s)
 
-const tmc51x0::ControllerParameters controller_parameters_real =
-{
-  .ramp_mode = tmc51x0::PositionMode,
-  .max_velocity = 20, // (millimeters/s)
-  .max_acceleration = 2, // ((millimeters/s)/s)
-  .start_velocity = 1, // (millimeters/s)
-  .stop_velocity = 5, // (millimeters/s)
-  .first_velocity = 10, // (millimeters/s)
-  .first_acceleration = 10, // ((millimeters/s)/s)
-  .max_deceleration = 20, // ((millimeters/s)/s)
-  .first_deceleration = 25, // ((millimeters/s)/s)
-};
+const auto controller_parameters_real =
+  tmc51x0::ControllerParameters{}
+    .withRampMode(tmc51x0::PositionMode)
+    .withMaxVelocity(20) // (millimeters/s)
+    .withMaxAcceleration(2) // ((millimeters/s)/s)
+    .withStartVelocity(1) // (millimeters/s)
+    .withStopVelocity(5) // (millimeters/s)
+    .withFirstVelocity(10) // (millimeters/s)
+    .withFirstAcceleration(10) // ((millimeters/s)/s)
+    .withMaxDeceleration(20) // ((millimeters/s)/s)
+    .withFirstDeceleration(25); // ((millimeters/s)/s)
 
 const int32_t MIN_TARGET_POSITION = 20;  // millimeters
 const int32_t MAX_TARGET_POSITION = 600;  // millimeters

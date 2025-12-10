@@ -35,12 +35,11 @@ const auto driver_parameters_real =
     .withPwmGradient(10) // (percent)
     .withStealthChopThreshold(60); // (rotations/min)
 
-const tmc51x0::ControllerParameters controller_parameters_real =
-{
-  .ramp_mode = tmc51x0::VelocityPositiveMode,
-  .max_velocity = 45, // (rotations/min)
-  .max_acceleration = 45, // ((rotations/min)/s)
-};
+const auto controller_parameters_real =
+  tmc51x0::ControllerParameters{}
+    .withRampMode(tmc51x0::VelocityPositiveMode)
+    .withMaxVelocity(45) // (rotations/min)
+    .withMaxAcceleration(45); // ((rotations/min)/s)
 
 const tmc51x0::SwitchParameters switch_parameters_running =
 {
