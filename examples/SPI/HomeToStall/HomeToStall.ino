@@ -47,11 +47,10 @@ const auto home_parameters_real =
     .withVelocity(20) // (radians/s)
     .withAcceleration(2); // ((radians/s)/s)
 
-const tmc51x0::StallParameters stall_parameters_real =
-{
-  .stall_guard_threshold = 3, // -64..63, 0 default, higher is less sensitive
-  .cool_step_threshold = 10 // (radians/s)
-};
+const auto stall_parameters_real =
+  tmc51x0::StallParameters{}
+    .withStallGuardThreshold(3) // -64..63, 0 default, higher is less sensitive
+    .withCoolStepThreshold(10); // (radians/s)
 
 const int32_t MOVE_POSITION = 110;  // radians
 
