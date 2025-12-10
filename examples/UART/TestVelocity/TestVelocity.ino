@@ -19,12 +19,11 @@ const uint32_t UART_BAUD_RATE = 115200;
 const uint32_t SERIAL_BAUD_RATE = 115200;
 const uint16_t LOOP_DELAY = 1000;
 
-const tmc51x0::ConverterParameters converter_parameters =
-{
-  // .clock_frequency_mhz = 16, // (typical external clock)
-  .microsteps_per_real_position_unit = 51200,
-  .seconds_per_real_velocity_unit = 60
-};
+const auto converter_parameters =
+  tmc51x0::ConverterParameters{}
+    //.withClockFrequencyMHz(16) // (typical external clock)
+    .withMicrostepsPerRealPositionUnit(51200)
+    .withSecondsPerRealVelocityUnit(60);
 // clock_frequency_mhz default is 12 (internal clock)
 // set clock_frequency_mhz if using external clock instead
 // 200 fullsteps per revolution for many steppers * 256 microsteps per fullstep = 51200

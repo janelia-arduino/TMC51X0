@@ -15,11 +15,10 @@ const auto spi_parameters =
     .withSpi(&spi)
     .withChipSelectPin(8);
 
-const tmc51x0::ConverterParameters converter_parameters =
-{
-  // .clock_frequency_mhz = 16, // (typical external clock)
-  .microsteps_per_real_position_unit = 8149
-};
+const auto converter_parameters =
+  tmc51x0::ConverterParameters{}
+    //.withClockFrequencyMHz(16) // (typical external clock)
+    .withMicrostepsPerRealPositionUnit(8149);
 // clock_frequency_mhz default is 12 (internal clock)
 // set clock_frequency_mhz if using external clock instead
 // 200 fullsteps per revolution for many steppers * 256 microsteps per fullstep
