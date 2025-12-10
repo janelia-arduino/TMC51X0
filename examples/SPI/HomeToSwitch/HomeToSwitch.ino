@@ -39,28 +39,26 @@ const auto controller_parameters_real =
     .withMaxVelocity(20) // (radians/s)
     .withMaxAcceleration(2); // ((radians/s)/s)
 
-const tmc51x0::HomeParameters home_parameters_homing_to_switch_real =
-{
-  .run_current = 25, // (percent)
-  .hold_current = 10, // (percent)
-  .target_position = -100, // (radians)
-  .velocity = 20, // (radians/s)
-  .acceleration = 2, // ((radians/s)/s)
-};
+const auto home_parameters_homing_to_switch_real =
+  tmc51x0::HomeParameters{}
+    .withRunCurrent(25) // (percent)
+    .withHoldCurrent(10) // (percent)
+    .withTargetPosition(-100) // (radians)
+    .withVelocity(20) // (radians/s)
+    .withAcceleration(2); // ((radians/s)/s)
 
 const tmc51x0::SwitchParameters switch_parameters_homing_to_switch =
 {
   .left_stop_enabled = true,
 };
 
-const tmc51x0::HomeParameters home_parameters_homing_off_switch_real =
-{
-  .run_current = 25, // (percent)
-  .hold_current = 10, // (percent)
-  .target_position = 2, // (radians)
-  .velocity = 1, // (radians/s)
-  .acceleration = 1, // ((radians/s)/s)
-};
+const auto home_parameters_homing_off_switch_real =
+  tmc51x0::HomeParameters{}
+    .withRunCurrent(25) // (percent)
+    .withHoldCurrent(10) // (percent)
+    .withTargetPosition(2) // (radians)
+    .withVelocity(1) // (radians/s)
+    .withAcceleration(1); // ((radians/s)/s)
 
 const tmc51x0::SwitchParameters switch_parameters_homing_off_switch =
 {

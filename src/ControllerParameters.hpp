@@ -44,7 +44,6 @@ struct ControllerParameters
   bool      stall_stop_enabled;
   uint32_t  min_dc_step_velocity;
 
-  // Base constructor (defaults copied from original struct)
   constexpr ControllerParameters(
     RampMode  ramp_mode            = VelocityPositiveMode,
     StopMode  stop_mode            = HardMode,

@@ -17,10 +17,6 @@ struct ConverterParameters
   uint32_t microsteps_per_real_position_unit;
   uint32_t seconds_per_real_velocity_unit;
 
-  // Base constructor with original defaults:
-  //   clock_frequency_mhz              = 12
-  //   microsteps_per_real_position_unit = 1
-  //   seconds_per_real_velocity_unit    = 1
   constexpr ConverterParameters(
     uint8_t  clock_frequency_mhz              = 12,
     uint32_t microsteps_per_real_position_unit = 1,

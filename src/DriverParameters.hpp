@@ -72,7 +72,6 @@ struct DriverParameters
   uint16_t            dc_time;
   uint8_t             dc_stall_guard_threshold;
 
-  // Base constructor – all defaults kept identical to your original struct
   constexpr DriverParameters(
     uint8_t             global_current_scaler                = 100,
     uint8_t             run_current                          = 50,

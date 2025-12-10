@@ -39,14 +39,13 @@ const auto controller_parameters_real =
     .withMaxVelocity(20) // (radians/s)
     .withMaxAcceleration(2); // ((radians/s)/s)
 
-const tmc51x0::HomeParameters home_parameters_real =
-{
-  .run_current = 25, // (percent)
-  .hold_current = 10, // (percent)
-  .target_position = -100, // (radians)
-  .velocity = 20, // (radians/s)
-  .acceleration = 2, // ((radians/s)/s)
-};
+const auto home_parameters_real =
+  tmc51x0::HomeParameters{}
+    .withRunCurrent(25) // (percent)
+    .withHoldCurrent(10) // (percent)
+    .withTargetPosition(-100) // (radians)
+    .withVelocity(20) // (radians/s)
+    .withAcceleration(2); // ((radians/s)/s)
 
 const tmc51x0::StallParameters stall_parameters_real =
 {

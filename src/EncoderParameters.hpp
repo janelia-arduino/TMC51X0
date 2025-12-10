@@ -27,10 +27,6 @@ struct EncoderParameters
   int32_t        microsteps_per_pulse_integer;
   int32_t        microsteps_per_pulse_fractional;
 
-  // Base constructor with original defaults:
-  //   fractional_mode                 = BinaryMode
-  //   microsteps_per_pulse_integer    = 1
-  //   microsteps_per_pulse_fractional = 0
   constexpr EncoderParameters(
     FractionalMode fractional_mode                 = BinaryMode,
     int32_t        microsteps_per_pulse_integer    = 1,
