@@ -15,7 +15,7 @@ namespace tmc51x0
 struct UartParameters
 {
   Stream * uart_ptr;
-  uint8_t node_address = 0;
+  uint8_t node_address;
   size_t enable_txrx_pin;
 
   constexpr UartParameters(Stream *s = nullptr,
