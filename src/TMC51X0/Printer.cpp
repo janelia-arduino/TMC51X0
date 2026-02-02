@@ -80,6 +80,13 @@ void Printer::printRegister(Registers::Ioin ioin)
   print_ptr_->println("--------------------------");
 }
 
+void Printer::readAndPrintIholdIrun()
+{
+  Registers::IholdIrun iholdirun;
+  iholdirun.bytes = registers_ptr_->read(Registers::IHOLD_IRUN);
+  printRegister(iholdirun);
+}
+
 void Printer::printRegister(Registers::IholdIrun iholdirun)
 {
   printRegisterPortion("iholdirun", iholdirun.bytes, HEX);
@@ -89,6 +96,33 @@ void Printer::printRegister(Registers::IholdIrun iholdirun)
   print_ptr_->println("--------------------------");
 }
 
+void Printer::readAndPrinttPowerDown()
+{
+  Registers::tPowerDown tpowerdown;
+  tpowerdown.bytes = registers_ptr_->read(Registers::TPOWER_DOWN);
+  printRegister(tpowerdown);
+}
+
+void Printer::printRegister(Registers::tPowerDown tpowerdown)
+{
+  printRegisterPortion("tpowerdown", tpowerdown.bytes, HEX);
+  printRegisterPortion("delay", tpowerdown.delaytime, HEX);
+  print_ptr_->println("--------------------------");
+}
+
+void Printer::readAndPrinttPwmthrs()
+{
+  Registers::tPwmthrs tpwmthrs;
+  tpwmthrs.bytes = registers_ptr_->read(Registers::TPOWER_DOWN);
+  printRegister(tpwmthrs);
+}
+
+void Printer::printRegister(Registers::tPwmthrs tpwmthrs)
+{
+  printRegisterPortion("tpwmthrs", tpwmthrs.bytes, HEX);
+  printRegisterPortion("upperVel", tpwmthrs.uppervel, HEX);
+  print_ptr_->println("--------------------------");
+}
 
 void Printer::readAndPrintSwMode()
 {

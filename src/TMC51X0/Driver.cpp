@@ -63,6 +63,13 @@ void Driver::writeHoldDelay(uint8_t hold_delay)
   registers_ptr_->write(Registers::IHOLD_IRUN, ihold_irun.bytes);
 }
 
+void Driver::writeiHoldiRun(uint32_t iholdirun)
+{
+  Registers::IholdIrun ihold_irun;
+  ihold_irun.bytes = iholdirun;
+  registers_ptr_->write(Registers::IHOLD_IRUN, ihold_irun.bytes);
+}
+
 void Driver::enableStealthChop()
 {
   Registers::Gconf gconf;
@@ -85,6 +92,20 @@ void Driver::writePwmOffset(uint8_t pwm_amplitude)
   pwmconf.bytes = registers_ptr_->getStored(Registers::PWMCONF);
   pwmconf.pwm_ofs = pwm_amplitude;
   registers_ptr_->write(Registers::PWMCONF, pwmconf.bytes);
+}
+
+void Driver::writePwmconf(uint32_t pwm_conf)
+{
+  Registers::Pwmconf pwmconf;
+  pwmconf.bytes = pwm_conf;
+  registers_ptr_->write(Registers::PWMCONF, pwmconf.bytes);
+}
+
+void Driver::writeGconf(uint32_t g_conf)
+{
+  Registers::Gconf gconf;
+  gconf.bytes = g_conf;
+  registers_ptr_->write(Registers::GCONF, gconf.bytes);
 }
 
 void Driver::writePwmGradient(uint8_t pwm_amplitude)
@@ -142,6 +163,11 @@ void Driver::writeChopperMode(ChopperMode chopper_mode)
 void Driver::writeStealthChopThreshold(uint32_t tstep)
 {
   registers_ptr_->write(Registers::TPWMTHRS, tstep);
+}
+
+void Driver::writetPowerDown(uint32_t tpowerdown)
+{
+  registers_ptr_->write(Registers::TPOWER_DOWN, tpowerdown);
 }
 
 void Driver::writeCoolStepThreshold(uint32_t tstep)

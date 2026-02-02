@@ -24,6 +24,9 @@
 #define DIRECT_MODE_OUTPUT(base, pin)   pin_function((PinName)pin, STM_PIN_DATA(STM_MODE_OUTPUT_PP, GPIO_NOPULL, 0))
 
 #define pin_size_t IO_REG_TYPE
+
+#elif defined(ARDUINO_ARCH_ESP32)
+#define pin_size_t uint16_t
 #endif
 
 namespace tmc51x0

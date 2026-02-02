@@ -85,12 +85,11 @@ struct Registers
     ADDRESS_COUNT = 0x74,
   };
 
-  void write(RegisterAddress register_address,
-    uint32_t data);
-  uint32_t read(RegisterAddress register_address);
-  uint32_t getStored(RegisterAddress register_address);
-  bool writeable(RegisterAddress register_address);
-  bool readable(RegisterAddress register_address);
+  void      write(RegisterAddress register_address, uint32_t data);
+  uint32_t  read(RegisterAddress register_address);
+  uint32_t  getStored(RegisterAddress register_address);
+  bool      writeable(RegisterAddress register_address);
+  bool      readable(RegisterAddress register_address);
 
   union Gconf
   {
@@ -201,6 +200,26 @@ struct Registers
       uint32_t reserved1 : 3;
       uint32_t iholddelay : 4;
       uint32_t reserved2 : 12;
+    };
+    uint32_t bytes;
+  };
+
+  union tPowerDown
+  {
+    struct
+    {
+      uint32_t delaytime : 8;
+      uint32_t reserved0 : 24;
+    };
+    uint32_t bytes;
+  };
+
+  union tPwmthrs
+  {
+    struct
+    {
+      uint32_t uppervel : 20;
+      uint32_t reserved0 : 12;
     };
     uint32_t bytes;
   };

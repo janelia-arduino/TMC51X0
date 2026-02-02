@@ -29,7 +29,14 @@ public:
   void readAndPrintIoin();
   void printRegister(Registers::Ioin ioin);
 
+  void readAndPrintIholdIrun();
   void printRegister(Registers::IholdIrun iholdirun);
+
+  void readAndPrinttPowerDown();
+  void printRegister(Registers::tPowerDown tpowerdown);
+
+  void readAndPrinttPwmthrs();
+  void printRegister(Registers::tPwmthrs tpwmthrs);
 
   void readAndPrintSwMode();
   void printRegister(Registers::SwMode sw_mode);

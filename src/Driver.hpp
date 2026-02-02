@@ -44,10 +44,15 @@ public:
   // 0: instant power down
   // 1..15: delay per current reduction step in multiple of 2^18 clocks
   void writeHoldDelay(uint8_t hold_delay);
+  
+  void writeiHoldiRun(uint32_t irunihold);
 
   void enableStealthChop();
   void disableStealthChop();
 
+  void writeGconf(uint32_t g_conf);
+
+  void writePwmconf(uint32_t pwm_conf);
   // range 0..255
   void writePwmOffset(uint8_t pwm_amplitude);
   // range 0..255
@@ -84,6 +89,7 @@ public:
   void writeChopperMode(ChopperMode chopper_mode);
 
   void writeStealthChopThreshold(uint32_t tstep);
+  void writetPowerDown(uint32_t tpowerdown);
   void writeCoolStepThreshold(uint32_t tstep);
   void writeHighVelocityThreshold(uint32_t tstep);
 
