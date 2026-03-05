@@ -13,99 +13,214 @@ UartInterface::setup (UartParameters uart_parameters)
 {
   interface_mode = UartMode;
   uart_parameters_ = uart_parameters;
+  last_uart_error_ = UartError::None;
 
-  pinMode (uart_parameters_.enable_txrx_pin, OUTPUT);
-  disableTxEnableRx ();
+  if (txrxPinEnabled ())
+    {
+      pinMode (uart_parameters_.enable_txrx_pin, OUTPUT);
+      disableTxEnableRx ();
+    }
+
+  UartEngine::Callbacks callbacks;
+  callbacks.ctx = this;
+  callbacks.available = &UartInterface::engineSerialAvailable_;
+  callbacks.read = &UartInterface::engineSerialRead_;
+  callbacks.write = &UartInterface::engineSerialWrite_;
+  callbacks.flush = &UartInterface::engineSerialFlush_;
+  callbacks.set_tx_enable = txrxPinEnabled () ? &UartInterface::engineSetTxEnable_ : nullptr;
+
+  UartEngine::Config config;
+  config.baud_rate = uart_parameters_.baud_rate;
+  config.reply_timeout_us = uart_parameters_.reply_timeout_us;
+  config.enable_delay_us = uart_parameters_.enable_delay_us;
+  config.max_retries = uart_parameters_.max_retries;
+  config.tx_complete_delay_us = uart_parameters_.tx_complete_delay_us;
+
+  uart_engine_.configure (callbacks, config);
 }
 
 void
 UartInterface::writeRegister (uint8_t register_address,
                               uint32_t data)
 {
-  CopiWriteDatagram copi_write_datagram;
-  copi_write_datagram.bytes = 0;
-  copi_write_datagram.sync = SYNC;
-  copi_write_datagram.node_address = uart_parameters_.node_address;
-  copi_write_datagram.register_address = register_address;
-  copi_write_datagram.rw = RW_WRITE;
-  copi_write_datagram.data = reverseData (data);
-  copi_write_datagram.crc = calculateCrc (copi_write_datagram, COPI_WRITE_DATAGRAM_SIZE);
-  blockingWrite (copi_write_datagram, COPI_WRITE_DATAGRAM_SIZE);
+  (void)writeRegisterResult (register_address, data);
 }
 
 uint32_t
 UartInterface::readRegister (uint8_t register_address)
 {
-  CopiReadDatagram copi_read_datagram;
-  copi_read_datagram.bytes = 0;
-  copi_read_datagram.sync = SYNC;
-  copi_read_datagram.node_address = uart_parameters_.node_address;
-  copi_read_datagram.register_address = register_address;
-  copi_read_datagram.rw = RW_READ;
-  copi_read_datagram.crc = calculateCrc (copi_read_datagram, COPI_READ_DATAGRAM_SIZE);
-  blockingWrite (copi_read_datagram, COPI_READ_DATAGRAM_SIZE);
-  CipoDatagram cipo_datagram;
-  cipo_datagram.bytes = 0;
-  cipo_datagram = blockingRead ();
-  return reverseData (cipo_datagram.data);
+  Result<uint32_t> r = readRegisterResult (register_address);
+  return r.ok () ? r.value : 0;
 }
 
-// private
+Result<void>
+UartInterface::writeRegisterResult (uint8_t register_address,
+                                    uint32_t data)
+{
+  // Blocking wrapper built on the poll-driven engine.
+  Result<void> start = startWriteRegister (register_address, data);
+  if (!start.ok ())
+    {
+      return start;
+    }
 
-template <typename Datagram>
+  while (!uart_engine_.resultReady ())
+    {
+      uart_engine_.poll (micros ());
+      if (!uart_engine_.resultReady ())
+        {
+          delayMicroseconds (1);
+        }
+    }
+
+  return takeWriteResult ();
+}
+
+Result<uint32_t>
+UartInterface::readRegisterResult (uint8_t register_address)
+{
+  Result<uint32_t> result;
+
+  Result<void> start = startReadRegister (register_address);
+  if (!start.ok ())
+    {
+      result.error = start.error;
+      last_uart_error_ = result.error;
+      return result;
+    }
+
+  while (!uart_engine_.resultReady ())
+    {
+      uart_engine_.poll (micros ());
+      if (!uart_engine_.resultReady ())
+        {
+          delayMicroseconds (1);
+        }
+    }
+
+  return takeReadResult ();
+}
+
+Result<void>
+UartInterface::startWriteRegister (uint8_t register_address,
+                                  uint32_t data)
+{
+  Result<void> r;
+  last_uart_error_ = UartError::None;
+
+  if (uart_parameters_.uart_ptr == nullptr)
+    {
+      last_uart_error_ = UartError::NotInitialized;
+      r.error = last_uart_error_;
+      return r;
+    }
+
+  r = uart_engine_.startWrite (uart_parameters_.node_address,
+                               register_address,
+                               data);
+  last_uart_error_ = r.error;
+  return r;
+}
+
+Result<void>
+UartInterface::startReadRegister (uint8_t register_address)
+{
+  Result<void> r;
+  last_uart_error_ = UartError::None;
+
+  if (uart_parameters_.uart_ptr == nullptr)
+    {
+      last_uart_error_ = UartError::NotInitialized;
+      r.error = last_uart_error_;
+      return r;
+    }
+
+  r = uart_engine_.startRead (uart_parameters_.node_address,
+                              register_address);
+  last_uart_error_ = r.error;
+  return r;
+}
+
 void
-UartInterface::blockingWrite (Datagram &datagram,
-                              uint8_t datagram_size)
+UartInterface::poll (uint32_t now_us)
 {
-  enableTxDisableRx ();
-
-  delayMicroseconds (ENABLE_DELAY_MICROSECONDS);
-
-  uint8_t write_byte;
-  for (uint8_t i = 0; i < datagram_size; ++i)
-    {
-      write_byte = (datagram.bytes >> (i * BITS_PER_BYTE)) & BYTE_MAX_VALUE;
-      serialWrite (write_byte);
-    }
-  serialFlush ();
-
-  disableTxEnableRx ();
+  uart_engine_.poll (now_us);
 }
 
-UartInterface::CipoDatagram
-UartInterface::blockingRead ()
+void
+UartInterface::poll ()
 {
-  CipoDatagram cipo_datagram;
-  cipo_datagram.bytes = 0;
+  uart_engine_.poll (micros ());
+}
 
-  uint64_t read_byte;
+Result<void>
+UartInterface::takeWriteResult ()
+{
+  Result<void> r = uart_engine_.takeWriteResult ();
+  last_uart_error_ = r.error;
+  return r;
+}
 
-  // clear the serial receive buffer if necessary
-  while (serialAvailable () > 0)
+Result<uint32_t>
+UartInterface::takeReadResult ()
+{
+  Result<uint32_t> r = uart_engine_.takeReadResult ();
+  last_uart_error_ = r.error;
+  return r;
+}
+
+// --------------------------------------------------------------------------
+// Engine callbacks
+// --------------------------------------------------------------------------
+
+int
+UartInterface::engineSerialAvailable_ (void *ctx)
+{
+  return static_cast<UartInterface *> (ctx)->serialAvailable ();
+}
+
+int
+UartInterface::engineSerialRead_ (void *ctx)
+{
+  return static_cast<UartInterface *> (ctx)->serialRead ();
+}
+
+size_t
+UartInterface::engineSerialWrite_ (void *ctx,
+                                    uint8_t b)
+{
+  return static_cast<UartInterface *> (ctx)->serialWrite (b);
+}
+
+void
+UartInterface::engineSerialFlush_ (void *ctx)
+{
+  static_cast<UartInterface *> (ctx)->serialFlush ();
+}
+
+void
+UartInterface::engineSetTxEnable_ (void *ctx,
+                                  bool enable)
+{
+  UartInterface *self = static_cast<UartInterface *> (ctx);
+  if (enable)
     {
-      read_byte = serialRead ();
+      self->enableTxDisableRx ();
     }
-
-  uint32_t reply_delay = 0;
-  while ((serialAvailable () < CIPO_DATAGRAM_SIZE) and (reply_delay < REPLY_DELAY_MAX_MICROSECONDS))
+  else
     {
-      delayMicroseconds (REPLY_DELAY_INC_MICROSECONDS);
-      reply_delay += REPLY_DELAY_INC_MICROSECONDS;
+      self->disableTxEnableRx ();
     }
+}
 
-  if (reply_delay >= REPLY_DELAY_MAX_MICROSECONDS)
-    {
-      Serial.println ("Read timeout!");
-      return cipo_datagram;
-    }
+// --------------------------------------------------------------------------
+// Low-level UART access
+// --------------------------------------------------------------------------
 
-  for (uint8_t i = 0; i < CIPO_DATAGRAM_SIZE; ++i)
-    {
-      read_byte = serialRead ();
-      cipo_datagram.bytes |= (read_byte << (i * BITS_PER_BYTE));
-    }
-
-  return cipo_datagram;
+bool
+UartInterface::txrxPinEnabled () const
+{
+  return uart_parameters_.enable_txrx_pin != NO_PIN;
 }
 
 int
@@ -135,7 +250,7 @@ UartInterface::serialRead ()
     {
       return uart_parameters_.uart_ptr->read ();
     }
-  return 0;
+  return -1;
 }
 
 void
@@ -143,59 +258,26 @@ UartInterface::serialFlush ()
 {
   if (uart_parameters_.uart_ptr != nullptr)
     {
-      return uart_parameters_.uart_ptr->flush ();
+      uart_parameters_.uart_ptr->flush ();
     }
-}
-
-uint32_t
-UartInterface::reverseData (uint32_t data)
-{
-  uint32_t reversed_data = 0;
-  uint8_t right_shift;
-  uint8_t left_shift;
-  for (uint8_t i = 0; i < DATA_SIZE; ++i)
-    {
-      right_shift = (DATA_SIZE - i - 1) * BITS_PER_BYTE;
-      left_shift = i * BITS_PER_BYTE;
-      reversed_data |= ((data >> right_shift) & BYTE_MAX_VALUE) << left_shift;
-    }
-  return reversed_data;
-}
-
-template <typename Datagram>
-uint8_t
-UartInterface::calculateCrc (Datagram &datagram,
-                             uint8_t datagram_size)
-{
-  uint8_t crc = 0;
-  uint8_t current_byte;
-  for (uint8_t i = 0; i < (datagram_size - 1); ++i)
-    {
-      current_byte = (datagram.bytes >> (i * BITS_PER_BYTE)) & BYTE_MAX_VALUE;
-      for (uint8_t j = 0; j < BITS_PER_BYTE; ++j)
-        {
-          if ((crc >> 7) ^ (current_byte & 0x01))
-            {
-              crc = (crc << 1) ^ 0x07;
-            }
-          else
-            {
-              crc = crc << 1;
-            }
-          current_byte = current_byte >> 1;
-        }
-    }
-  return crc;
 }
 
 void
 UartInterface::enableTxDisableRx ()
 {
-  digitalWrite (uart_parameters_.enable_txrx_pin, ENABLE_TX_DISABLE_RX_PIN_VALUE);
+  if (!txrxPinEnabled ())
+    {
+      return;
+    }
+  digitalWrite (uart_parameters_.enable_txrx_pin, HIGH);
 }
 
 void
 UartInterface::disableTxEnableRx ()
 {
-  digitalWrite (uart_parameters_.enable_txrx_pin, DISABLE_TX_ENABLE_RX_PIN_VALUE);
+  if (!txrxPinEnabled ())
+    {
+      return;
+    }
+  digitalWrite (uart_parameters_.enable_txrx_pin, LOW);
 }

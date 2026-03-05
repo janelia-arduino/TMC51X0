@@ -25,46 +25,48 @@ void
 SpiInterface::writeRegister (uint8_t register_address,
                              uint32_t data)
 {
-  CopiDatagram copi_datagram;
-  copi_datagram.register_address = register_address;
-  copi_datagram.rw = RW_WRITE;
-  copi_datagram.data = data;
-  writeRead (copi_datagram);
+  spi::packDatagram (register_address,
+                     spi::RW_WRITE,
+                     data,
+                     tx_buffer_);
+  transferDatagram (tx_buffer_, rx_buffer_);
+
+  noInterrupts ();
+  spi_status_.raw = spi::unpackStatus (rx_buffer_);
+  interrupts ();
 }
 
 uint32_t
 SpiInterface::readRegister (uint8_t register_address)
 {
-  CopiDatagram copi_datagram;
-  copi_datagram.register_address = register_address;
-  copi_datagram.rw = RW_READ;
-  copi_datagram.data = 0;
-  CipoDatagram cipo_datagram = writeRead (copi_datagram);
-  // cipo data is returned on second read
-  cipo_datagram = writeRead (copi_datagram);
-  return cipo_datagram.data;
+  spi::packDatagram (register_address,
+                     spi::RW_READ,
+                     0,
+                     tx_buffer_);
+
+  // NOTE: data is returned on the second read.
+  transferDatagram (tx_buffer_, rx_buffer_);
+  transferDatagram (tx_buffer_, rx_buffer_);
+
+  noInterrupts ();
+  spi_status_.raw = spi::unpackStatus (rx_buffer_);
+  interrupts ();
+
+  return spi::unpackData (rx_buffer_);
 }
 
 // private
 
-SpiInterface::CipoDatagram
-SpiInterface::writeRead (CopiDatagram copi_datagram)
+void
+SpiInterface::transferDatagram (const uint8_t tx[spi::DATAGRAM_SIZE],
+                                uint8_t rx[spi::DATAGRAM_SIZE])
 {
-  uint8_t write_byte, read_byte;
-  CipoDatagram cipo_datagram;
-  cipo_datagram.bytes = 0x0;
   beginTransaction ();
-  for (int i = (DATAGRAM_SIZE - 1); i >= 0; --i)
+  for (size_t i = 0; i < spi::DATAGRAM_SIZE; ++i)
     {
-      write_byte = (copi_datagram.bytes >> (8 * i)) & 0xff;
-      read_byte = spi_parameters_.spi_ptr->transfer (write_byte);
-      cipo_datagram.bytes |= ((uint32_t)read_byte) << (8 * i);
+      rx[i] = spi_parameters_.spi_ptr->transfer (tx[i]);
     }
   endTransaction ();
-  noInterrupts ();
-  spi_status_ = cipo_datagram.spi_status;
-  interrupts ();
-  return cipo_datagram;
 }
 
 void

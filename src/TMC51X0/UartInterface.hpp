@@ -12,6 +12,9 @@
 #include "UartParameters.hpp"
 #include "Interface.hpp"
 
+#include "Result.hpp"
+#include "UartEngine.hpp"
+
 namespace tmc51x0
 {
 class UartInterface : public Interface
@@ -19,92 +22,63 @@ class UartInterface : public Interface
 public:
   void setup (UartParameters uart_parameters);
 
+  // --------------------------------------------------------------------------
+  // Backward-compatible blocking API
+  // --------------------------------------------------------------------------
+
+  // These call the blocking wrappers and update last_uart_error_.
   void writeRegister (uint8_t register_address,
                       uint32_t data);
   uint32_t readRegister (uint8_t register_address);
 
+  // --------------------------------------------------------------------------
+  // Blocking API with explicit error reporting
+  // --------------------------------------------------------------------------
+
+  Result<void> writeRegisterResult (uint8_t register_address,
+                                    uint32_t data);
+  Result<uint32_t> readRegisterResult (uint8_t register_address);
+
+  UartError getLastUartError () const { return last_uart_error_; }
+
+  // --------------------------------------------------------------------------
+  // Non-blocking API (poll-driven)
+  // --------------------------------------------------------------------------
+
+  Result<void> startWriteRegister (uint8_t register_address,
+                                  uint32_t data);
+  Result<void> startReadRegister (uint8_t register_address);
+
+  void poll (uint32_t now_us);
+  void poll ();
+
+  bool busy () const { return uart_engine_.busy (); }
+  bool resultReady () const { return uart_engine_.resultReady (); }
+
+  Result<void> takeWriteResult ();
+  Result<uint32_t> takeReadResult ();
+
 private:
   UartParameters uart_parameters_;
+  UartError last_uart_error_{ UartError::None };
 
-  const static uint8_t BYTE_MAX_VALUE = 0xFF;
-  const static uint8_t BITS_PER_BYTE = 8;
+  UartEngine uart_engine_;
 
-  const static uint8_t SYNC = 0b101;
-  const static uint8_t DATA_SIZE = 4;
+  // Engine callbacks
+  static int engineSerialAvailable_ (void *ctx);
+  static int engineSerialRead_ (void *ctx);
+  static size_t engineSerialWrite_ (void *ctx,
+                                    uint8_t b);
+  static void engineSerialFlush_ (void *ctx);
+  static void engineSetTxEnable_ (void *ctx,
+                                  bool enable);
 
-  const static uint8_t ENABLE_TX_DISABLE_RX_PIN_VALUE = HIGH;
-  const static uint8_t DISABLE_TX_ENABLE_RX_PIN_VALUE = LOW;
-
-  // Copi Datagrams
-  const static uint8_t COPI_WRITE_DATAGRAM_SIZE = 8;
-  union CopiWriteDatagram
-  {
-    struct
-    {
-      uint64_t sync : 4;
-      uint64_t reserved : 4;
-      uint64_t node_address : 8;
-      uint64_t register_address : 7;
-      uint64_t rw : 1;
-      uint64_t data : 32;
-      uint64_t crc : 8;
-    };
-    uint64_t bytes;
-  };
-
-  const static uint8_t COPI_READ_DATAGRAM_SIZE = 4;
-  union CopiReadDatagram
-  {
-    struct
-    {
-      uint32_t sync : 4;
-      uint32_t reserved : 4;
-      uint32_t node_address : 8;
-      uint32_t register_address : 7;
-      uint32_t rw : 1;
-      uint32_t crc : 8;
-    };
-    uint32_t bytes;
-  };
-
-  const static uint8_t RW_READ = 0;
-  const static uint8_t RW_WRITE = 1;
-
-  // Cipo Datagrams
-  const static uint8_t CIPO_DATAGRAM_SIZE = 8;
-  union CipoDatagram
-  {
-    struct
-    {
-      uint64_t sync : 4;
-      uint64_t reserved : 4;
-      uint64_t node_address : 8;
-      uint64_t register_address : 7;
-      uint64_t rw : 1;
-      uint64_t data : 32;
-      uint64_t crc : 8;
-    };
-    uint64_t bytes;
-  };
-
-  const static uint32_t REPLY_DELAY_INC_MICROSECONDS = 1;
-  const static uint32_t REPLY_DELAY_MAX_MICROSECONDS = 10000;
-  const static uint32_t ENABLE_DELAY_MICROSECONDS = 10;
-
-  template <typename Datagram>
-  void blockingWrite (Datagram &datagram,
-                      uint8_t datagram_size);
-  CipoDatagram blockingRead ();
+  bool txrxPinEnabled () const;
 
   int serialAvailable ();
   size_t serialWrite (uint8_t c);
   int serialRead ();
   void serialFlush ();
-
-  uint32_t reverseData (uint32_t data);
-  template <typename Datagram>
-  uint8_t calculateCrc (Datagram &datagram,
-                        uint8_t datagram_size);
 
   void enableTxDisableRx ();
   void disableTxEnableRx ();

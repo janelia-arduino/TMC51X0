@@ -9,6 +9,8 @@
 #define TMC51X0_REGISTERS_HPP
 #include <Arduino.h>
 
+#include "Constants.hpp"
+
 #include "TMC51X0/Interface.hpp"
 
 #include "tmc_bits.hpp"
@@ -2025,6 +2027,5 @@ private:
   friend class ::TMC51X0;
 };
 
-const size_t NO_PIN = 255;
 }
 #endif
