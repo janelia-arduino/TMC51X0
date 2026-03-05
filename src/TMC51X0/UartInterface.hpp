@@ -12,17 +12,16 @@
 #include "UartParameters.hpp"
 #include "Interface.hpp"
 
-
 namespace tmc51x0
 {
 class UartInterface : public Interface
 {
 public:
-  void setup(UartParameters uart_parameters);
+  void setup (UartParameters uart_parameters);
 
-  void writeRegister(uint8_t register_address,
-    uint32_t data);
-  uint32_t readRegister(uint8_t register_address);
+  void writeRegister (uint8_t register_address,
+                      uint32_t data);
+  uint32_t readRegister (uint8_t register_address);
 
 private:
   UartParameters uart_parameters_;
@@ -92,23 +91,23 @@ private:
   const static uint32_t REPLY_DELAY_MAX_MICROSECONDS = 10000;
   const static uint32_t ENABLE_DELAY_MICROSECONDS = 10;
 
-  template<typename Datagram>
-  void blockingWrite(Datagram & datagram,
-    uint8_t datagram_size);
-  CipoDatagram blockingRead();
+  template <typename Datagram>
+  void blockingWrite (Datagram &datagram,
+                      uint8_t datagram_size);
+  CipoDatagram blockingRead ();
 
-  int serialAvailable();
-  size_t serialWrite(uint8_t c);
-  int serialRead();
-  void serialFlush();
+  int serialAvailable ();
+  size_t serialWrite (uint8_t c);
+  int serialRead ();
+  void serialFlush ();
 
-  uint32_t reverseData(uint32_t data);
-  template<typename Datagram>
-  uint8_t calculateCrc(Datagram & datagram,
-    uint8_t datagram_size);
+  uint32_t reverseData (uint32_t data);
+  template <typename Datagram>
+  uint8_t calculateCrc (Datagram &datagram,
+                        uint8_t datagram_size);
 
-  void enableTxDisableRx();
-  void disableTxEnableRx();
+  void enableTxDisableRx ();
+  void disableTxEnableRx ();
 };
 }
 #endif

@@ -15,45 +15,44 @@
 #include "Driver.hpp"
 #include "Controller.hpp"
 
-
 namespace tmc51x0
 {
 class Converter
 {
 public:
-  void setup(ConverterParameters parameters);
+  void setup (ConverterParameters parameters);
 
-  DriverParameters driverParametersRealToChip(DriverParameters parameters);
-  ControllerParameters controllerParametersRealToChip(ControllerParameters parameters);
-  HomeParameters homeParametersRealToChip(HomeParameters parameters);
-  StallParameters stallParametersRealToChip(StallParameters parameters);
+  DriverParameters driverParametersRealToChip (DriverParameters parameters);
+  ControllerParameters controllerParametersRealToChip (ControllerParameters parameters);
+  HomeParameters homeParametersRealToChip (HomeParameters parameters);
+  StallParameters stallParametersRealToChip (StallParameters parameters);
 
-  int32_t positionChipToReal(int32_t position_chip);
-  int32_t positionRealToChip(int32_t position_real);
+  int32_t positionChipToReal (int32_t position_chip);
+  int32_t positionRealToChip (int32_t position_real);
 
-  int32_t velocityChipToReal(int32_t velocity_chip);
-  int32_t velocityRealToChip(int32_t velocity_real);
-  int32_t velocityFloatToChip(float velocity_real);
+  int32_t velocityChipToReal (int32_t velocity_chip);
+  int32_t velocityRealToChip (int32_t velocity_real);
+  int32_t velocityFloatToChip (float velocity_real);
 
-  int32_t tstepToVelocityReal(int32_t tstep);
-  int32_t velocityRealToTstep(int32_t velocity_real);
-  int32_t velocityChipToTstep(int32_t velocity_chip);
-  int32_t velocityTstepToChip(int32_t tstep);
+  int32_t tstepToVelocityReal (int32_t tstep);
+  int32_t velocityRealToTstep (int32_t velocity_real);
+  int32_t velocityChipToTstep (int32_t velocity_chip);
+  int32_t velocityTstepToChip (int32_t tstep);
 
-  int32_t accelerationChipToReal(int32_t acceleration_chip);
-  int32_t accelerationRealToChip(int32_t acceleration_chip);
+  int32_t accelerationChipToReal (int32_t acceleration_chip);
+  int32_t accelerationRealToChip (int32_t acceleration_chip);
 
-  uint8_t percentToGlobalCurrentScaler(uint8_t percent);
+  uint8_t percentToGlobalCurrentScaler (uint8_t percent);
 
-  uint8_t percentToCurrentSetting(uint8_t percent);
-  uint8_t currentSettingToPercent(uint8_t current_setting);
+  uint8_t percentToCurrentSetting (uint8_t percent);
+  uint8_t currentSettingToPercent (uint8_t current_setting);
 
-  uint8_t percentToHoldDelaySetting(uint8_t percent);
-  uint8_t holdDelaySettingToPercent(uint8_t hold_delay_setting);
+  uint8_t percentToHoldDelaySetting (uint8_t percent);
+  uint8_t holdDelaySettingToPercent (uint8_t hold_delay_setting);
 
-  uint8_t percentToPwmSetting(uint8_t percent);
+  uint8_t percentToPwmSetting (uint8_t percent);
 
-  uint32_t millisecondsToZeroWaitDuration(uint32_t milliseconds);
+  uint32_t millisecondsToZeroWaitDuration (uint32_t milliseconds);
 
 private:
   ConverterParameters converter_parameters_;
@@ -83,20 +82,20 @@ private:
   const static uint8_t SEMAX_MIN = 0;
   const static uint8_t SEMAX_MAX = 15;
 
-  int32_t velocityChipToHz(int32_t velocity_chip);
-  int32_t velocityHzToChip(int32_t velocity_hz);
-  int32_t velocityRealToHz(int32_t velocity_real);
-  int32_t velocityHzToReal(int32_t velocity_hz);
+  int32_t velocityChipToHz (int32_t velocity_chip);
+  int32_t velocityHzToChip (int32_t velocity_hz);
+  int32_t velocityRealToHz (int32_t velocity_real);
+  int32_t velocityHzToReal (int32_t velocity_hz);
 
-  int32_t tstepToVelocityHz(int32_t tstep);
-  int32_t velocityHzToTstep(int32_t velocity_hz);
+  int32_t tstepToVelocityHz (int32_t tstep);
+  int32_t velocityHzToTstep (int32_t velocity_hz);
 
-  int32_t accelerationChipToHzPerS(int32_t acceleration_chip);
-  int32_t accelerationHzPerSToChip(int32_t acceleration_hz_per_s);
-  int32_t accelerationRealToHzPerS(int32_t acceleration_real);
-  int32_t accelerationHzPerSToReal(int32_t acceleration_hz_per_s);
+  int32_t accelerationChipToHzPerS (int32_t acceleration_chip);
+  int32_t accelerationHzPerSToChip (int32_t acceleration_hz_per_s);
+  int32_t accelerationRealToHzPerS (int32_t acceleration_real);
+  int32_t accelerationHzPerSToReal (int32_t acceleration_hz_per_s);
 
-  uint32_t constrain_(uint32_t value, uint32_t low, uint32_t high);
+  uint32_t constrain_ (uint32_t value, uint32_t low, uint32_t high);
 };
 }
 #endif

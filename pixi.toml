@@ -1,0 +1,130 @@
+[workspace]
+name = "TMC51X0"
+version = "4.0.0"
+description = "Arduino library for the Trinamic TMC5130/TMC5160 controller+driver family."
+authors = ["Peter Polidoro <peter@polidoro.io>"]
+channels = ["conda-forge"]
+
+# Supported pixi platforms. Including these ensures pixi.lock can be solved
+# for each OS/arch (Linux/macOS/Windows).
+platforms = ["linux-64", "osx-64", "osx-arm64", "win-64"]
+
+[dependencies]
+# PlatformIO CLI (conda-forge, noarch). This provides the `pio` command.
+platformio = ">=6.1.19,<7"
+# Explicit Python for repo helper scripts.
+python = ">=3.12,<=3.14"
+# Optional but handy for formatting and basic tooling parity with other repos.
+clang-tools = "*"
+git = "*"
+
+# --------------------------------------------------------------------------------------
+# git archive
+# --------------------------------------------------------------------------------------
+
+[tasks.archive]
+description = "Export the git repository at the tip of the current branch."
+cmd = "git archive --format=zip --output=../TMC51X0.zip HEAD"
+
+# --------------------------------------------------------------------------------------
+# clang-format
+# --------------------------------------------------------------------------------------
+
+[tasks.format]
+description = "Format staged changes only (git clang-format) for C/C++/Arduino (.ino)."
+cmd = "git clang-format --staged --style=file --binary clang-format --extensions c,cc,cpp,cxx,h,hh,hpp,hxx,ino"
+
+[tasks.format-wip]
+description = "Format working tree changes (allows unstaged files) for C/C++/Arduino (.ino)."
+cmd = "git clang-format --style=file --binary clang-format --extensions c,cc,cpp,cxx,h,hh,hpp,hxx,ino --force"
+
+[tasks.format-all]
+description = "Reformat ALL tracked C/C++/Arduino files in the repo."
+cmd = "python tools/clang_format_all.py"
+
+[tasks.format-check]
+description = "Check formatting (no writes). Fails if files need reformatting."
+cmd = "python tools/clang_format_all.py --check"
+
+# --------------------------------------------------------------------------------------
+# PlatformIO helpers
+#
+# We select which example to build by setting PLATFORMIO_SRC_DIR (instead of editing
+# platformio.ini). A Python wrapper keeps this portable across shells/OSes.
+# --------------------------------------------------------------------------------------
+
+[tasks]
+# List connected devices/ports (helps users discover COM3, /dev/ttyACM0, /dev/cu.usbmodem*, etc.)
+ports = "pio device list"
+
+[tasks.pio-version]
+cmd = "pio --version"
+
+[tasks.build]
+args = [
+  { arg = "example", default = "examples/SPI/TestCommunication" },
+  { arg = "env", default = "pico" },
+]
+cmd = "python tools/pio_task.py build --example {{ example }} --env {{ env }}"
+
+[tasks.clean]
+args = [
+  { arg = "example", default = "examples/SPI/TestCommunication" },
+  { arg = "env", default = "pico" },
+]
+cmd = "python tools/pio_task.py clean --example {{ example }} --env {{ env }}"
+
+[tasks.upload]
+args = [
+  { arg = "example", default = "examples/SPI/TestCommunication" },
+  { arg = "env", default = "pico" },
+  { arg = "port", default = "/dev/ttyACM0" },
+]
+cmd = "python tools/pio_task.py upload --example {{ example }} --env {{ env }} --port {{ port }}"
+
+# Clean + Upload (upload implicitly builds)
+[tasks.flash]
+args = [
+  { arg = "example", default = "examples/SPI/TestCommunication" },
+  { arg = "env", default = "pico" },
+  { arg = "port", default = "/dev/ttyACM0" },
+]
+cmd = "python tools/pio_task.py flash --example {{ example }} --env {{ env }} --port {{ port }}"
+
+# Clean + Build (compile only)
+[tasks.rebuild]
+args = [
+  { arg = "example", default = "examples/SPI/TestCommunication" },
+  { arg = "env", default = "pico" },
+]
+cmd = "python tools/pio_task.py rebuild --example {{ example }} --env {{ env }}"
+
+# "Nuclear" clean scoped to one example.
+[tasks.deepclean]
+args = [{ arg = "example", default = "examples/SPI/TestCommunication" }]
+cmd = "python tools/pio_task.py deepclean --example {{ example }}"
+
+[tasks.monitor]
+args = [
+  { arg = "port", default = "/dev/ttyACM0" },
+  { arg = "baud", default = "115200" },
+]
+cmd = "python tools/pio_task.py monitor --port {{ port }} --baud {{ baud }}"
+
+# Run host-native tests (Unity)
+[tasks.test]
+args = [{ arg = "env", default = "native" }]
+cmd = "python tools/pio_task.py test --env {{ env }}"
+
+# Build tooling for PlatformIO native tests on POSIX.
+[target.linux-64.dependencies]
+make = "*"
+c-compiler = "*"
+
+[target.osx-64.dependencies]
+make = "*"
+c-compiler = "*"
+
+[target.osx-arm64.dependencies]
+make = "*"
+c-compiler = "*"

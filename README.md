@@ -239,6 +239,44 @@ git clone https://github.com/janelia-arduino/TMC51X0
 
 ## PlatformIO
 
+### Pixi (recommended)
+
+This repo includes a `pixi.toml` so you can install PlatformIO and run common tasks (build, upload, tests)
+in a reproducible environment — without managing a local Python virtualenv.
+
+1. Install Pixi (see the Pixi docs for your OS).
+
+2. Create the environment and verify PlatformIO:
+
+```sh
+pixi install
+pixi run pio-version
+```
+
+3. Build an example (defaults: `examples/SPI/TestCommunication` + `pico`):
+
+```sh
+pixi run build
+# Override defaults: pixi run build <example_path> <env>
+pixi run build examples/SPI/TestCommunication pico
+```
+
+4. Run host-native tests (Unity):
+
+```sh
+pixi run test          # defaults to env=native
+pixi run test native   # explicit
+```
+
+5. Upload (example + env + port):
+
+```sh
+pixi run upload examples/SPI/TestCommunication pico /dev/ttyACM0
+```
+
+> Pixi tasks use `tools/pio_task.py` to set `PLATFORMIO_SRC_DIR` / `PLATFORMIO_BUILD_DIR` so you don't need
+> to edit `platformio.ini` to switch examples.
+
 
 ### Install PlatformIO Core
 

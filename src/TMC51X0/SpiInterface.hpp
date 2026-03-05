@@ -13,17 +13,16 @@
 #include "SpiParameters.hpp"
 #include "Interface.hpp"
 
-
 namespace tmc51x0
 {
 class SpiInterface : public Interface
 {
 public:
-  void setup(SpiParameters spi_parameters);
+  void setup (SpiParameters spi_parameters);
 
-  void writeRegister(uint8_t register_address,
-    uint32_t data);
-  uint32_t readRegister(uint8_t register_address);
+  void writeRegister (uint8_t register_address,
+                      uint32_t data);
+  uint32_t readRegister (uint8_t register_address);
 
 private:
   SpiParameters spi_parameters_;
@@ -73,12 +72,12 @@ private:
 
   uint8_t spi_buffer_[DATAGRAM_SIZE];
 
-  CipoDatagram writeRead(CopiDatagram copi_datagram);
+  CipoDatagram writeRead (CopiDatagram copi_datagram);
 
-  void enableChipSelect();
-  void disableChipSelect();
-  void beginTransaction();
-  void endTransaction();
+  void enableChipSelect ();
+  void disableChipSelect ();
+  void beginTransaction ();
+  void endTransaction ();
 };
 }
 #endif

@@ -6,92 +6,97 @@
 // ----------------------------------------------------------------------------
 #include "Registers.hpp"
 
-
 using namespace tmc51x0;
 
-void Registers::write(RegisterAddress register_address,
-  uint32_t data)
+void
+Registers::write (RegisterAddress register_address,
+                  uint32_t data)
 {
   if ((register_address < AddressCount) && (writeable_[register_address]))
-  {
-    interface_ptr_->writeRegister(register_address, data);
-    stored_[register_address] = data;
-  }
+    {
+      interface_ptr_->writeRegister (register_address, data);
+      stored_[register_address] = data;
+    }
 }
 
-uint32_t Registers::read(RegisterAddress register_address)
+uint32_t
+Registers::read (RegisterAddress register_address)
 {
   if ((register_address < AddressCount) && (readable_[register_address]))
-  {
-    uint32_t data = interface_ptr_->readRegister(register_address);
-    stored_[register_address] = data;
-    return data;
-  }
+    {
+      uint32_t data = interface_ptr_->readRegister (register_address);
+      stored_[register_address] = data;
+      return data;
+    }
   else
-  {
-    return 0;
-  }
+    {
+      return 0;
+    }
 }
 
-uint32_t Registers::getStored(RegisterAddress register_address)
+uint32_t
+Registers::getStored (RegisterAddress register_address)
 {
   if (register_address < AddressCount)
-  {
-    return stored_[register_address];
-  }
+    {
+      return stored_[register_address];
+    }
   else
-  {
-    return 0;
-  }
+    {
+      return 0;
+    }
 }
 
-bool Registers::writeable(RegisterAddress register_address)
+bool
+Registers::writeable (RegisterAddress register_address)
 {
   if (register_address < AddressCount)
-  {
-    return writeable_[register_address];
-  }
+    {
+      return writeable_[register_address];
+    }
   else
-  {
-    return false;
-  }
+    {
+      return false;
+    }
 }
 
-bool Registers::readable(RegisterAddress register_address)
+bool
+Registers::readable (RegisterAddress register_address)
 {
   if (register_address < AddressCount)
-  {
-    return readable_[register_address];
-  }
+    {
+      return readable_[register_address];
+    }
   else
-  {
-    return false;
-  }
+    {
+      return false;
+    }
 }
 
-
-Registers::Gstat Registers::readAndClearGstat()
+Registers::Gstat
+Registers::readAndClearGstat ()
 {
   Gstat gstat_read, gstat_write;
-  gstat_read.raw = read(tmc51x0::Registers::GstatAddress);
-  gstat_write.reset(true);
-  gstat_write.drv_err(true);
-  gstat_write.uv_cp(true);
-  write(GstatAddress, gstat_write.raw);
+  gstat_read.raw = read (tmc51x0::Registers::GstatAddress);
+  gstat_write.reset (true);
+  gstat_write.drv_err (true);
+  gstat_write.uv_cp (true);
+  write (GstatAddress, gstat_write.raw);
   return gstat_read;
 }
 
 // private
-void Registers::initialize(Interface & interface)
+void
+Registers::initialize (Interface &interface)
 {
   interface_ptr_ = &interface;
 
-  for (uint8_t register_address=0; register_address<AddressCount; ++register_address)
-  {
-    stored_[register_address] = 0;
-    writeable_[register_address] = false;
-    readable_[register_address] = false;
-  }
+  for (uint8_t register_address = 0; register_address < AddressCount; ++register_address)
+    {
+      stored_[register_address] = 0;
+      writeable_[register_address] = false;
+      readable_[register_address] = false;
+    }
 
   stored_[GconfAddress] = 0x0;
   writeable_[GconfAddress] = true;
@@ -143,15 +148,15 @@ void Registers::initialize(Interface & interface)
   writeable_[XactualAddress] = true;
   // Refer to datasheet "Errata in Read Access"
   if (interface_ptr_->interface_mode == Interface::SpiMode)
-  {
-    readable_[XactualAddress] = true;
-  }
+    {
+      readable_[XactualAddress] = true;
+    }
 
   // Refer to datasheet "Errata in Read Access"
   if (interface_ptr_->interface_mode == Interface::SpiMode)
-  {
-    readable_[VactualAddress] = true;
-  }
+    {
+      readable_[VactualAddress] = true;
+    }
 
   writeable_[VstartAddress] = true;
 
@@ -191,9 +196,9 @@ void Registers::initialize(Interface & interface)
   writeable_[XencAddress] = true;
   // Refer to datasheet "Errata in Read Access"
   if (interface_ptr_->interface_mode == Interface::SpiMode)
-  {
-    readable_[XencAddress] = true;
-  }
+    {
+      readable_[XencAddress] = true;
+    }
 
   writeable_[EncConstAddress] = true;
 
@@ -226,9 +231,9 @@ void Registers::initialize(Interface & interface)
 
   // Refer to datasheet "Errata in Read Access"
   if (interface_ptr_->interface_mode == Interface::SpiMode)
-  {
-    readable_[MscntAddress] = true;
-  }
+    {
+      readable_[MscntAddress] = true;
+    }
 
   readable_[MscuractAddress] = true;
 

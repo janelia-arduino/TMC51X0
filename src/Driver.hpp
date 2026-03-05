@@ -12,7 +12,6 @@
 #include "Registers.hpp"
 #include "DriverParameters.hpp"
 
-
 class TMC51X0;
 
 namespace tmc51x0
@@ -20,15 +19,15 @@ namespace tmc51x0
 class Driver
 {
 public:
-  Driver();
+  Driver ();
 
-  void setup();
-  void setup(DriverParameters parameters);
+  void setup ();
+  void setup (DriverParameters parameters);
 
   // driver must be enabled before use it is disabled by default
-  void setEnableHardwarePin(size_t hardware_enable_pin);
-  void enable();
-  void disable();
+  void setEnableHardwarePin (size_t hardware_enable_pin);
+  void enable ();
+  void disable ();
 
   // 0: full scale
   // 1..31: not allowed for operation
@@ -36,94 +35,94 @@ public:
   // >128 recommended for best results
   // reset default: 0
   // only available on the TMC5160
-  void writeGlobalCurrentScaler(uint8_t scaler);
+  void writeGlobalCurrentScaler (uint8_t scaler);
 
   // 0..31: 1/32..32/32
   // 16..31: for best microstep performance
   // reset default: 0
-  void writeRunCurrent(uint8_t run_current);
+  void writeRunCurrent (uint8_t run_current);
   // 0..31: 1/32..32/32
   // reset default: 0
-  void writeHoldCurrent(uint8_t hold_current);
+  void writeHoldCurrent (uint8_t hold_current);
   // 0: instant power down
   // 1..15: delay per current reduction step in multiple of 2^18 clocks
-  void writeHoldDelay(uint8_t hold_delay);
+  void writeHoldDelay (uint8_t hold_delay);
 
   // range 0..255
-  void writePwmOffset(uint8_t pwm_amplitude);
+  void writePwmOffset (uint8_t pwm_amplitude);
   // range 0..255
-  void writePwmGradient(uint8_t pwm_amplitude);
+  void writePwmGradient (uint8_t pwm_amplitude);
 
   // autograd = automatic gradient adaptation
   // pwm_reg range 1..15 -> slowest regulation..fastest regulation
-  void enableAutomaticCurrentControl(bool autograd=true,
-    uint8_t pwm_reg=4);
-  void disableAutomaticCurrentControl();
+  void enableAutomaticCurrentControl (bool autograd = true,
+                                      uint8_t pwm_reg = 4);
+  void disableAutomaticCurrentControl ();
 
-  void writeMotorDirection(MotorDirection motor_direction);
+  void writeMotorDirection (MotorDirection motor_direction);
 
   // only available with StealthChop enabled
-  void writeStandstillMode(StandstillMode mode);
+  void writeStandstillMode (StandstillMode mode);
 
-  void writeChopperMode(ChopperMode chopper_mode);
+  void writeChopperMode (ChopperMode chopper_mode);
 
-  void writeStealthChopThreshold(uint32_t tstep);
-  void enableStealthChop();
-  void disableStealthChop();
+  void writeStealthChopThreshold (uint32_t tstep);
+  void enableStealthChop ();
+  void disableStealthChop ();
 
-  void writeCoolStepThreshold(uint32_t tstep);
+  void writeCoolStepThreshold (uint32_t tstep);
   // min: 1..15
   // max: 0..15
-  void enableCoolStep(uint8_t min=1,
-    uint8_t max=0);
-  void disableCoolStep();
+  void enableCoolStep (uint8_t min = 1,
+                       uint8_t max = 0);
+  void disableCoolStep ();
 
-  void writeHighVelocityThreshold(uint32_t tstep);
+  void writeHighVelocityThreshold (uint32_t tstep);
 
-  void enableHighVelocityFullstep();
-  void disableHighVelocityFullstep();
-  void enableHighVelocityChopperSwitch();
-  void disableHighVelocityChopperSwitch();
+  void enableHighVelocityFullstep ();
+  void disableHighVelocityFullstep ();
+  void enableHighVelocityChopperSwitch ();
+  void disableHighVelocityChopperSwitch ();
 
   // 0 indifferent value
   // 1..63 less sensitivity
   // -1..-64 higher sensitivity
-  void writeStallGuardThreshold(int8_t threshold);
-  void enableStallGuardFilter();
-  void disableStallGuardFilter();
-  bool stalled();
+  void writeStallGuardThreshold (int8_t threshold);
+  void enableStallGuardFilter ();
+  void disableStallGuardFilter ();
+  bool stalled ();
   // stall guard result
   // 0 highest load
   // low value high load
   // high value less load
-  uint16_t readStallGuardResult();
+  uint16_t readStallGuardResult ();
 
-  uint8_t readActualCurrentScaling();
+  uint8_t readActualCurrentScaling ();
 
-  void enableShortToGroundProtection();
-  void disableShortToGroundProtection();
+  void enableShortToGroundProtection ();
+  void disableShortToGroundProtection ();
 
   // ClockCycles16 min
   // ClockCycles36 default
   // ClockCycles24 or ClockCycles36 for typical applications
   // ClockCycles54 for higher capacitive loads
-  void writeComparatorBlankTime(ComparatorBlankTime tbl);
+  void writeComparatorBlankTime (ComparatorBlankTime tbl);
 
   // 1..15
   // 1 use only with Compator Blank Time >= 2
   // 3 default
   // 8 for DcStep
-  void writeEnabledToff(uint8_t toff);
+  void writeEnabledToff (uint8_t toff);
 
   // Initially set slightly above comparator blank time
-  void writeDcTime(uint16_t dc_time);
+  void writeDcTime (uint16_t dc_time);
 
   // Initially set slightly above dc_time/16
   // Increase for higher sensitivity
-  void writeDcStallGuardThreshold(uint8_t dc_stall_guard_threshold);
+  void writeDcStallGuardThreshold (uint8_t dc_stall_guard_threshold);
 
 private:
-  Registers * registers_ptr_;
+  Registers *registers_ptr_;
   DriverParameters setup_driver_parameters_;
   DriverParameters cached_driver_settings_;
 
@@ -140,16 +139,16 @@ private:
 
   const static uint8_t SEMIN_OFF = 0;
 
-  void initialize(Registers & registers);
-  void reinitialize();
-  void writeDriverParameters(DriverParameters parameters);
-  void cacheDriverSettings();
-  void restoreDriverSettings();
+  void initialize (Registers &registers);
+  void reinitialize ();
+  void writeDriverParameters (DriverParameters parameters);
+  void cacheDriverSettings ();
+  void restoreDriverSettings ();
 
-  void hardwareEnable();
-  void hardwareDisable();
-  void softwareEnable();
-  void softwareDisable();
+  void hardwareEnable ();
+  void hardwareDisable ();
+  void softwareEnable ();
+  void softwareDisable ();
 
   friend class ::TMC51X0;
 };
