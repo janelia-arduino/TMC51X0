@@ -29,18 +29,18 @@ void Encoder::setup(tmc51x0::EncoderParameters parameters)
 void Encoder::writeFractionalMode(FractionalMode mode)
 {
   Registers::Encmode encmode;
-  encmode.bytes = registers_ptr_->getStored(Registers::EncmodeAddress);
-  encmode.enc_sel_decimal = mode;
-  registers_ptr_->write(Registers::EncmodeAddress, encmode.bytes);
+  encmode.raw = registers_ptr_->getStored(Registers::EncmodeAddress);
+  encmode.enc_sel_decimal(mode);
+  registers_ptr_->write(Registers::EncmodeAddress, encmode.raw);
 }
 
 void Encoder::writeMicrostepsPerPulse(int16_t integer,
   uint16_t fractional)
 {
   Registers::EncConst enc_const;
-  enc_const.integer = integer;
-  enc_const.fractional = fractional;
-  return registers_ptr_->write(Registers::EncConstAddress, enc_const.bytes);
+  enc_const.integer(integer);
+  enc_const.fractional(fractional);
+  return registers_ptr_->write(Registers::EncConstAddress, enc_const.raw);
 }
 
 int32_t Encoder::readActualPosition()
@@ -61,10 +61,10 @@ void Encoder::zeroActualPosition()
 Registers::EncStatus Encoder::readAndClearStatus()
 {
   Registers::EncStatus enc_status_read, enc_status_write;
-  enc_status_read.bytes = registers_ptr_->read(tmc51x0::Registers::EncStatusAddress);
-  enc_status_write.n_event = 1;
-  enc_status_write.deviation_warn = 1;
-  registers_ptr_->write(tmc51x0::Registers::EncStatusAddress, enc_status_write.bytes);
+  enc_status_read.raw = registers_ptr_->read(tmc51x0::Registers::EncStatusAddress);
+  enc_status_write.n_event(true);
+  enc_status_write.deviation_warn(true);
+  registers_ptr_->write(tmc51x0::Registers::EncStatusAddress, enc_status_write.raw);
   return enc_status_read;
 }
 

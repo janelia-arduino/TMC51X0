@@ -32,8 +32,8 @@ void TMC51X0::setupUart(UartParameters uart_parameters)
 uint8_t TMC51X0::readVersion()
 {
   Registers::Ioin ioin;
-  ioin.bytes = registers.read(Registers::IoinAddress);
-  return ioin.version;
+  ioin.raw = registers.read(Registers::IoinAddress);
+  return ioin.version();
 }
 
 bool TMC51X0::communicating()

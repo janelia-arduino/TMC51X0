@@ -32,8 +32,8 @@ void Controller::setup(tmc51x0::ControllerParameters parameters)
 bool Controller::stepAndDirectionMode()
 {
   Registers::Ioin ioin;
-  ioin.bytes = registers_ptr_->read(Registers::IoinAddress);
-  return ioin.sd_mode;
+  ioin.raw = registers_ptr_->read(Registers::IoinAddress);
+  return ioin.sd_mode();
 }
 
 void Controller::writeRampMode(RampMode ramp_mode)
@@ -44,9 +44,9 @@ void Controller::writeRampMode(RampMode ramp_mode)
 void Controller::writeStopMode(StopMode stop_mode)
 {
   Registers::SwMode sw_mode;
-  sw_mode.bytes = registers_ptr_->getStored(Registers::SwModeAddress);
-  sw_mode.en_softstop = stop_mode;
-  registers_ptr_->write(Registers::SwModeAddress, sw_mode.bytes);
+  sw_mode.raw = registers_ptr_->getStored(Registers::SwModeAddress);
+  sw_mode.en_softstop(stop_mode);
+  registers_ptr_->write(Registers::SwModeAddress, sw_mode.raw);
 }
 
 uint32_t Controller::readTstep()
@@ -82,15 +82,15 @@ void Controller::zeroActualPosition()
 bool Controller::velocityReached()
 {
   Registers::RampStat ramp_stat;
-  ramp_stat.bytes = registers_ptr_->read(Registers::RampStatAddress);
-  return ramp_stat.velocity_reached;
+  ramp_stat.raw = registers_ptr_->read(Registers::RampStatAddress);
+  return ramp_stat.velocity_reached();
 }
 
 bool Controller::positionReached()
 {
   Registers::RampStat ramp_stat;
-  ramp_stat.bytes = registers_ptr_->read(Registers::RampStatAddress);
-  return ramp_stat.position_reached;
+  ramp_stat.raw = registers_ptr_->read(Registers::RampStatAddress);
+  return ramp_stat.position_reached();
 }
 
 void Controller::beginRampToZeroVelocity()
@@ -108,8 +108,8 @@ void Controller::endRampToZeroVelocity()
 bool Controller::zeroVelocity()
 {
   Registers::RampStat ramp_stat;
-  ramp_stat.bytes = registers_ptr_->read(Registers::RampStatAddress);
-  return ramp_stat.vzero;
+  ramp_stat.raw = registers_ptr_->read(Registers::RampStatAddress);
+  return ramp_stat.vzero();
 }
 
 void Controller::writeMaxVelocity(uint32_t velocity)
@@ -160,8 +160,8 @@ void Controller::writeZeroWaitDuration(uint32_t tzerowait)
 bool Controller::zeroWaitActive()
 {
   Registers::RampStat ramp_stat;
-  ramp_stat.bytes = registers_ptr_->read(Registers::RampStatAddress);
-  return ramp_stat.t_zerowait_active;
+  ramp_stat.raw = registers_ptr_->read(Registers::RampStatAddress);
+  return ramp_stat.t_zerowait_active();
 }
 
 int32_t Controller::readTargetPosition()
@@ -187,17 +187,17 @@ void Controller::writeComparePosition(int32_t position)
 void Controller::enableStallStop()
 {
   Registers::SwMode sw_mode;
-  sw_mode.bytes = registers_ptr_->getStored(Registers::SwModeAddress);
-  sw_mode.sg_stop = 1;
-  registers_ptr_->write(Registers::SwModeAddress, sw_mode.bytes);
+  sw_mode.raw = registers_ptr_->getStored(Registers::SwModeAddress);
+  sw_mode.sg_stop(true);
+  registers_ptr_->write(Registers::SwModeAddress, sw_mode.raw);
 }
 
 void Controller::disableStallStop()
 {
   Registers::SwMode sw_mode;
-  sw_mode.bytes = registers_ptr_->getStored(Registers::SwModeAddress);
-  sw_mode.sg_stop = 0;
-  registers_ptr_->write(Registers::SwModeAddress, sw_mode.bytes);
+  sw_mode.raw = registers_ptr_->getStored(Registers::SwModeAddress);
+  sw_mode.sg_stop(false);
+  registers_ptr_->write(Registers::SwModeAddress, sw_mode.raw);
 }
 
 void Controller::writeMinDcStepVelocity(uint32_t velocity)
@@ -220,43 +220,43 @@ void Controller::setupSwitches(SwitchParameters parameters)
 bool Controller::leftSwitchActive()
 {
   Registers::RampStat ramp_stat;
-  ramp_stat.bytes = registers_ptr_->read(Registers::RampStatAddress);
-  return ramp_stat.status_stop_l;
+  ramp_stat.raw = registers_ptr_->read(Registers::RampStatAddress);
+  return ramp_stat.status_stop_l();
 }
 
 bool Controller::rightSwitchActive()
 {
   Registers::RampStat ramp_stat;
-  ramp_stat.bytes = registers_ptr_->read(Registers::RampStatAddress);
-  return ramp_stat.status_stop_r;
+  ramp_stat.raw = registers_ptr_->read(Registers::RampStatAddress);
+  return ramp_stat.status_stop_r();
 }
 
 bool Controller::leftLatchActive()
 {
   Registers::RampStat ramp_stat;
-  ramp_stat.bytes = registers_ptr_->read(Registers::RampStatAddress);
-  return ramp_stat.status_latch_l;
+  ramp_stat.raw = registers_ptr_->read(Registers::RampStatAddress);
+  return ramp_stat.status_latch_l();
 }
 
 bool Controller::rightLatchActive()
 {
   Registers::RampStat ramp_stat;
-  ramp_stat.bytes = registers_ptr_->read(Registers::RampStatAddress);
-  return ramp_stat.status_latch_r;
+  ramp_stat.raw = registers_ptr_->read(Registers::RampStatAddress);
+  return ramp_stat.status_latch_r();
 }
 
 bool Controller::leftStopEvent()
 {
   Registers::RampStat ramp_stat;
-  ramp_stat.bytes = registers_ptr_->read(Registers::RampStatAddress);
-  return ramp_stat.event_stop_l;
+  ramp_stat.raw = registers_ptr_->read(Registers::RampStatAddress);
+  return ramp_stat.event_stop_l();
 }
 
 bool Controller::rightStopEvent()
 {
   Registers::RampStat ramp_stat;
-  ramp_stat.bytes = registers_ptr_->read(Registers::RampStatAddress);
-  return ramp_stat.event_stop_r;
+  ramp_stat.raw = registers_ptr_->read(Registers::RampStatAddress);
+  return ramp_stat.event_stop_r();
 }
 
 // private
@@ -305,8 +305,8 @@ void Controller::cacheControllerSettings()
 {
   cached_controller_settings_.ramp_mode = (RampMode)registers_ptr_->getStored(Registers::RampmodeAddress);
   Registers::SwMode sw_mode;
-  sw_mode.bytes = registers_ptr_->getStored(Registers::SwModeAddress);
-  cached_controller_settings_.stop_mode = (StopMode)sw_mode.en_softstop;
+  sw_mode.raw = registers_ptr_->getStored(Registers::SwModeAddress);
+  cached_controller_settings_.stop_mode = (StopMode)sw_mode.en_softstop();
   cached_controller_settings_.max_velocity = registers_ptr_->getStored(Registers::VmaxAddress);
   cached_controller_settings_.max_acceleration = registers_ptr_->getStored(Registers::AmaxAddress);
   cached_controller_settings_.start_velocity = registers_ptr_->getStored(Registers::VstartAddress);
@@ -316,7 +316,7 @@ void Controller::cacheControllerSettings()
   cached_controller_settings_.max_deceleration = registers_ptr_->getStored(Registers::DmaxAddress);
   cached_controller_settings_.first_deceleration = registers_ptr_->getStored(Registers::Deceleration1Address);
   cached_controller_settings_.zero_wait_duration = registers_ptr_->getStored(Registers::TzerowaitAddress);
-  cached_controller_settings_.stall_stop_enabled = sw_mode.sg_stop;
+  cached_controller_settings_.stall_stop_enabled = sw_mode.sg_stop();
   cached_controller_settings_.min_dc_step_velocity = registers_ptr_->getStored(Registers::VdcminAddress);
 }
 
@@ -328,34 +328,34 @@ void Controller::restoreControllerSettings()
 void Controller::writeSwitchParameters(SwitchParameters parameters)
 {
   Registers::SwMode sw_mode;
-  sw_mode.bytes = registers_ptr_->getStored(Registers::SwModeAddress);
-  sw_mode.stop_l_enable = parameters.left_stop_enabled;
-  sw_mode.stop_r_enable = parameters.right_stop_enabled;
-  sw_mode.pol_stop_l = parameters.invert_left_polarity;
-  sw_mode.pol_stop_r = parameters.invert_right_polarity;
-  sw_mode.swap_lr = parameters.swap_left_right;
-  sw_mode.latch_l_active = parameters.latch_left_active;
-  sw_mode.latch_l_inactive = parameters.latch_left_inactive;
-  sw_mode.latch_r_active = parameters.latch_right_active;
-  sw_mode.latch_r_inactive = parameters.latch_right_inactive;
-  sw_mode.en_latch_encoder = parameters.latch_encoder_enabled;
-  registers_ptr_->write(Registers::SwModeAddress, sw_mode.bytes);
+  sw_mode.raw = registers_ptr_->getStored(Registers::SwModeAddress);
+  sw_mode.stop_l_enable(parameters.left_stop_enabled);
+  sw_mode.stop_r_enable(parameters.right_stop_enabled);
+  sw_mode.pol_stop_l(parameters.invert_left_polarity);
+  sw_mode.pol_stop_r(parameters.invert_right_polarity);
+  sw_mode.swap_lr(parameters.swap_left_right);
+  sw_mode.latch_l_active(parameters.latch_left_active);
+  sw_mode.latch_l_inactive(parameters.latch_left_inactive);
+  sw_mode.latch_r_active(parameters.latch_right_active);
+  sw_mode.latch_r_inactive(parameters.latch_right_inactive);
+  sw_mode.en_latch_encoder(parameters.latch_encoder_enabled);
+  registers_ptr_->write(Registers::SwModeAddress, sw_mode.raw);
 }
 
 void Controller::cacheSwitchSettings()
 {
   Registers::SwMode sw_mode;
-  sw_mode.bytes = registers_ptr_->getStored(Registers::SwModeAddress);
-  cached_switch_settings_.left_stop_enabled = sw_mode.stop_l_enable;
-  cached_switch_settings_.right_stop_enabled = sw_mode.stop_r_enable;
-  cached_switch_settings_.invert_left_polarity = sw_mode.pol_stop_l;
-  cached_switch_settings_.invert_right_polarity = sw_mode.pol_stop_r;
-  cached_switch_settings_.swap_left_right = sw_mode.swap_lr;
-  cached_switch_settings_.latch_left_active = sw_mode.latch_l_active;
-  cached_switch_settings_.latch_left_inactive = sw_mode.latch_l_inactive;
-  cached_switch_settings_.latch_right_active = sw_mode.latch_r_active;
-  cached_switch_settings_.latch_right_inactive = sw_mode.latch_r_inactive;
-  cached_switch_settings_.latch_encoder_enabled = sw_mode.en_latch_encoder;
+  sw_mode.raw = registers_ptr_->getStored(Registers::SwModeAddress);
+  cached_switch_settings_.left_stop_enabled = sw_mode.stop_l_enable();
+  cached_switch_settings_.right_stop_enabled = sw_mode.stop_r_enable();
+  cached_switch_settings_.invert_left_polarity = sw_mode.pol_stop_l();
+  cached_switch_settings_.invert_right_polarity = sw_mode.pol_stop_r();
+  cached_switch_settings_.swap_left_right = sw_mode.swap_lr();
+  cached_switch_settings_.latch_left_active = sw_mode.latch_l_active();
+  cached_switch_settings_.latch_left_inactive = sw_mode.latch_l_inactive();
+  cached_switch_settings_.latch_right_active = sw_mode.latch_r_active();
+  cached_switch_settings_.latch_right_inactive = sw_mode.latch_r_inactive();
+  cached_switch_settings_.latch_encoder_enabled = sw_mode.en_latch_encoder();
 }
 
 void Controller::restoreSwitchSettings()

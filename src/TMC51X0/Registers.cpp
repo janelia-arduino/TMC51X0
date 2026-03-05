@@ -73,11 +73,11 @@ bool Registers::readable(RegisterAddress register_address)
 Registers::Gstat Registers::readAndClearGstat()
 {
   Gstat gstat_read, gstat_write;
-  gstat_read.bytes = read(tmc51x0::Registers::GstatAddress);
-  gstat_write.reset = 1;
-  gstat_write.drv_err = 1;
-  gstat_write.uv_cp = 1;
-  write(GstatAddress, gstat_write.bytes);
+  gstat_read.raw = read(tmc51x0::Registers::GstatAddress);
+  gstat_write.reset(true);
+  gstat_write.drv_err(true);
+  gstat_write.uv_cp(true);
+  write(GstatAddress, gstat_write.raw);
   return gstat_read;
 }
 

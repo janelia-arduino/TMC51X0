@@ -62,9 +62,9 @@ void loop()
   Serial.print("encoder_actual_position: ");
   Serial.println(encoder_actual_position);
   encoder_status = stepper.encoder.readAndClearStatus();
-  Serial.print("encoder_status.n_event: ");
-  Serial.print(encoder_status.n_event);
-  Serial.print(" , encoder_status.deviation_warn (only works on TMC5160): ");
-  Serial.println(encoder_status.deviation_warn);
+  Serial.print("encoder_status.n_event(): ");
+  Serial.print(encoder_status.n_event());
+  Serial.print(" , encoder_status.deviation_warn() (only works on TMC5160): ");
+  Serial.println(encoder_status.deviation_warn());
   delay(LOOP_DELAY);
 }
