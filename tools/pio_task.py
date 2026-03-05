@@ -79,12 +79,12 @@ def main(argv: list[str]) -> int:
     def add_common_example_env(sp: argparse.ArgumentParser) -> None:
         sp.add_argument(
             "--example",
-            default="examples/UnidirectionalCommunication/MoveAtVelocity",
+            default="examples/SPI/TestCommunication",
             help="Repo-relative example directory to build (contains a .ino).",
         )
         sp.add_argument(
             "--env",
-            default="teensy40",
+            default="pico",
             help="PlatformIO environment name (e.g. teensy40, uno, mega, pico).",
         )
 
@@ -118,11 +118,24 @@ def main(argv: list[str]) -> int:
     sp_deep = sub.add_parser("deepclean", help="Delete the isolated build dir for an example.")
     sp_deep.add_argument(
         "--example",
-        default="examples/UnidirectionalCommunication/MoveAtVelocity",
+        default="examples/SPI/TestCommunication",
         help="Repo-relative example directory.",
     )
 
-    # test
+    # monitor
+    sp_monitor = sub.add_parser("monitor", help="Open a serial monitor.")
+    sp_monitor.add_argument(
+        "--port",
+        default=None,
+        help="Serial port (e.g. /dev/ttyACM0, COM3). If omitted, PlatformIO may auto-detect.",
+    )
+    sp_monitor.add_argument(
+        "--baud",
+        default="115200",
+        help="Baud rate (default: 115200).",
+    )
+
+# test
     sp_test = sub.add_parser("test", help="Run PlatformIO unit tests.")
     sp_test.add_argument(
         "--env",
@@ -181,6 +194,15 @@ def main(argv: list[str]) -> int:
         print(f"+ rm -rf {build_dir}")
         shutil.rmtree(build_dir, ignore_errors=True)
         return 0
+
+    if args.command == "monitor":
+        cmd = ["pio", "device", "monitor"]
+        if getattr(args, "port", None):
+            cmd += ["--port", args.port]
+        if getattr(args, "baud", None):
+            cmd += ["--baud", str(args.baud)]
+        cmd += unknown
+        return _run(cmd, cwd=root, env=env)
 
     if args.command == "test":
         cmd = ["pio", "test", "-e", args.env]
