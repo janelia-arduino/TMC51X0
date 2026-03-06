@@ -39,21 +39,33 @@ public:
                                     uint32_t data);
   Result<uint32_t> readRegisterResult (uint8_t register_address);
 
-  UartError getLastUartError () const { return last_uart_error_; }
+  UartError
+  getLastUartError () const
+  {
+    return last_uart_error_;
+  }
 
   // --------------------------------------------------------------------------
   // Non-blocking API (poll-driven)
   // --------------------------------------------------------------------------
 
   Result<void> startWriteRegister (uint8_t register_address,
-                                  uint32_t data);
+                                   uint32_t data);
   Result<void> startReadRegister (uint8_t register_address);
 
   void poll (uint32_t now_us);
   void poll ();
 
-  bool busy () const { return uart_engine_.busy (); }
-  bool resultReady () const { return uart_engine_.resultReady (); }
+  bool
+  busy () const
+  {
+    return uart_engine_.busy ();
+  }
+  bool
+  resultReady () const
+  {
+    return uart_engine_.resultReady ();
+  }
 
   Result<void> takeWriteResult ();
   Result<uint32_t> takeReadResult ();

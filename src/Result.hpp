@@ -27,16 +27,24 @@ template <typename T>
 struct Result
 {
   T value{};
-  UartError error{UartError::None};
-  constexpr bool ok () const { return error == UartError::None; }
+  UartError error{ UartError::None };
+  constexpr bool
+  ok () const
+  {
+    return error == UartError::None;
+  }
 };
 
 // Specialization for "no value".
 template <>
 struct Result<void>
 {
-  UartError error{UartError::None};
-  constexpr bool ok () const { return error == UartError::None; }
+  UartError error{ UartError::None };
+  constexpr bool
+  ok () const
+  {
+    return error == UartError::None;
+  }
 };
 } // namespace tmc51x0
 

@@ -37,8 +37,16 @@ struct TMC51X0
   void setupUart (tmc51x0::UartParameters uart_parameters);
 
   // Advanced access to the underlying UART interface (for non-blocking polling).
-  tmc51x0::UartInterface &uartInterface () { return interface_uart_; }
-  const tmc51x0::UartInterface &uartInterface () const { return interface_uart_; }
+  tmc51x0::UartInterface &
+  uartInterface ()
+  {
+    return interface_uart_;
+  }
+  const tmc51x0::UartInterface &
+  uartInterface () const
+  {
+    return interface_uart_;
+  }
 
   uint8_t readVersion ();
   bool communicating ();

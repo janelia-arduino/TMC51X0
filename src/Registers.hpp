@@ -14,7 +14,6 @@
 #include <stdint.h>
 #endif
 
-
 #include "Constants.hpp"
 
 #include "TMC51X0/Interface.hpp"

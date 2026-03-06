@@ -113,8 +113,9 @@ public:
 
   // Start a register read transaction. Completion is reported via resultReady()
   // and takeReadResult().
-  Result<void> startRead (uint8_t node_address,
-                          uint8_t register_address)
+  Result<void>
+  startRead (uint8_t node_address,
+             uint8_t register_address)
   {
     Result<void> r;
     if (!configured ())
@@ -153,9 +154,10 @@ public:
   }
 
   // Start a register write transaction (no reply expected).
-  Result<void> startWrite (uint8_t node_address,
-                           uint8_t register_address,
-                           uint32_t data)
+  Result<void>
+  startWrite (uint8_t node_address,
+              uint8_t register_address,
+              uint32_t data)
   {
     Result<void> r;
     if (!configured ())
@@ -195,7 +197,8 @@ public:
 
   // Drive the state machine forward. Call this regularly from your event-loop
   // (or from a blocking wrapper).
-  void poll (uint32_t now_us)
+  void
+  poll (uint32_t now_us)
   {
     if (state_ == State::Idle || state_ == State::Done)
       {
@@ -208,159 +211,159 @@ public:
         bool progressed = false;
         switch (state_)
           {
-            case State::DrainBefore:
-              progressed = drainRx_ ();
-              // Even if we didn't drain anything, move forward.
-              state_ = State::EnableTx;
-              progressed = true;
-              break;
+          case State::DrainBefore:
+            progressed = drainRx_ ();
+            // Even if we didn't drain anything, move forward.
+            state_ = State::EnableTx;
+            progressed = true;
+            break;
 
-            case State::EnableTx:
-              if (callbacks_.set_tx_enable)
-                {
-                  callbacks_.set_tx_enable (callbacks_.ctx, true);
-                }
-              state_start_us_ = now_us;
-              state_ = State::WaitEnableDelay;
-              progressed = true;
-              break;
+          case State::EnableTx:
+            if (callbacks_.set_tx_enable)
+              {
+                callbacks_.set_tx_enable (callbacks_.ctx, true);
+              }
+            state_start_us_ = now_us;
+            state_ = State::WaitEnableDelay;
+            progressed = true;
+            break;
 
-            case State::WaitEnableDelay:
-              if ((callbacks_.set_tx_enable == nullptr)
-                  || (config_.enable_delay_us == 0)
-                  || elapsedUs_ (now_us, state_start_us_) >= config_.enable_delay_us)
-                {
-                  state_ = State::Send;
-                  progressed = true;
-                }
-              break;
+          case State::WaitEnableDelay:
+            if ((callbacks_.set_tx_enable == nullptr)
+                || (config_.enable_delay_us == 0)
+                || elapsedUs_ (now_us, state_start_us_) >= config_.enable_delay_us)
+              {
+                state_ = State::Send;
+                progressed = true;
+              }
+            break;
 
-            case State::Send:
-              while (tx_index_ < tx_size_)
-                {
-                  (void)callbacks_.write (callbacks_.ctx, tx_[tx_index_]);
-                  ++tx_index_;
-                }
+          case State::Send:
+            while (tx_index_ < tx_size_)
+              {
+                (void)callbacks_.write (callbacks_.ctx, tx_[tx_index_]);
+                ++tx_index_;
+              }
 
-              // Establish when it's safe to switch to RX in half-duplex mode.
-              if (config_.baud_rate != 0)
-                {
-                  tx_done_us_ = now_us + computeTxTimeUs_ (tx_size_, config_.baud_rate);
-                }
-              else if (config_.tx_complete_delay_us != 0)
-                {
-                  tx_done_us_ = now_us + config_.tx_complete_delay_us;
-                }
-              else if (callbacks_.flush)
-                {
-                  // May block depending on the platform.
-                  callbacks_.flush (callbacks_.ctx);
-                  tx_done_us_ = now_us;
-                }
-              else
-                {
-                  tx_done_us_ = now_us;
-                }
+            // Establish when it's safe to switch to RX in half-duplex mode.
+            if (config_.baud_rate != 0)
+              {
+                tx_done_us_ = now_us + computeTxTimeUs_ (tx_size_, config_.baud_rate);
+              }
+            else if (config_.tx_complete_delay_us != 0)
+              {
+                tx_done_us_ = now_us + config_.tx_complete_delay_us;
+              }
+            else if (callbacks_.flush)
+              {
+                // May block depending on the platform.
+                callbacks_.flush (callbacks_.ctx);
+                tx_done_us_ = now_us;
+              }
+            else
+              {
+                tx_done_us_ = now_us;
+              }
 
-              state_ = State::WaitTxDone;
-              progressed = true;
-              break;
+            state_ = State::WaitTxDone;
+            progressed = true;
+            break;
 
-            case State::WaitTxDone:
-              if (timeAfterEq_ (now_us, tx_done_us_))
-                {
-                  if (callbacks_.set_tx_enable)
-                    {
-                      // Switch to RX.
-                      callbacks_.set_tx_enable (callbacks_.ctx, false);
-                    }
+          case State::WaitTxDone:
+            if (timeAfterEq_ (now_us, tx_done_us_))
+              {
+                if (callbacks_.set_tx_enable)
+                  {
+                    // Switch to RX.
+                    callbacks_.set_tx_enable (callbacks_.ctx, false);
+                  }
 
-                  if (op_ == Op::Write)
-                    {
-                      // No reply expected.
-                      finishOk_ ();
-                      progressed = true;
-                    }
-                  else
-                    {
-                      // Start reply timeout when we enter reply wait.
-                      reply_deadline_us_ = now_us + config_.reply_timeout_us;
-                      state_ = State::WaitReply;
-                      progressed = true;
-                    }
-                }
-              break;
+                if (op_ == Op::Write)
+                  {
+                    // No reply expected.
+                    finishOk_ ();
+                    progressed = true;
+                  }
+                else
+                  {
+                    // Start reply timeout when we enter reply wait.
+                    reply_deadline_us_ = now_us + config_.reply_timeout_us;
+                    state_ = State::WaitReply;
+                    progressed = true;
+                  }
+              }
+            break;
 
-            case State::WaitReply:
-              if (callbacks_.available (callbacks_.ctx) > 0)
-                {
-                  state_ = State::ReadReply;
-                  progressed = true;
-                }
-              else if (timeAfterEq_ (now_us, reply_deadline_us_))
-                {
-                  handleErrorOrRetry_ (UartError::ReplyTimeout, now_us);
-                  progressed = true;
-                }
-              break;
+          case State::WaitReply:
+            if (callbacks_.available (callbacks_.ctx) > 0)
+              {
+                state_ = State::ReadReply;
+                progressed = true;
+              }
+            else if (timeAfterEq_ (now_us, reply_deadline_us_))
+              {
+                handleErrorOrRetry_ (UartError::ReplyTimeout, now_us);
+                progressed = true;
+              }
+            break;
 
-            case State::ReadReply:
-              while ((rx_index_ < rx_size_)
-                     && (callbacks_.available (callbacks_.ctx) > 0))
-                {
-                  int v = callbacks_.read (callbacks_.ctx);
-                  if (v < 0)
-                    {
-                      break;
-                    }
-                  rx_[rx_index_] = static_cast<uint8_t> (v);
-                  ++rx_index_;
-                }
+          case State::ReadReply:
+            while ((rx_index_ < rx_size_)
+                   && (callbacks_.available (callbacks_.ctx) > 0))
+              {
+                int v = callbacks_.read (callbacks_.ctx);
+                if (v < 0)
+                  {
+                    break;
+                  }
+                rx_[rx_index_] = static_cast<uint8_t> (v);
+                ++rx_index_;
+              }
 
-              if (rx_index_ >= rx_size_)
-                {
-                  state_ = State::Validate;
-                  progressed = true;
-                }
-              else if (timeAfterEq_ (now_us, reply_deadline_us_))
-                {
-                  handleErrorOrRetry_ (UartError::ReplyTimeout, now_us);
-                  progressed = true;
-                }
-              break;
+            if (rx_index_ >= rx_size_)
+              {
+                state_ = State::Validate;
+                progressed = true;
+              }
+            else if (timeAfterEq_ (now_us, reply_deadline_us_))
+              {
+                handleErrorOrRetry_ (UartError::ReplyTimeout, now_us);
+                progressed = true;
+              }
+            break;
 
-            case State::Validate:
-              if (!uart::checkSyncByte (rx_[0]))
-                {
-                  handleErrorOrRetry_ (UartError::UnexpectedFrame, now_us);
-                  progressed = true;
-                  break;
-                }
+          case State::Validate:
+            if (!uart::checkSyncByte (rx_[0]))
+              {
+                handleErrorOrRetry_ (UartError::UnexpectedFrame, now_us);
+                progressed = true;
+                break;
+              }
 
-              if (!uart::checkCrc (rx_, rx_size_))
-                {
-                  handleErrorOrRetry_ (UartError::CrcMismatch, now_us);
-                  progressed = true;
-                  break;
-                }
+            if (!uart::checkCrc (rx_, rx_size_))
+              {
+                handleErrorOrRetry_ (UartError::CrcMismatch, now_us);
+                progressed = true;
+                break;
+              }
 
-              if ((uart::replyNode (rx_) != node_address_)
-                  || (uart::replyRegister (rx_) != register_address_))
-                {
-                  handleErrorOrRetry_ (UartError::UnexpectedFrame, now_us);
-                  progressed = true;
-                  break;
-                }
+            if ((uart::replyNode (rx_) != node_address_)
+                || (uart::replyRegister (rx_) != register_address_))
+              {
+                handleErrorOrRetry_ (UartError::UnexpectedFrame, now_us);
+                progressed = true;
+                break;
+              }
 
-              read_data_ = uart::replyData (rx_);
-              finishOk_ ();
-              progressed = true;
-              break;
+            read_data_ = uart::replyData (rx_);
+            finishOk_ ();
+            progressed = true;
+            break;
 
-            case State::Idle:
-            case State::Done:
-            default:
-              return;
+          case State::Idle:
+          case State::Done:
+          default:
+            return;
           }
 
         if (!progressed)

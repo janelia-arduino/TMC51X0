@@ -103,7 +103,7 @@ UartInterface::readRegisterResult (uint8_t register_address)
 
 Result<void>
 UartInterface::startWriteRegister (uint8_t register_address,
-                                  uint32_t data)
+                                   uint32_t data)
 {
   Result<void> r;
   last_uart_error_ = UartError::None;
@@ -187,7 +187,7 @@ UartInterface::engineSerialRead_ (void *ctx)
 
 size_t
 UartInterface::engineSerialWrite_ (void *ctx,
-                                    uint8_t b)
+                                   uint8_t b)
 {
   return static_cast<UartInterface *> (ctx)->serialWrite (b);
 }
@@ -200,7 +200,7 @@ UartInterface::engineSerialFlush_ (void *ctx)
 
 void
 UartInterface::engineSetTxEnable_ (void *ctx,
-                                  bool enable)
+                                   bool enable)
 {
   UartInterface *self = static_cast<UartInterface *> (ctx);
   if (enable)

@@ -32,22 +32,55 @@ private:
 
   struct SpiStatus
   {
-    uint8_t raw{0};
+    uint8_t raw{ 0 };
 
-    static bool bit (uint8_t r,
-                     uint8_t pos)
+    static bool
+    bit (uint8_t r,
+         uint8_t pos)
     {
       return ((r >> pos) & 0x01) != 0;
     }
 
-    bool reset_flag () const { return bit (raw, 0); }
-    bool driver_error () const { return bit (raw, 1); }
-    bool sg2 () const { return bit (raw, 2); }
-    bool standstill () const { return bit (raw, 3); }
-    bool velocity_reached () const { return bit (raw, 4); }
-    bool position_reached () const { return bit (raw, 5); }
-    bool status_stop_l () const { return bit (raw, 6); }
-    bool status_stop_r () const { return bit (raw, 7); }
+    bool
+    reset_flag () const
+    {
+      return bit (raw, 0);
+    }
+    bool
+    driver_error () const
+    {
+      return bit (raw, 1);
+    }
+    bool
+    sg2 () const
+    {
+      return bit (raw, 2);
+    }
+    bool
+    standstill () const
+    {
+      return bit (raw, 3);
+    }
+    bool
+    velocity_reached () const
+    {
+      return bit (raw, 4);
+    }
+    bool
+    position_reached () const
+    {
+      return bit (raw, 5);
+    }
+    bool
+    status_stop_l () const
+    {
+      return bit (raw, 6);
+    }
+    bool
+    status_stop_r () const
+    {
+      return bit (raw, 7);
+    }
   };
   SpiStatus spi_status_;
 
