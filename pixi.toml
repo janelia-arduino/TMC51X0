@@ -46,6 +46,15 @@ cmd = "python tools/clang_format_all.py"
 description = "Check formatting (no writes). Fails if files need reformatting."
 cmd = "python tools/clang_format_all.py --check"
 
+[tasks.check-version]
+description = "Check that library metadata files all use the same version."
+cmd = "python tools/version_sync.py check"
+
+[tasks.set-version]
+description = "Set the version across library.properties, .metadata/README.org, and pixi.toml."
+args = [{ arg = "version" }]
+cmd = "python tools/version_sync.py set {{ version }}"
+
 # --------------------------------------------------------------------------------------
 # PlatformIO helpers
 #

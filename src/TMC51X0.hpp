@@ -48,6 +48,18 @@ struct TMC51X0
     return interface_uart_;
   }
 
+  // Preferred family-style alias for async / event-loop driven UART access.
+  tmc51x0::UartBus &
+  uartBus ()
+  {
+    return interface_uart_;
+  }
+  const tmc51x0::UartBus &
+  uartBus () const
+  {
+    return interface_uart_;
+  }
+
   uint8_t readVersion ();
   bool communicating ();
 

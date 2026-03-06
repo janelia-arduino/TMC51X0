@@ -134,21 +134,92 @@ cbSetTxEnable (void *ctx,
   static_cast<Context *> (ctx)->pin.set (enable);
 }
 
+static UartEngine::Callbacks
+makeCallbacks (Context &ctx,
+               bool with_flush = true,
+               bool with_pin = true)
+{
+  UartEngine::Callbacks cb;
+  cb.ctx = &ctx;
+  cb.available = &cbAvailable;
+  cb.read = &cbRead;
+  cb.write = &cbWrite;
+  cb.flush = with_flush ? &cbFlush : nullptr;
+  cb.set_tx_enable = with_pin ? &cbSetTxEnable : nullptr;
+  return cb;
+}
+
+static UartEngine::Config
+makeConfig ()
+{
+  UartEngine::Config cfg;
+  cfg.baud_rate = 1000000;
+  cfg.reply_timeout_us = 5000;
+  cfg.enable_delay_us = 0;
+  cfg.max_retries = 0;
+  cfg.tx_complete_delay_us = 0;
+  cfg.drain_limit = 256;
+  return cfg;
+}
+
 static void
-drive_until_done (UartEngine &engine,
-                  Context &ctx,
-                  uint32_t t_end_us,
-                  uint32_t step_us)
+assertUartError (UartError expected,
+                 UartError actual)
+{
+  TEST_ASSERT_EQUAL_INT (static_cast<int> (expected), static_cast<int> (actual));
+}
+
+static void
+packReply (uint8_t node_address,
+           uint8_t register_address,
+           uint32_t data,
+           uint8_t out[uart::REPLY_SIZE])
+{
+  // The engine validates sync, CRC, node, register, and payload bytes only.
+  uart::packWriteRequest (node_address, register_address, data, out);
+}
+
+static void
+driveUntilDone (UartEngine &engine,
+                Context &ctx,
+                uint32_t t_end_us,
+                uint32_t step_us)
 {
   for (uint32_t now = 0; now <= t_end_us; now += step_us)
     {
       ctx.serial.update (now);
       engine.poll (now);
-      if (engine.resultReady ())
+      if (engine.done ())
         {
           return;
         }
     }
+}
+
+static void
+test_start_read_without_configuration_returns_not_initialized (void)
+{
+  UartEngine engine;
+  Result<void> start = engine.startRead (0, 0x10);
+  TEST_ASSERT_FALSE (start.ok ());
+  assertUartError (UartError::NotInitialized, start.error);
+}
+
+static void
+test_busy_is_reported_while_transaction_is_in_flight (void)
+{
+  Context ctx;
+
+  UartEngine engine;
+  engine.configure (makeCallbacks (ctx), makeConfig ());
+
+  Result<void> start = engine.startRead (0, 0x10);
+  TEST_ASSERT_TRUE (start.ok ());
+  TEST_ASSERT_TRUE (engine.busy ());
+
+  Result<void> second_start = engine.startWrite (0, 0x20, 0x11223344UL);
+  TEST_ASSERT_FALSE (second_start.ok ());
+  assertUartError (UartError::Busy, second_start.error);
 }
 
 static void
@@ -157,23 +228,7 @@ test_read_success_chunked_reply (void)
   Context ctx;
 
   UartEngine engine;
-  UartEngine::Callbacks cb;
-  cb.ctx = &ctx;
-  cb.available = &cbAvailable;
-  cb.read = &cbRead;
-  cb.write = &cbWrite;
-  cb.flush = &cbFlush;
-  cb.set_tx_enable = &cbSetTxEnable;
-
-  UartEngine::Config cfg;
-  cfg.baud_rate = 1000000;
-  cfg.reply_timeout_us = 5000;
-  cfg.enable_delay_us = 0;
-  cfg.max_retries = 0;
-  cfg.tx_complete_delay_us = 0;
-  cfg.drain_limit = 256;
-
-  engine.configure (cb, cfg);
+  engine.configure (makeCallbacks (ctx), makeConfig ());
 
   // Pre-fill RX with garbage that should be drained before sending.
   ctx.serial.rx.push_back (0xAA);
@@ -184,18 +239,18 @@ test_read_success_chunked_reply (void)
 
   // Schedule a valid reply in two chunks.
   uint8_t reply[uart::REPLY_SIZE];
-  uart::packWriteRequest (0, 0x10, 0x12345678, reply);
-
+  packReply (0, 0x10, 0x12345678UL, reply);
   ctx.serial.scheduleBytes (200, reply, 4);
   ctx.serial.scheduleBytes (400, reply + 4, 4);
 
-  drive_until_done (engine, ctx, 2000, 50);
+  driveUntilDone (engine, ctx, 2000, 50);
 
   TEST_ASSERT_TRUE (engine.resultReady ());
+  TEST_ASSERT_TRUE (engine.done ());
 
   Result<uint32_t> r = engine.takeReadResult ();
   TEST_ASSERT_TRUE (r.ok ());
-  TEST_ASSERT_EQUAL_UINT32 (0x12345678, r.value);
+  TEST_ASSERT_EQUAL_UINT32 (0x12345678UL, r.value);
 
   // Verify the request bytes.
   uint8_t req[uart::READ_REQUEST_SIZE];
@@ -215,22 +270,10 @@ test_read_timeout_then_retry_succeeds (void)
   Context ctx;
 
   UartEngine engine;
-  UartEngine::Callbacks cb;
-  cb.ctx = &ctx;
-  cb.available = &cbAvailable;
-  cb.read = &cbRead;
-  cb.write = &cbWrite;
-  cb.flush = &cbFlush;
-  cb.set_tx_enable = &cbSetTxEnable;
-
-  UartEngine::Config cfg;
-  cfg.baud_rate = 1000000;
+  UartEngine::Config cfg = makeConfig ();
   cfg.reply_timeout_us = 100;
-  cfg.enable_delay_us = 0;
   cfg.max_retries = 1;
-  cfg.tx_complete_delay_us = 0;
-
-  engine.configure (cb, cfg);
+  engine.configure (makeCallbacks (ctx), cfg);
 
   Result<void> start = engine.startRead (0, 0x22);
   TEST_ASSERT_TRUE (start.ok ());
@@ -238,15 +281,15 @@ test_read_timeout_then_retry_succeeds (void)
   // Only provide a reply late enough that the first attempt times out, but the
   // second attempt succeeds.
   uint8_t reply[uart::REPLY_SIZE];
-  uart::packWriteRequest (0, 0x22, 0xA5A55A5A, reply);
+  packReply (0, 0x22, 0xA5A55A5AUL, reply);
   ctx.serial.scheduleBytes (250, reply, uart::REPLY_SIZE);
 
-  drive_until_done (engine, ctx, 2000, 50);
+  driveUntilDone (engine, ctx, 2000, 50);
 
   TEST_ASSERT_TRUE (engine.resultReady ());
   Result<uint32_t> r = engine.takeReadResult ();
   TEST_ASSERT_TRUE (r.ok ());
-  TEST_ASSERT_EQUAL_UINT32 (0xA5A55A5A, r.value);
+  TEST_ASSERT_EQUAL_UINT32 (0xA5A55A5AUL, r.value);
 
   // Verify that the request was sent twice (due to a retry).
   uint8_t req[uart::READ_REQUEST_SIZE];
@@ -259,53 +302,108 @@ test_read_timeout_then_retry_succeeds (void)
 }
 
 static void
-test_read_crc_mismatch_then_retry_succeeds (void)
+test_crc_mismatch_reports_explicit_error_without_retry (void)
 {
   Context ctx;
 
   UartEngine engine;
-  UartEngine::Callbacks cb;
-  cb.ctx = &ctx;
-  cb.available = &cbAvailable;
-  cb.read = &cbRead;
-  cb.write = &cbWrite;
-  cb.flush = &cbFlush;
-  cb.set_tx_enable = &cbSetTxEnable;
-
-  UartEngine::Config cfg;
-  cfg.baud_rate = 1000000;
-  cfg.reply_timeout_us = 2000;
-  cfg.enable_delay_us = 0;
-  cfg.max_retries = 1;
-  cfg.tx_complete_delay_us = 0;
-
-  engine.configure (cb, cfg);
+  engine.configure (makeCallbacks (ctx), makeConfig ());
 
   Result<void> start = engine.startRead (0, 0x33);
   TEST_ASSERT_TRUE (start.ok ());
 
-  uint8_t reply_bad[uart::REPLY_SIZE];
-  uart::packWriteRequest (0, 0x33, 0x0BADBEEF, reply_bad);
-  reply_bad[uart::REPLY_SIZE - 1] ^= 0xFF; // corrupt CRC
+  uint8_t reply[uart::REPLY_SIZE];
+  packReply (0, 0x33, 0x0BADBEEFUL, reply);
+  reply[uart::REPLY_SIZE - 1] ^= 0xFF; // corrupt CRC
+  ctx.serial.scheduleBytes (200, reply, uart::REPLY_SIZE);
 
-  uint8_t reply_good[uart::REPLY_SIZE];
-  uart::packWriteRequest (0, 0x33, 0x0BADBEEF, reply_good);
-
-  // First reply arrives with bad CRC, second reply is correct.
-  ctx.serial.scheduleBytes (200, reply_bad, uart::REPLY_SIZE);
-  ctx.serial.scheduleBytes (500, reply_good, uart::REPLY_SIZE);
-
-  drive_until_done (engine, ctx, 2000, 50);
+  driveUntilDone (engine, ctx, 2000, 50);
 
   TEST_ASSERT_TRUE (engine.resultReady ());
   Result<uint32_t> r = engine.takeReadResult ();
-  TEST_ASSERT_TRUE (r.ok ());
-  TEST_ASSERT_EQUAL_UINT32 (0x0BADBEEF, r.value);
+  TEST_ASSERT_FALSE (r.ok ());
+  assertUartError (UartError::CrcMismatch, r.error);
+  TEST_ASSERT_EQUAL_UINT32 (0UL, r.value);
+}
 
-  // Verify the request was re-sent.
-  uint8_t req[uart::READ_REQUEST_SIZE];
-  uart::packReadRequest (0, 0x33, req);
-  TEST_ASSERT_EQUAL_UINT8 (uart::READ_REQUEST_SIZE * 2, ctx.serial.tx.size ());
+static void
+test_unexpected_frame_reports_error (void)
+{
+  Context ctx;
+
+  UartEngine engine;
+  engine.configure (makeCallbacks (ctx), makeConfig ());
+
+  Result<void> start = engine.startRead (0, 0x44);
+  TEST_ASSERT_TRUE (start.ok ());
+
+  uint8_t reply[uart::REPLY_SIZE];
+  packReply (0, 0x45, 0xCAFEBABEUL, reply); // wrong register
+  ctx.serial.scheduleBytes (200, reply, uart::REPLY_SIZE);
+
+  driveUntilDone (engine, ctx, 2000, 50);
+
+  TEST_ASSERT_TRUE (engine.resultReady ());
+  Result<uint32_t> r = engine.takeReadResult ();
+  TEST_ASSERT_FALSE (r.ok ());
+  assertUartError (UartError::UnexpectedFrame, r.error);
+}
+
+static void
+test_rx_garbage_overflow_reports_explicit_error (void)
+{
+  Context ctx;
+
+  UartEngine engine;
+  UartEngine::Config cfg = makeConfig ();
+  cfg.drain_limit = 2;
+  engine.configure (makeCallbacks (ctx, true, false), cfg);
+
+  ctx.serial.rx.push_back (0xAA);
+  ctx.serial.rx.push_back (0xBB);
+  ctx.serial.rx.push_back (0xCC);
+
+  Result<void> start = engine.startRead (0, 0x55);
+  TEST_ASSERT_TRUE (start.ok ());
+
+  driveUntilDone (engine, ctx, 100, 10);
+
+  TEST_ASSERT_TRUE (engine.resultReady ());
+  Result<uint32_t> r = engine.takeReadResult ();
+  TEST_ASSERT_FALSE (r.ok ());
+  assertUartError (UartError::RxGarbage, r.error);
+  TEST_ASSERT_EQUAL_UINT8 (0, ctx.serial.tx.size ());
+}
+
+static void
+test_write_success_completes_without_reply (void)
+{
+  Context ctx;
+
+  UartEngine engine;
+  UartEngine::Config cfg = makeConfig ();
+  cfg.baud_rate = 0;
+  cfg.tx_complete_delay_us = 0;
+  engine.configure (makeCallbacks (ctx, true, true), cfg);
+
+  Result<void> start = engine.startWrite (0, 0x12, 0x11223344UL);
+  TEST_ASSERT_TRUE (start.ok ());
+
+  driveUntilDone (engine, ctx, 100, 10);
+
+  TEST_ASSERT_TRUE (engine.resultReady ());
+  Result<void> r = engine.takeWriteResult ();
+  TEST_ASSERT_TRUE (r.ok ());
+  TEST_ASSERT_TRUE (ctx.serial.flush_called);
+
+  uint8_t req[uart::WRITE_REQUEST_SIZE];
+  uart::packWriteRequest (0, 0x12, 0x11223344UL, req);
+  TEST_ASSERT_EQUAL_UINT8 (uart::WRITE_REQUEST_SIZE, ctx.serial.tx.size ());
+  TEST_ASSERT_EQUAL_UINT8_ARRAY (req, ctx.serial.tx.data (), uart::WRITE_REQUEST_SIZE);
+
+  TEST_ASSERT_EQUAL (2, ctx.pin.states.size ());
+  TEST_ASSERT_TRUE (ctx.pin.states[0]);
+  TEST_ASSERT_FALSE (ctx.pin.states[1]);
 }
 
 void
@@ -326,8 +424,13 @@ main (int argc,
   (void)argv;
 
   UNITY_BEGIN ();
+  RUN_TEST (test_start_read_without_configuration_returns_not_initialized);
+  RUN_TEST (test_busy_is_reported_while_transaction_is_in_flight);
   RUN_TEST (test_read_success_chunked_reply);
   RUN_TEST (test_read_timeout_then_retry_succeeds);
-  RUN_TEST (test_read_crc_mismatch_then_retry_succeeds);
+  RUN_TEST (test_crc_mismatch_reports_explicit_error_without_retry);
+  RUN_TEST (test_unexpected_frame_reports_error);
+  RUN_TEST (test_rx_garbage_overflow_reports_explicit_error);
+  RUN_TEST (test_write_success_completes_without_reply);
   return UNITY_END ();
 }

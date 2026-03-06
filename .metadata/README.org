@@ -12,7 +12,7 @@
 
 * Library Information
 - Name :: TMC51X0
-- Version :: 3.0.0
+- Version :: 4.0.0
 - License :: BSD
 - URL :: https://github.com/janelia-arduino/TMC51X0
 - Author :: Peter Polidoro
@@ -42,6 +42,10 @@ to 46V.
 The TMC5160 uses external MOSFETs to drive higher current motors from 1A to
 several 10A per coil and may be driven at higher voltages than the MOFSFETs
 included in the TMC5130.
+
+The library now exposes a poll-driven UART path through =TMC51X0::uartBus()=
+(=uartInterface()= is retained for compatibility). For UART-specific guidance,
+see [[./docs/UART.md][docs/UART.md]] and [[./MIGRATION.md][MIGRATION.md]].
 
 #+html: <img src="./images/trinamic-wiring-TMC51X0-description.svg" width="1920px">
 
@@ -301,13 +305,15 @@ After this file is installed, physically unplug and reconnect your board.
 **** Gnu/Linux
 
 #+BEGIN_SRC sh
-make firmware
+make pico-firmware
+# or make teensy-firmware
 #+END_SRC
 
 **** Other
 
 #+BEGIN_SRC sh
-pio run -e teensy40
+pio run -e pico
+# or pio run -e teensy40
 #+END_SRC
 
 *** Upload the firmware
@@ -315,13 +321,15 @@ pio run -e teensy40
 **** Gnu/Linux
 
 #+BEGIN_SRC sh
-make upload
+make pico-upload
+# or make teensy-upload
 #+END_SRC
 
 **** Other
 
 #+BEGIN_SRC sh
-pio run -e teensy40 -t upload
+pio run -e pico -t upload
+# or pio run -e teensy40 -t upload
 #+END_SRC
 
 *** Serial Terminal Monitor

@@ -1,0 +1,70 @@
+name: ci
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  native-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install PlatformIO
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install platformio
+
+      - name: Check version metadata
+        run: python tools/version_sync.py check
+
+      - name: Run native tests
+        run: python tools/pio_task.py test --env native
+
+  compile-matrix:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - env: pico
+            example: examples/SPI/TestCommunication
+          - env: teensy40
+            example: examples/SPI/TestCommunication
+          - env: esp32
+            example: examples/SPI/TestCommunication
+          - env: giga_r1_m7
+            example: examples/SPI/TestCommunication
+          - env: nanoatmega328
+            example: examples/SPI/TestCommunication
+          - env: pico
+            example: examples/UART/TestCommunication
+          - env: teensy40
+            example: examples/UART/TestCommunication
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install PlatformIO
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install platformio
+
+      - name: Build ${{ matrix.example }} for ${{ matrix.env }}
+        run: >-
+          python tools/pio_task.py build
+          --example "${{ matrix.example }}"
+          --env "${{ matrix.env }}"

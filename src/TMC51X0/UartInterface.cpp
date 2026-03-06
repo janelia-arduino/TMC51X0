@@ -35,6 +35,7 @@ UartInterface::setup (UartParameters uart_parameters)
   config.enable_delay_us = uart_parameters_.enable_delay_us;
   config.max_retries = uart_parameters_.max_retries;
   config.tx_complete_delay_us = uart_parameters_.tx_complete_delay_us;
+  config.drain_limit = uart_parameters_.drain_limit;
 
   uart_engine_.configure (callbacks, config);
 }

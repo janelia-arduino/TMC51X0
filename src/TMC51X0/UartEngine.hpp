@@ -105,6 +105,12 @@ public:
     return state_ == State::Done;
   }
 
+  bool
+  done () const
+  {
+    return resultReady ();
+  }
+
   UartError
   lastError () const
   {
@@ -212,11 +218,20 @@ public:
         switch (state_)
           {
           case State::DrainBefore:
-            progressed = drainRx_ ();
-            // Even if we didn't drain anything, move forward.
-            state_ = State::EnableTx;
-            progressed = true;
-            break;
+            {
+              const DrainResult drain_result = drainRx_ ();
+              if (drain_result == DrainResult::Overflow)
+                {
+                  handleErrorOrRetry_ (UartError::RxGarbage, now_us);
+                  progressed = true;
+                  break;
+                }
+
+              // Even if we didn't drain anything, move forward.
+              state_ = State::EnableTx;
+              progressed = true;
+              break;
+            }
 
           case State::EnableTx:
             if (callbacks_.set_tx_enable)
@@ -504,7 +519,14 @@ private:
     return (us > 0xFFFFFFFFULL) ? 0xFFFFFFFFUL : static_cast<uint32_t> (us);
   }
 
-  bool
+  enum class DrainResult
+  {
+    Clean,
+    Drained,
+    Overflow,
+  };
+
+  DrainResult
   drainRx_ ()
   {
     // Drain up to drain_limit bytes.
@@ -517,14 +539,13 @@ private:
       }
 
     // If we hit the drain limit and there are still bytes available, report an
-    // error (or let retry logic handle it).
+    // explicit error instead of silently continuing with ambiguous state.
     if ((drained >= config_.drain_limit) && (callbacks_.available (callbacks_.ctx) > 0))
       {
-        // Leave remaining bytes in the buffer; the caller may want to inspect.
-        last_error_ = UartError::RxGarbage;
+        return DrainResult::Overflow;
       }
 
-    return drained > 0;
+    return (drained > 0) ? DrainResult::Drained : DrainResult::Clean;
   }
 
   void

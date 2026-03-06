@@ -45,6 +45,12 @@ public:
     return last_uart_error_;
   }
 
+  UartError
+  lastError () const
+  {
+    return getLastUartError ();
+  }
+
   // --------------------------------------------------------------------------
   // Non-blocking API (poll-driven)
   // --------------------------------------------------------------------------
@@ -52,6 +58,17 @@ public:
   Result<void> startWriteRegister (uint8_t register_address,
                                    uint32_t data);
   Result<void> startReadRegister (uint8_t register_address);
+
+  // Family-style aliases for the non-blocking API.
+  Result<void> startWrite (uint8_t register_address,
+                           uint32_t data)
+  {
+    return startWriteRegister (register_address, data);
+  }
+  Result<void> startRead (uint8_t register_address)
+  {
+    return startReadRegister (register_address);
+  }
 
   void poll (uint32_t now_us);
   void poll ();
@@ -65,6 +82,11 @@ public:
   resultReady () const
   {
     return uart_engine_.resultReady ();
+  }
+  bool
+  done () const
+  {
+    return resultReady ();
   }
 
   Result<void> takeWriteResult ();
@@ -95,5 +117,8 @@ private:
   void enableTxDisableRx ();
   void disableTxEnableRx ();
 };
+
+// Low-friction public bus abstraction for family-wide API parity.
+using UartBus = UartInterface;
 }
 #endif

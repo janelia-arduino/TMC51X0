@@ -8,11 +8,13 @@
 #ifndef TMC51X0_RESULT_HPP
 #define TMC51X0_RESULT_HPP
 
+#include <stdint.h>
+
 namespace tmc51x0
 {
 // UART-specific error codes. Intended to be surfaced for debugging and for
 // event-loop / QP-friendly non-blocking APIs.
-enum class UartError
+enum class UartError : uint8_t
 {
   None = 0,
   Busy,

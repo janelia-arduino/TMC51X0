@@ -16,7 +16,7 @@
 # Library Information
 
 -   **Name:** TMC51X0
--   **Version:** 3.0.0
+-   **Version:** 4.0.0
 -   **License:** BSD
 -   **URL:** <https://github.com/janelia-arduino/TMC51X0>
 -   **Author:** Peter Polidoro
@@ -36,6 +36,8 @@ Both versions have encoder inputs and reference switch inputs for optional posit
 The TMC5130 includes MOSFETs inside the IC to reduce part count and circuit size for driving motors up to 1.64A RMS per coil at a voltage supply range from 4.75 to 46V.
 
 The TMC5160 uses external MOSFETs to drive higher current motors from 1A to several 10A per coil and may be driven at higher voltages than the MOFSFETs included in the TMC5130.
+
+The library now exposes a poll-driven UART path through `TMC51X0::uartBus()` (`uartInterface()` is retained for compatibility). For UART-specific guidance, see [docs/UART.md](./docs/UART.md) and [MIGRATION.md](./MIGRATION.md).
 
 <img src="./images/trinamic-wiring-TMC51X0-description.svg" width="1920px">
 
@@ -331,13 +333,15 @@ Linux users have to install udev rules for PlatformIO supported boards/devices.
 1.  Gnu/Linux
 
     ```sh
-    make firmware
+    make pico-firmware
+    # or make teensy-firmware
     ```
 
 2.  Other
 
     ```sh
-    pio run -e teensy40
+    pio run -e pico
+    # or pio run -e teensy40
     ```
 
 
@@ -346,13 +350,15 @@ Linux users have to install udev rules for PlatformIO supported boards/devices.
 1.  Gnu/Linux
 
     ```sh
-    make upload
+    make pico-upload
+    # or make teensy-upload
     ```
 
 2.  Other
 
     ```sh
-    pio run -e teensy40 -t upload
+    pio run -e pico -t upload
+    # or pio run -e teensy40 -t upload
     ```
 
 

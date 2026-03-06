@@ -37,6 +37,11 @@ struct UartParameters
   // back to Stream::flush() (which can block on some platforms).
   uint32_t tx_complete_delay_us;
 
+  // Maximum number of bytes to drain from RX before starting a transaction.
+  // If the limit is exceeded and stale bytes are still present, the transaction
+  // fails with UartError::RxGarbage (or retries if configured).
+  uint16_t drain_limit;
+
   constexpr UartParameters (Stream *uart_ptr = nullptr,
                             uint8_t node_address = 0,
                             size_t enable_txrx_pin = NO_PIN,
@@ -44,7 +49,8 @@ struct UartParameters
                             uint32_t reply_timeout_us = 10000,
                             uint32_t enable_delay_us = 10,
                             uint8_t max_retries = 0,
-                            uint32_t tx_complete_delay_us = 0)
+                            uint32_t tx_complete_delay_us = 0,
+                            uint16_t drain_limit = 256)
       : uart_ptr (uart_ptr),
         node_address (node_address),
         enable_txrx_pin (enable_txrx_pin),
@@ -52,7 +58,8 @@ struct UartParameters
         reply_timeout_us (reply_timeout_us),
         enable_delay_us (enable_delay_us),
         max_retries (max_retries),
-        tx_complete_delay_us (tx_complete_delay_us)
+        tx_complete_delay_us (tx_complete_delay_us),
+        drain_limit (drain_limit)
   {
   }
 
@@ -69,7 +76,8 @@ struct UartParameters
         reply_timeout_us,
         enable_delay_us,
         max_retries,
-        tx_complete_delay_us);
+        tx_complete_delay_us,
+        drain_limit);
   }
 
   constexpr UartParameters
@@ -83,7 +91,8 @@ struct UartParameters
         reply_timeout_us,
         enable_delay_us,
         max_retries,
-        tx_complete_delay_us);
+        tx_complete_delay_us,
+        drain_limit);
   }
 
   constexpr UartParameters
@@ -97,7 +106,8 @@ struct UartParameters
         reply_timeout_us,
         enable_delay_us,
         max_retries,
-        tx_complete_delay_us);
+        tx_complete_delay_us,
+        drain_limit);
   }
 
   constexpr UartParameters
@@ -111,7 +121,8 @@ struct UartParameters
         reply_timeout_us,
         enable_delay_us,
         max_retries,
-        tx_complete_delay_us);
+        tx_complete_delay_us,
+        drain_limit);
   }
 
   constexpr UartParameters
@@ -125,7 +136,8 @@ struct UartParameters
         timeout_us,
         enable_delay_us,
         max_retries,
-        tx_complete_delay_us);
+        tx_complete_delay_us,
+        drain_limit);
   }
 
   constexpr UartParameters
@@ -139,7 +151,8 @@ struct UartParameters
         reply_timeout_us,
         delay_us,
         max_retries,
-        tx_complete_delay_us);
+        tx_complete_delay_us,
+        drain_limit);
   }
 
   constexpr UartParameters
@@ -153,7 +166,8 @@ struct UartParameters
         reply_timeout_us,
         enable_delay_us,
         retries,
-        tx_complete_delay_us);
+        tx_complete_delay_us,
+        drain_limit);
   }
 
   constexpr UartParameters
@@ -167,7 +181,23 @@ struct UartParameters
         reply_timeout_us,
         enable_delay_us,
         max_retries,
-        delay_us);
+        delay_us,
+        drain_limit);
+  }
+
+  constexpr UartParameters
+  withDrainLimit (uint16_t limit) const
+  {
+    return UartParameters (
+        uart_ptr,
+        node_address,
+        enable_txrx_pin,
+        baud_rate,
+        reply_timeout_us,
+        enable_delay_us,
+        max_retries,
+        tx_complete_delay_us,
+        limit);
   }
 };
 } // namespace tmc51x0
