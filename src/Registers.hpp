@@ -7,7 +7,13 @@
 
 #ifndef TMC51X0_REGISTERS_HPP
 #define TMC51X0_REGISTERS_HPP
+#ifdef ARDUINO
 #include <Arduino.h>
+#else
+#include <stddef.h>
+#include <stdint.h>
+#endif
+
 
 #include "Constants.hpp"
 

@@ -8,11 +8,15 @@
 #ifndef TMC51X0_INTERFACE_HPP
 #define TMC51X0_INTERFACE_HPP
 
+#include <stdint.h>
+
 namespace tmc51x0
 {
 class Interface
 {
 public:
+  virtual ~Interface () = default;
+
   enum InterfaceMode
   {
     SpiMode,
