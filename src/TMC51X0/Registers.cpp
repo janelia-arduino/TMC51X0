@@ -12,26 +12,41 @@ void
 Registers::write (RegisterAddress register_address,
                   uint32_t data)
 {
-  if ((register_address < AddressCount) && (writeable_[register_address]))
+  if ((register_address < AddressCount)
+      && (writeable_[register_address])
+      && (interface_ptr_ != nullptr))
     {
-      interface_ptr_->writeRegister (register_address, data);
-      stored_[register_address] = data;
+      Result<void> result = interface_ptr_->writeRegisterResult (register_address,
+                                                                 data);
+      if (result.ok ())
+        {
+          // Only advance the software mirror after an explicit successful
+          // transport operation.
+          stored_[register_address] = data;
+          stored_valid_[register_address] = true;
+        }
     }
 }
 
 uint32_t
 Registers::read (RegisterAddress register_address)
 {
-  if ((register_address < AddressCount) && (readable_[register_address]))
+  if ((register_address < AddressCount)
+      && (readable_[register_address])
+      && (interface_ptr_ != nullptr))
     {
-      uint32_t data = interface_ptr_->readRegister (register_address);
-      stored_[register_address] = data;
-      return data;
+      Result<uint32_t> result = interface_ptr_->readRegisterResult (register_address);
+      if (result.ok ())
+        {
+          // Keep the last-known-good mirror intact if the transport reports an
+          // error instead of poisoning it with an implicit fallback value.
+          stored_[register_address] = result.value;
+          stored_valid_[register_address] = true;
+          return result.value;
+        }
     }
-  else
-    {
-      return 0;
-    }
+
+  return 0;
 }
 
 uint32_t
@@ -45,6 +60,25 @@ Registers::getStored (RegisterAddress register_address)
     {
       return 0;
     }
+}
+
+bool
+Registers::storedValid (RegisterAddress register_address) const
+{
+  if (register_address < AddressCount)
+    {
+      return stored_valid_[register_address];
+    }
+  else
+    {
+      return false;
+    }
+}
+
+void
+Registers::assumeDeviceReset ()
+{
+  seedStoredResetValues_ ();
 }
 
 bool
@@ -78,11 +112,43 @@ Registers::readAndClearGstat ()
 {
   Gstat gstat_read, gstat_write;
   gstat_read.raw = read (tmc51x0::Registers::GstatAddress);
+  if (gstat_read.reset ())
+    {
+      assumeDeviceReset ();
+    }
   gstat_write.reset (true);
   gstat_write.drv_err (true);
   gstat_write.uv_cp (true);
   write (GstatAddress, gstat_write.raw);
   return gstat_read;
+}
+
+void
+Registers::seedStoredResetValues_ ()
+{
+  for (uint8_t register_address = 0; register_address < AddressCount; ++register_address)
+    {
+      stored_[register_address] = 0;
+      stored_valid_[register_address] = false;
+    }
+
+  stored_[GconfAddress] = 0x0;
+  stored_valid_[GconfAddress] = true;
+
+  stored_[GstatAddress] = 0x5;
+  stored_valid_[GstatAddress] = true;
+
+  stored_[FactoryConfAddress] = 0xE;
+  stored_valid_[FactoryConfAddress] = true;
+
+  stored_[RampStatAddress] = 0x780;
+  stored_valid_[RampStatAddress] = true;
+
+  stored_[ChopconfAddress] = 0x10410150;
+  stored_valid_[ChopconfAddress] = true;
+
+  stored_[PwmconfAddress] = 0xC40C001E;
+  stored_valid_[PwmconfAddress] = true;
 }
 
 // private
@@ -93,16 +159,13 @@ Registers::initialize (Interface &interface)
 
   for (uint8_t register_address = 0; register_address < AddressCount; ++register_address)
     {
-      stored_[register_address] = 0;
       writeable_[register_address] = false;
       readable_[register_address] = false;
     }
 
-  stored_[GconfAddress] = 0x0;
   writeable_[GconfAddress] = true;
   readable_[GconfAddress] = true;
 
-  stored_[GstatAddress] = 0x5;
   writeable_[GstatAddress] = true;
   readable_[GstatAddress] = true;
 
@@ -118,7 +181,6 @@ Registers::initialize (Interface &interface)
 
   readable_[OtpReadAddress] = true;
 
-  stored_[FactoryConfAddress] = 0xE;
   writeable_[FactoryConfAddress] = true;
   readable_[FactoryConfAddress] = true;
 
@@ -184,7 +246,6 @@ Registers::initialize (Interface &interface)
   writeable_[SwModeAddress] = true;
   readable_[SwModeAddress] = true;
 
-  stored_[RampStatAddress] = 0x780;
   writeable_[RampStatAddress] = true;
   readable_[RampStatAddress] = true;
 
@@ -237,7 +298,6 @@ Registers::initialize (Interface &interface)
 
   readable_[MscuractAddress] = true;
 
-  stored_[ChopconfAddress] = 0x10410150;
   writeable_[ChopconfAddress] = true;
   readable_[ChopconfAddress] = true;
 
@@ -247,7 +307,6 @@ Registers::initialize (Interface &interface)
 
   readable_[DrvStatusAddress] = true;
 
-  stored_[PwmconfAddress] = 0xC40C001E;
   writeable_[PwmconfAddress] = true;
 
   readable_[PwmScaleAddress] = true;
@@ -255,4 +314,6 @@ Registers::initialize (Interface &interface)
   readable_[PwmAutoAddress] = true;
 
   readable_[LostStepsAddress] = true;
+
+  seedStoredResetValues_ ();
 }

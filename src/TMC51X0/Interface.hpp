@@ -10,6 +10,8 @@
 
 #include <stdint.h>
 
+#include "Result.hpp"
+
 namespace tmc51x0
 {
 class Interface
@@ -22,7 +24,7 @@ public:
     SpiMode,
     UartMode
   };
-  InterfaceMode interface_mode;
+  InterfaceMode interface_mode{ SpiMode };
 
   virtual void writeRegister (uint8_t /* register_address */,
                               uint32_t /* data */) {};
@@ -31,6 +33,25 @@ public:
   {
     return 0;
   };
+
+  // Explicit-error variants. The default implementation preserves the legacy
+  // behavior for transports like SPI that do not currently surface a richer
+  // error model.
+  virtual Result<void>
+  writeRegisterResult (uint8_t register_address,
+                       uint32_t data)
+  {
+    writeRegister (register_address, data);
+    return Result<void>{};
+  }
+
+  virtual Result<uint32_t>
+  readRegisterResult (uint8_t register_address)
+  {
+    Result<uint32_t> r;
+    r.value = readRegister (register_address);
+    return r;
+  }
 };
 }
 #endif

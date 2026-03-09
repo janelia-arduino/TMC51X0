@@ -28,16 +28,16 @@ public:
 
   // These call the blocking wrappers and update last_uart_error_.
   void writeRegister (uint8_t register_address,
-                      uint32_t data);
-  uint32_t readRegister (uint8_t register_address);
+                      uint32_t data) override;
+  uint32_t readRegister (uint8_t register_address) override;
 
   // --------------------------------------------------------------------------
   // Blocking API with explicit error reporting
   // --------------------------------------------------------------------------
 
   Result<void> writeRegisterResult (uint8_t register_address,
-                                    uint32_t data);
-  Result<uint32_t> readRegisterResult (uint8_t register_address);
+                                    uint32_t data) override;
+  Result<uint32_t> readRegisterResult (uint8_t register_address) override;
 
   UartError
   getLastUartError () const
@@ -60,12 +60,14 @@ public:
   Result<void> startReadRegister (uint8_t register_address);
 
   // Family-style aliases for the non-blocking API.
-  Result<void> startWrite (uint8_t register_address,
-                           uint32_t data)
+  Result<void>
+  startWrite (uint8_t register_address,
+              uint32_t data)
   {
     return startWriteRegister (register_address, data);
   }
-  Result<void> startRead (uint8_t register_address)
+  Result<void>
+  startRead (uint8_t register_address)
   {
     return startReadRegister (register_address);
   }

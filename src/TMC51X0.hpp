@@ -68,7 +68,9 @@ struct TMC51X0
   void enablePower ();
   void disablePower ();
 
-  // call reinitialize after cycling power to the chip
+  // Call reinitialize after cycling power to the chip. This reseeds the
+  // software-side register mirror to known reset defaults before replaying the
+  // library setup state.
   void reinitialize ();
 
   void beginHomeToSwitch (tmc51x0::HomeParameters home_parameters,

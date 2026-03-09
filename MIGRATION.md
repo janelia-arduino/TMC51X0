@@ -14,6 +14,10 @@ This update keeps the existing UART API working while aligning the public surfac
   - `lastError()`
 - `UartParameters` now exposes `withDrainLimit(...)` for stale-RX handling.
 - RX drain overflow now surfaces as `UartError::RxGarbage` instead of being silently absorbed and later reported ambiguously.
+- The software-side register mirror now updates only after explicit successful transport operations. Failed UART reads/writes no longer poison the stored cache with fallback values.
+- `TMC51X0::reinitialize()` now reseeds the register mirror to known reset defaults before replaying library setup state.
+- UART transport errors are now prevented from poisoning the software mirror. SPI remains optimistic because the current SPI transport does not surface explicit transaction failures; after suspected SPI faults or external resets, re-read key registers or call `reinitialize()` to resynchronize.
+- Advanced recovery code can call `stepper.registers.assumeDeviceReset()` directly and inspect `stepper.registers.storedValid(...)` when needed.
 
 ## Existing code compatibility
 

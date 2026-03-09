@@ -86,6 +86,7 @@ TMC51X0::disablePower ()
 void
 TMC51X0::reinitialize ()
 {
+  registers.assumeDeviceReset ();
   driver.reinitialize ();
   controller.reinitialize ();
   encoder.reinitialize ();

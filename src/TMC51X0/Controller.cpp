@@ -345,6 +345,11 @@ Controller::writeControllerParameters (ControllerParameters parameters)
 void
 Controller::cacheControllerSettings ()
 {
+  // Refresh the readable pieces of the mirror first so cache snapshots track
+  // the live device as closely as possible.
+  (void)registers_ptr_->read (Registers::RampmodeAddress);
+  (void)registers_ptr_->read (Registers::SwModeAddress);
+
   cached_controller_settings_.ramp_mode = (RampMode)registers_ptr_->getStored (Registers::RampmodeAddress);
   Registers::SwMode sw_mode;
   sw_mode.raw = registers_ptr_->getStored (Registers::SwModeAddress);
@@ -389,6 +394,8 @@ Controller::writeSwitchParameters (SwitchParameters parameters)
 void
 Controller::cacheSwitchSettings ()
 {
+  (void)registers_ptr_->read (Registers::SwModeAddress);
+
   Registers::SwMode sw_mode;
   sw_mode.raw = registers_ptr_->getStored (Registers::SwModeAddress);
   cached_switch_settings_.left_stop_enabled = sw_mode.stop_l_enable ();

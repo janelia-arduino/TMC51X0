@@ -456,6 +456,11 @@ Driver::writeDriverParameters (DriverParameters parameters)
 void
 Driver::cacheDriverSettings ()
 {
+  // Refresh the readable pieces of the mirror first so cache snapshots are as
+  // close to the live chip state as the transport allows.
+  (void)registers_ptr_->read (Registers::GconfAddress);
+  (void)registers_ptr_->read (Registers::ChopconfAddress);
+
   cached_driver_settings_.global_current_scaler = registers_ptr_->getStored (Registers::GlobalScalerAddress);
   Registers::IholdIrun ihold_irun;
   ihold_irun.raw = registers_ptr_->getStored (Registers::IholdIrunAddress);
@@ -487,7 +492,7 @@ Driver::cacheDriverSettings ()
   cached_driver_settings_.high_velocity_chopper_switch_enabled = chopconf.vhighchm ();
   cached_driver_settings_.stall_guard_threshold = coolconf.sgt ();
   cached_driver_settings_.stall_guard_filter_enabled = coolconf.sfilt ();
-  cached_driver_settings_.short_to_ground_protection_enabled = chopconf.diss2g ();
+  cached_driver_settings_.short_to_ground_protection_enabled = !chopconf.diss2g ();
   cached_driver_settings_.enabled_toff = enabled_toff_;
   cached_driver_settings_.comparator_blank_time = (ComparatorBlankTime)chopconf.tbl ();
   Registers::Dcctrl dcctrl;
