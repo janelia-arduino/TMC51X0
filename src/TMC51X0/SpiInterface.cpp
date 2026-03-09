@@ -16,6 +16,7 @@ SpiInterface::setup (tmc51x0::SpiParameters spi_parameters)
   spi_settings_ = SPISettings (spi_parameters.clock_rate,
                                MSBFIRST,
                                SPI_MODE3);
+  device_reset_observed_ = false;
 
   pinMode (spi_parameters_.chip_select_pin, OUTPUT);
   disableChipSelect ();
@@ -33,6 +34,10 @@ SpiInterface::writeRegister (uint8_t register_address,
 
   noInterrupts ();
   spi_status_.raw = spi::unpackStatus (rx_buffer_);
+  if (spi_status_.reset_flag ())
+    {
+      device_reset_observed_ = true;
+    }
   interrupts ();
 }
 
@@ -50,9 +55,21 @@ SpiInterface::readRegister (uint8_t register_address)
 
   noInterrupts ();
   spi_status_.raw = spi::unpackStatus (rx_buffer_);
+  if (spi_status_.reset_flag ())
+    {
+      device_reset_observed_ = true;
+    }
   interrupts ();
 
   return spi::unpackData (rx_buffer_);
+}
+
+bool
+SpiInterface::consumeDeviceResetObserved ()
+{
+  bool observed = device_reset_observed_;
+  device_reset_observed_ = false;
+  return observed;
 }
 
 // private

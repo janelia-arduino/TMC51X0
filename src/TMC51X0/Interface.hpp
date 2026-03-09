@@ -52,6 +52,15 @@ public:
     r.value = readRegister (register_address);
     return r;
   }
+
+  // SPI surfaces a reset flag alongside every access. Transports that can
+  // detect a device-side reset should latch it and surface it here so the
+  // register mirror can demand a re-seed/recovery pass.
+  virtual bool
+  consumeDeviceResetObserved ()
+  {
+    return false;
+  }
 };
 }
 #endif

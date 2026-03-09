@@ -8,6 +8,41 @@
 
 using namespace tmc51x0;
 
+namespace
+{
+uint32_t
+pwmconfResetDefault (Registers::DeviceModel device_model)
+{
+  switch (device_model)
+    {
+    case Registers::DeviceModel::TMC5130A:
+      return 0x00050480UL;
+    case Registers::DeviceModel::TMC5160A:
+    case Registers::DeviceModel::Unknown:
+    default:
+      return 0xC40C001EUL;
+    }
+}
+}
+
+void
+Registers::setDeviceModel (DeviceModel device_model)
+{
+  device_model_ = device_model;
+}
+
+Registers::DeviceModel
+Registers::deviceModel () const
+{
+  return device_model_;
+}
+
+bool
+Registers::deviceModelKnown () const
+{
+  return device_model_ != DeviceModel::Unknown;
+}
+
 void
 Registers::write (RegisterAddress register_address,
                   uint32_t data)
@@ -18,12 +53,14 @@ Registers::write (RegisterAddress register_address,
     {
       Result<void> result = interface_ptr_->writeRegisterResult (register_address,
                                                                  data);
+      recordTransportReset_ ();
       if (result.ok ())
         {
           // Only advance the software mirror after an explicit successful
           // transport operation.
           stored_[register_address] = data;
           stored_valid_[register_address] = true;
+          stored_confidence_[register_address] = MirrorConfidence::AssumedWritten;
         }
     }
 }
@@ -36,17 +73,60 @@ Registers::read (RegisterAddress register_address)
       && (interface_ptr_ != nullptr))
     {
       Result<uint32_t> result = interface_ptr_->readRegisterResult (register_address);
+      recordTransportReset_ ();
       if (result.ok ())
         {
           // Keep the last-known-good mirror intact if the transport reports an
           // error instead of poisoning it with an implicit fallback value.
           stored_[register_address] = result.value;
           stored_valid_[register_address] = true;
+          stored_confidence_[register_address] = MirrorConfidence::ReadVerified;
           return result.value;
         }
     }
 
   return 0;
+}
+
+bool
+Registers::refresh (RegisterAddress register_address)
+{
+  if ((register_address < AddressCount)
+      && (readable_[register_address])
+      && (interface_ptr_ != nullptr))
+    {
+      Result<uint32_t> result = interface_ptr_->readRegisterResult (register_address);
+      recordTransportReset_ ();
+      if (result.ok ())
+        {
+          stored_[register_address] = result.value;
+          stored_valid_[register_address] = true;
+          stored_confidence_[register_address] = MirrorConfidence::ReadVerified;
+          return true;
+        }
+    }
+
+  return false;
+}
+
+bool
+Registers::resyncReadableConfiguration ()
+{
+  const RegisterAddress addresses[] = {
+    GconfAddress,
+    FactoryConfAddress,
+    RampmodeAddress,
+    SwModeAddress,
+    EncmodeAddress,
+    ChopconfAddress,
+  };
+
+  bool ok = true;
+  for (size_t i = 0; i < (sizeof (addresses) / sizeof (addresses[0])); ++i)
+    {
+      ok = refresh (addresses[i]) && ok;
+    }
+  return ok;
 }
 
 uint32_t
@@ -75,10 +155,41 @@ Registers::storedValid (RegisterAddress register_address) const
     }
 }
 
+Registers::MirrorConfidence
+Registers::storedConfidence (RegisterAddress register_address) const
+{
+  if (register_address < AddressCount)
+    {
+      return stored_confidence_[register_address];
+    }
+  else
+    {
+      return MirrorConfidence::Unknown;
+    }
+}
+
 void
 Registers::assumeDeviceReset ()
 {
   seedStoredResetValues_ ();
+}
+
+void
+Registers::notePossibleDrift ()
+{
+  resync_required_ = true;
+}
+
+bool
+Registers::resyncRequired () const
+{
+  return resync_required_;
+}
+
+void
+Registers::clearResyncRequired ()
+{
+  resync_required_ = false;
 }
 
 bool
@@ -114,7 +225,11 @@ Registers::readAndClearGstat ()
   gstat_read.raw = read (tmc51x0::Registers::GstatAddress);
   if (gstat_read.reset ())
     {
-      assumeDeviceReset ();
+      if (!resync_required_)
+        {
+          assumeDeviceReset ();
+        }
+      resync_required_ = true;
     }
   gstat_write.reset (true);
   gstat_write.drv_err (true);
@@ -124,31 +239,44 @@ Registers::readAndClearGstat ()
 }
 
 void
+Registers::seedStoredResetValue_ (RegisterAddress register_address,
+                                  uint32_t data)
+{
+  stored_[register_address] = data;
+  stored_valid_[register_address] = true;
+  stored_confidence_[register_address] = MirrorConfidence::ResetDefault;
+}
+
+void
+Registers::recordTransportReset_ ()
+{
+  if ((interface_ptr_ != nullptr)
+      && interface_ptr_->consumeDeviceResetObserved ())
+    {
+      if (!resync_required_)
+        {
+          assumeDeviceReset ();
+        }
+      resync_required_ = true;
+    }
+}
+
+void
 Registers::seedStoredResetValues_ ()
 {
   for (uint8_t register_address = 0; register_address < AddressCount; ++register_address)
     {
       stored_[register_address] = 0;
       stored_valid_[register_address] = false;
+      stored_confidence_[register_address] = MirrorConfidence::Unknown;
     }
 
-  stored_[GconfAddress] = 0x0;
-  stored_valid_[GconfAddress] = true;
-
-  stored_[GstatAddress] = 0x5;
-  stored_valid_[GstatAddress] = true;
-
-  stored_[FactoryConfAddress] = 0xE;
-  stored_valid_[FactoryConfAddress] = true;
-
-  stored_[RampStatAddress] = 0x780;
-  stored_valid_[RampStatAddress] = true;
-
-  stored_[ChopconfAddress] = 0x10410150;
-  stored_valid_[ChopconfAddress] = true;
-
-  stored_[PwmconfAddress] = 0xC40C001E;
-  stored_valid_[PwmconfAddress] = true;
+  seedStoredResetValue_ (GconfAddress, 0x0UL);
+  seedStoredResetValue_ (GstatAddress, 0x5UL);
+  seedStoredResetValue_ (FactoryConfAddress, 0xEUL);
+  seedStoredResetValue_ (RampStatAddress, 0x780UL);
+  seedStoredResetValue_ (ChopconfAddress, 0x10410150UL);
+  seedStoredResetValue_ (PwmconfAddress, pwmconfResetDefault (device_model_));
 }
 
 // private
@@ -156,6 +284,7 @@ void
 Registers::initialize (Interface &interface)
 {
   interface_ptr_ = &interface;
+  resync_required_ = false;
 
   for (uint8_t register_address = 0; register_address < AddressCount; ++register_address)
     {

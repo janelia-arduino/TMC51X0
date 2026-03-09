@@ -15,9 +15,18 @@ This update keeps the existing UART API working while aligning the public surfac
 - `UartParameters` now exposes `withDrainLimit(...)` for stale-RX handling.
 - RX drain overflow now surfaces as `UartError::RxGarbage` instead of being silently absorbed and later reported ambiguously.
 - The software-side register mirror now updates only after explicit successful transport operations. Failed UART reads/writes no longer poison the stored cache with fallback values.
-- `TMC51X0::reinitialize()` now reseeds the register mirror to known reset defaults before replaying library setup state.
-- UART transport errors are now prevented from poisoning the software mirror. SPI remains optimistic because the current SPI transport does not surface explicit transaction failures; after suspected SPI faults or external resets, re-read key registers or call `reinitialize()` to resynchronize.
-- Advanced recovery code can call `stepper.registers.assumeDeviceReset()` directly and inspect `stepper.registers.storedValid(...)` when needed.
+- Reset seeding is now chip-aware. `TMC51X0::setupSpi(...)` and `setupUart(...)` optionally accept an expected `Registers::DeviceModel` so the mirror can start from the correct reset defaults even before the first successful identity read.
+- The register mirror now tracks confidence per entry via `Registers::MirrorConfidence` (`Unknown`, `ResetDefault`, `AssumedWritten`, `ReadVerified`).
+- SPI now latches the transport-level `reset_flag` and marks the mirror as requiring recovery instead of silently trusting the old cache.
+- `TMC51X0::reinitialize()` now performs the stronger reset-recovery flow: reseed, clear reset flags, replay setup state, and verify a safe subset of readable configuration registers.
+- New recovery helpers are available on `TMC51X0`:
+  - `notePossibleMirrorDrift()`
+  - `mirrorResyncRequired()`
+  - `recoverFromDeviceReset()`
+  - `recoverIfNeeded()`
+  - `resyncReadableConfiguration()`
+- Advanced recovery code can inspect `stepper.registers.storedConfidence(...)`, `stepper.registers.resyncRequired()`, and `stepper.registers.deviceModel()` directly when needed.
+- See [docs/RECOVERY.md](./docs/RECOVERY.md) for the recommended reset / re-sync workflow.
 
 ## Existing code compatibility
 
@@ -45,5 +54,22 @@ auto start = bus.startRead(tmc51x0::Registers::GconfAddress);
 if (start.ok())
   {
     // keep polling until bus.done()
+  }
+```
+
+If you have external power supervision or watchdog logic, the preferred recovery pattern after any suspected drift is:
+
+```cpp
+stepper.notePossibleMirrorDrift();
+
+// Optionally power-cycle the driver externally here.
+
+if (stepper.mirrorResyncRequired())
+  {
+    bool ok = stepper.recoverFromDeviceReset();
+    if (!ok)
+      {
+        // Communication is still not healthy.
+      }
   }
 ```

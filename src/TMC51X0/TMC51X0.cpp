@@ -15,19 +15,41 @@ TMC51X0::TMC51X0 ()
 }
 
 void
-TMC51X0::setupSpi (SpiParameters spi_parameters)
+TMC51X0::setupSpi (SpiParameters spi_parameters,
+                   Registers::DeviceModel expected_device_model)
 {
   interface_spi_.setup (spi_parameters);
   registers.initialize (interface_spi_);
+  if (expected_device_model != Registers::DeviceModel::Unknown)
+    {
+      registers.setDeviceModel (expected_device_model);
+    }
+  else
+    {
+      (void)communicating ();
+    }
+  registers.assumeDeviceReset ();
   initialize ();
+  (void)finishSetupOrRecovery_ ();
 }
 
 void
-TMC51X0::setupUart (UartParameters uart_parameters)
+TMC51X0::setupUart (UartParameters uart_parameters,
+                    Registers::DeviceModel expected_device_model)
 {
   interface_uart_.setup (uart_parameters);
   registers.initialize (interface_uart_);
+  if (expected_device_model != Registers::DeviceModel::Unknown)
+    {
+      registers.setDeviceModel (expected_device_model);
+    }
+  else
+    {
+      (void)communicating ();
+    }
+  registers.assumeDeviceReset ();
   initialize ();
+  (void)finishSetupOrRecovery_ ();
 }
 
 uint8_t
@@ -35,6 +57,7 @@ TMC51X0::readVersion ()
 {
   Registers::Ioin ioin;
   ioin.raw = registers.read (Registers::IoinAddress);
+  (void)updateDeviceModelFromVersion_ (ioin.version ());
   return ioin.version ();
 }
 
@@ -84,12 +107,57 @@ TMC51X0::disablePower ()
 }
 
 void
+TMC51X0::notePossibleMirrorDrift ()
+{
+  registers.notePossibleDrift ();
+}
+
+bool
+TMC51X0::mirrorResyncRequired () const
+{
+  return registers.resyncRequired ();
+}
+
+tmc51x0::Registers::DeviceModel
+TMC51X0::deviceModel () const
+{
+  return registers.deviceModel ();
+}
+
+bool
+TMC51X0::resyncReadableConfiguration ()
+{
+  return registers.resyncReadableConfiguration ();
+}
+
+void
 TMC51X0::reinitialize ()
 {
+  (void)recoverFromDeviceReset ();
+}
+
+bool
+TMC51X0::recoverFromDeviceReset ()
+{
+  if (!registers.deviceModelKnown ())
+    {
+      (void)communicating ();
+    }
   registers.assumeDeviceReset ();
   driver.reinitialize ();
   controller.reinitialize ();
   encoder.reinitialize ();
+  return finishSetupOrRecovery_ ();
+}
+
+bool
+TMC51X0::recoverIfNeeded ()
+{
+  if (!mirrorResyncRequired ())
+    {
+      return true;
+    }
+  return recoverFromDeviceReset ();
 }
 
 void
@@ -209,4 +277,47 @@ TMC51X0::initialize ()
   controller.initialize (registers);
   encoder.initialize (registers);
   printer.initialize (registers);
+}
+
+bool
+TMC51X0::updateDeviceModelFromVersion_ (uint8_t version)
+{
+  if (version == Registers::VERSION_TMC5130)
+    {
+      registers.setDeviceModel (Registers::DeviceModel::TMC5130A);
+      return true;
+    }
+  if (version == Registers::VERSION_TMC5160)
+    {
+      registers.setDeviceModel (Registers::DeviceModel::TMC5160A);
+      return true;
+    }
+  return false;
+}
+
+bool
+TMC51X0::finishSetupOrRecovery_ ()
+{
+  registers.notePossibleDrift ();
+  (void)registers.readAndClearGstat ();
+
+  const Registers::DeviceModel model_before = registers.deviceModel ();
+  const bool version_ok = communicating ();
+  const bool model_changed = version_ok && (registers.deviceModel () != model_before);
+  if (model_changed)
+    {
+      registers.assumeDeviceReset ();
+      driver.reinitialize ();
+      controller.reinitialize ();
+      encoder.reinitialize ();
+      registers.notePossibleDrift ();
+      (void)registers.readAndClearGstat ();
+    }
+
+  const bool readable_ok = version_ok ? registers.resyncReadableConfiguration () : false;
+  if (version_ok && readable_ok)
+    {
+      registers.clearResyncRequired ();
+    }
+  return version_ok && readable_ok;
 }

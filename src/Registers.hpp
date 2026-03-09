@@ -93,17 +93,42 @@ struct Registers
     AddressCount = 0x74,
   };
 
+  enum class DeviceModel : uint8_t
+  {
+    Unknown = 0,
+    TMC5130A,
+    TMC5160A,
+  };
+
+  enum class MirrorConfidence : uint8_t
+  {
+    Unknown = 0,
+    ResetDefault,
+    AssumedWritten,
+    ReadVerified,
+  };
+
+  void setDeviceModel (DeviceModel device_model);
+  DeviceModel deviceModel () const;
+  bool deviceModelKnown () const;
+
   void write (RegisterAddress register_address,
               uint32_t data);
   uint32_t read (RegisterAddress register_address);
+  bool refresh (RegisterAddress register_address);
+  bool resyncReadableConfiguration ();
   uint32_t getStored (RegisterAddress register_address);
   bool storedValid (RegisterAddress register_address) const;
+  MirrorConfidence storedConfidence (RegisterAddress register_address) const;
 
   // Re-seed the software-side register mirror to known chip reset defaults.
   // This is useful after the chip power is cycled or otherwise reset outside
   // the library, because many higher-level write helpers perform read-modify-
   // write operations against the stored mirror.
   void assumeDeviceReset ();
+  void notePossibleDrift ();
+  bool resyncRequired () const;
+  void clearResyncRequired ();
 
   bool writeable (RegisterAddress register_address);
   bool readable (RegisterAddress register_address);
@@ -2026,18 +2051,24 @@ struct Registers
   };
 
 private:
-  Interface *interface_ptr_;
+  Interface *interface_ptr_{ nullptr };
 
   uint32_t stored_[AddressCount] = { 0 };
   bool stored_valid_[AddressCount] = { false };
+  MirrorConfidence stored_confidence_[AddressCount] = { MirrorConfidence::Unknown };
   bool writeable_[AddressCount] = { false };
   bool readable_[AddressCount] = { false };
+  DeviceModel device_model_{ DeviceModel::Unknown };
+  bool resync_required_{ false };
 
   const static uint8_t VERSION_TMC5130 = 0x11;
   const static uint8_t VERSION_TMC5160 = 0x30;
 
   void initialize (Interface &interface);
   void seedStoredResetValues_ ();
+  void seedStoredResetValue_ (RegisterAddress register_address,
+                              uint32_t data);
+  void recordTransportReset_ ();
 
   friend class ::TMC51X0;
 };

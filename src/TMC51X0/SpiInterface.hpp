@@ -25,6 +25,7 @@ public:
   void writeRegister (uint8_t register_address,
                       uint32_t data) override;
   uint32_t readRegister (uint8_t register_address) override;
+  bool consumeDeviceResetObserved () override;
 
 private:
   SpiParameters spi_parameters_;
@@ -83,6 +84,7 @@ private:
     }
   };
   SpiStatus spi_status_;
+  bool device_reset_observed_{ false };
 
   uint8_t tx_buffer_[spi::DATAGRAM_SIZE];
   uint8_t rx_buffer_[spi::DATAGRAM_SIZE];

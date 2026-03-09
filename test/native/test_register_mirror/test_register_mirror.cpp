@@ -29,6 +29,7 @@ struct FakeInterface : public Interface
   uint32_t forced_read_value{ 0 };
   uint32_t write_calls{ 0 };
   uint32_t read_calls{ 0 };
+  bool device_reset_observed{ false };
   uint32_t register_image[Registers::AddressCount] = { 0 };
 
   FakeInterface ()
@@ -78,6 +79,14 @@ struct FakeInterface : public Interface
         r.value = register_image[register_address];
       }
     return r;
+  }
+
+  bool
+  consumeDeviceResetObserved () override
+  {
+    const bool observed = device_reset_observed;
+    device_reset_observed = false;
+    return observed;
   }
 };
 } // namespace
@@ -199,6 +208,76 @@ test_driver_cache_tracks_short_to_ground_protection_enable_state (void)
   TEST_ASSERT_TRUE (driver.cached_driver_settings_.short_to_ground_protection_enabled);
 }
 
+static void
+test_chip_specific_reset_defaults_seed_pwmconf (void)
+{
+  FakeInterface interface;
+  Registers registers;
+  initRegisters (registers, interface);
+
+  registers.setDeviceModel (Registers::DeviceModel::TMC5130A);
+  registers.assumeDeviceReset ();
+  TEST_ASSERT_EQUAL_HEX32 (0x00050480UL, registers.getStored (Registers::PwmconfAddress));
+  TEST_ASSERT_EQUAL_INT (
+      static_cast<int> (Registers::MirrorConfidence::ResetDefault),
+      static_cast<int> (registers.storedConfidence (Registers::PwmconfAddress)));
+
+  registers.setDeviceModel (Registers::DeviceModel::TMC5160A);
+  registers.assumeDeviceReset ();
+  TEST_ASSERT_EQUAL_HEX32 (0xC40C001EUL, registers.getStored (Registers::PwmconfAddress));
+}
+
+static void
+test_transport_reset_marks_the_mirror_for_recovery (void)
+{
+  FakeInterface interface;
+  Registers registers;
+  initRegisters (registers, interface);
+
+  interface.device_reset_observed = true;
+  const uint32_t value = 0x00060F0AUL;
+  registers.write (Registers::IholdIrunAddress, value);
+
+  TEST_ASSERT_TRUE (registers.resyncRequired ());
+  TEST_ASSERT_TRUE (registers.storedValid (Registers::IholdIrunAddress));
+  TEST_ASSERT_EQUAL_HEX32 (value, registers.getStored (Registers::IholdIrunAddress));
+  TEST_ASSERT_EQUAL_INT (
+      static_cast<int> (Registers::MirrorConfidence::AssumedWritten),
+      static_cast<int> (registers.storedConfidence (Registers::IholdIrunAddress)));
+  TEST_ASSERT_TRUE (registers.storedValid (Registers::PwmconfAddress));
+  TEST_ASSERT_EQUAL_INT (
+      static_cast<int> (Registers::MirrorConfidence::ResetDefault),
+      static_cast<int> (registers.storedConfidence (Registers::PwmconfAddress)));
+}
+
+static void
+test_resync_readable_configuration_refreshes_verified_values (void)
+{
+  FakeInterface interface;
+  Registers registers;
+  initRegisters (registers, interface);
+
+  interface.register_image[Registers::GconfAddress] = 0x00000010UL;
+  interface.register_image[Registers::FactoryConfAddress] = 0x0000001FUL;
+  interface.register_image[Registers::RampmodeAddress] = 0x00000002UL;
+  interface.register_image[Registers::SwModeAddress] = 0x00001234UL;
+  interface.register_image[Registers::EncmodeAddress] = 0x00005678UL;
+  interface.register_image[Registers::ChopconfAddress] = 0xABCDEF12UL;
+
+  registers.notePossibleDrift ();
+  TEST_ASSERT_TRUE (registers.resyncReadableConfiguration ());
+  TEST_ASSERT_TRUE (registers.resyncRequired ());
+
+  TEST_ASSERT_EQUAL_HEX32 (0x00000010UL, registers.getStored (Registers::GconfAddress));
+  TEST_ASSERT_EQUAL_HEX32 (0xABCDEF12UL, registers.getStored (Registers::ChopconfAddress));
+  TEST_ASSERT_EQUAL_INT (
+      static_cast<int> (Registers::MirrorConfidence::ReadVerified),
+      static_cast<int> (registers.storedConfidence (Registers::GconfAddress)));
+  TEST_ASSERT_EQUAL_INT (
+      static_cast<int> (Registers::MirrorConfidence::ReadVerified),
+      static_cast<int> (registers.storedConfidence (Registers::ChopconfAddress)));
+}
+
 int
 main (int argc,
       char **argv)
@@ -210,6 +289,9 @@ main (int argc,
   RUN_TEST (test_failed_read_does_not_poison_the_stored_mirror);
   RUN_TEST (test_assume_device_reset_reseeds_known_defaults_and_invalidates_runtime_only_entries);
   RUN_TEST (test_driver_cache_tracks_short_to_ground_protection_enable_state);
+  RUN_TEST (test_chip_specific_reset_defaults_seed_pwmconf);
+  RUN_TEST (test_transport_reset_marks_the_mirror_for_recovery);
+  RUN_TEST (test_resync_readable_configuration_refreshes_verified_values);
 
   return UNITY_END ();
 }
