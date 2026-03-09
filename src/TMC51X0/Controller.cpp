@@ -41,12 +41,14 @@ Controller::stepAndDirectionMode ()
 void
 Controller::writeRampMode (RampMode ramp_mode)
 {
+  setup_controller_parameters_.ramp_mode = ramp_mode;
   registers_ptr_->write (Registers::RampmodeAddress, ramp_mode);
 }
 
 void
 Controller::writeStopMode (StopMode stop_mode)
 {
+  setup_controller_parameters_.stop_mode = stop_mode;
   Registers::SwMode sw_mode;
   sw_mode.raw = registers_ptr_->getStored (Registers::SwModeAddress);
   sw_mode.en_softstop (stop_mode);
@@ -129,54 +131,63 @@ Controller::zeroVelocity ()
 void
 Controller::writeMaxVelocity (uint32_t velocity)
 {
+  setup_controller_parameters_.max_velocity = velocity;
   registers_ptr_->write (Registers::VmaxAddress, velocity);
 }
 
 void
 Controller::writeMaxAcceleration (uint32_t acceleration)
 {
+  setup_controller_parameters_.max_acceleration = acceleration;
   registers_ptr_->write (Registers::AmaxAddress, acceleration);
 }
 
 void
 Controller::writeStartVelocity (uint32_t velocity)
 {
+  setup_controller_parameters_.start_velocity = velocity;
   registers_ptr_->write (Registers::VstartAddress, velocity);
 }
 
 void
 Controller::writeStopVelocity (uint32_t velocity)
 {
+  setup_controller_parameters_.stop_velocity = velocity;
   registers_ptr_->write (Registers::VstopAddress, velocity);
 }
 
 void
 Controller::writeFirstAcceleration (uint32_t acceleration)
 {
+  setup_controller_parameters_.first_acceleration = acceleration;
   registers_ptr_->write (Registers::Acceleration1Address, acceleration);
 }
 
 void
 Controller::writeFirstVelocity (uint32_t velocity)
 {
+  setup_controller_parameters_.first_velocity = velocity;
   registers_ptr_->write (Registers::Velocity1Address, velocity);
 }
 
 void
 Controller::writeMaxDeceleration (uint32_t deceleration)
 {
+  setup_controller_parameters_.max_deceleration = deceleration;
   registers_ptr_->write (Registers::DmaxAddress, deceleration);
 }
 
 void
 Controller::writeFirstDeceleration (uint32_t deceleration)
 {
+  setup_controller_parameters_.first_deceleration = deceleration;
   registers_ptr_->write (Registers::Deceleration1Address, deceleration);
 }
 
 void
 Controller::writeZeroWaitDuration (uint32_t tzerowait)
 {
+  setup_controller_parameters_.zero_wait_duration = tzerowait;
   registers_ptr_->write (Registers::TzerowaitAddress, tzerowait);
 }
 
@@ -215,6 +226,7 @@ Controller::writeComparePosition (int32_t position)
 void
 Controller::enableStallStop ()
 {
+  setup_controller_parameters_.stall_stop_enabled = true;
   Registers::SwMode sw_mode;
   sw_mode.raw = registers_ptr_->getStored (Registers::SwModeAddress);
   sw_mode.sg_stop (true);
@@ -224,6 +236,7 @@ Controller::enableStallStop ()
 void
 Controller::disableStallStop ()
 {
+  setup_controller_parameters_.stall_stop_enabled = false;
   Registers::SwMode sw_mode;
   sw_mode.raw = registers_ptr_->getStored (Registers::SwModeAddress);
   sw_mode.sg_stop (false);
@@ -233,6 +246,7 @@ Controller::disableStallStop ()
 void
 Controller::writeMinDcStepVelocity (uint32_t velocity)
 {
+  setup_controller_parameters_.min_dc_step_velocity = velocity;
   registers_ptr_->write (Registers::VdcminAddress, velocity);
 }
 
@@ -312,7 +326,14 @@ Controller::reinitialize ()
 {
   zeroActualPosition ();
   zeroTargetPosition ();
-  disableStallStop ();
+
+  // Clear stall-stop runtime state without changing the desired recovery
+  // configuration. setup() below will restore the caller's intended setting.
+  Registers::SwMode sw_mode;
+  sw_mode.raw = registers_ptr_->getStored (Registers::SwModeAddress);
+  sw_mode.sg_stop (false);
+  registers_ptr_->write (Registers::SwModeAddress, sw_mode.raw);
+
   setup ();
   setupSwitches ();
 }
@@ -320,6 +341,7 @@ Controller::reinitialize ()
 void
 Controller::writeControllerParameters (ControllerParameters parameters)
 {
+  setup_controller_parameters_ = parameters;
   writeRampMode (parameters.ramp_mode);
   writeStopMode (parameters.stop_mode);
   writeMaxVelocity (parameters.max_velocity);
@@ -376,6 +398,7 @@ Controller::restoreControllerSettings ()
 void
 Controller::writeSwitchParameters (SwitchParameters parameters)
 {
+  setup_switch_parameters_ = parameters;
   Registers::SwMode sw_mode;
   sw_mode.raw = registers_ptr_->getStored (Registers::SwModeAddress);
   sw_mode.stop_l_enable (parameters.left_stop_enabled);

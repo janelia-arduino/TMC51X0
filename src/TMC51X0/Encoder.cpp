@@ -30,6 +30,7 @@ Encoder::setup (tmc51x0::EncoderParameters parameters)
 void
 Encoder::writeFractionalMode (FractionalMode mode)
 {
+  setup_encoder_parameters_.fractional_mode = mode;
   Registers::Encmode encmode;
   encmode.raw = registers_ptr_->getStored (Registers::EncmodeAddress);
   encmode.enc_sel_decimal (mode);
@@ -40,6 +41,8 @@ void
 Encoder::writeMicrostepsPerPulse (int16_t integer,
                                   uint16_t fractional)
 {
+  setup_encoder_parameters_.microsteps_per_pulse_integer = integer;
+  setup_encoder_parameters_.microsteps_per_pulse_fractional = fractional;
   Registers::EncConst enc_const;
   enc_const.integer (integer);
   enc_const.fractional (fractional);
@@ -95,6 +98,7 @@ Encoder::reinitialize ()
 void
 Encoder::writeEncoderParameters (EncoderParameters parameters)
 {
+  setup_encoder_parameters_ = parameters;
   writeFractionalMode (parameters.fractional_mode);
   writeMicrostepsPerPulse (parameters.microsteps_per_pulse_integer,
                            parameters.microsteps_per_pulse_fractional);

@@ -14,6 +14,10 @@ Driver::Driver ()
   setup_driver_parameters_ = DriverParameters{};
   cached_driver_settings_ = DriverParameters{};
   hardware_enable_pin_ = NO_PIN;
+  setup_pwm_autograd_ = true;
+  setup_pwm_reg_ = 4;
+  cached_pwm_autograd_ = true;
+  cached_pwm_reg_ = 4;
 }
 
 void
@@ -54,12 +58,14 @@ Driver::disable ()
 void
 Driver::writeGlobalCurrentScaler (uint8_t scaler)
 {
+  setup_driver_parameters_.global_current_scaler = scaler;
   registers_ptr_->write (Registers::GlobalScalerAddress, scaler);
 }
 
 void
 Driver::writeRunCurrent (uint8_t run_current)
 {
+  setup_driver_parameters_.run_current = run_current;
   Registers::IholdIrun ihold_irun;
   ihold_irun.raw = registers_ptr_->getStored (Registers::IholdIrunAddress);
   ihold_irun.irun (run_current);
@@ -69,6 +75,7 @@ Driver::writeRunCurrent (uint8_t run_current)
 void
 Driver::writeHoldCurrent (uint8_t hold_current)
 {
+  setup_driver_parameters_.hold_current = hold_current;
   Registers::IholdIrun ihold_irun;
   ihold_irun.raw = registers_ptr_->getStored (Registers::IholdIrunAddress);
   ihold_irun.ihold (hold_current);
@@ -78,6 +85,7 @@ Driver::writeHoldCurrent (uint8_t hold_current)
 void
 Driver::writeHoldDelay (uint8_t hold_delay)
 {
+  setup_driver_parameters_.hold_delay = hold_delay;
   Registers::IholdIrun ihold_irun;
   ihold_irun.raw = registers_ptr_->getStored (Registers::IholdIrunAddress);
   ihold_irun.iholddelay (hold_delay);
@@ -87,6 +95,7 @@ Driver::writeHoldDelay (uint8_t hold_delay)
 void
 Driver::writePwmOffset (uint8_t pwm_amplitude)
 {
+  setup_driver_parameters_.pwm_offset = pwm_amplitude;
   Registers::Pwmconf pwmconf;
   pwmconf.raw = registers_ptr_->getStored (Registers::PwmconfAddress);
   pwmconf.pwm_ofs (pwm_amplitude);
@@ -96,6 +105,7 @@ Driver::writePwmOffset (uint8_t pwm_amplitude)
 void
 Driver::writePwmGradient (uint8_t pwm_amplitude)
 {
+  setup_driver_parameters_.pwm_gradient = pwm_amplitude;
   Registers::Pwmconf pwmconf;
   pwmconf.raw = registers_ptr_->getStored (Registers::PwmconfAddress);
   pwmconf.pwm_grad (pwm_amplitude);
@@ -106,6 +116,9 @@ void
 Driver::enableAutomaticCurrentControl (bool autograd,
                                        uint8_t pwm_reg)
 {
+  setup_driver_parameters_.automatic_current_control_enabled = true;
+  setup_pwm_autograd_ = autograd;
+  setup_pwm_reg_ = pwm_reg;
   Registers::Pwmconf pwmconf;
   pwmconf.raw = registers_ptr_->getStored (Registers::PwmconfAddress);
   pwmconf.pwm_autoscale (true);
@@ -117,6 +130,7 @@ Driver::enableAutomaticCurrentControl (bool autograd,
 void
 Driver::disableAutomaticCurrentControl ()
 {
+  setup_driver_parameters_.automatic_current_control_enabled = false;
   Registers::Pwmconf pwmconf;
   pwmconf.raw = registers_ptr_->getStored (Registers::PwmconfAddress);
   pwmconf.pwm_autoscale (false);
@@ -127,6 +141,7 @@ Driver::disableAutomaticCurrentControl ()
 void
 Driver::writeMotorDirection (MotorDirection motor_direction)
 {
+  setup_driver_parameters_.motor_direction = motor_direction;
   Registers::Gconf gconf;
   gconf.raw = registers_ptr_->getStored (Registers::GconfAddress);
   gconf.shaft (motor_direction);
@@ -136,6 +151,7 @@ Driver::writeMotorDirection (MotorDirection motor_direction)
 void
 Driver::writeStandstillMode (StandstillMode mode)
 {
+  setup_driver_parameters_.standstill_mode = mode;
   Registers::Pwmconf pwmconf;
   pwmconf.raw = registers_ptr_->getStored (Registers::PwmconfAddress);
   pwmconf.freewheel (mode);
@@ -145,6 +161,7 @@ Driver::writeStandstillMode (StandstillMode mode)
 void
 Driver::writeChopperMode (ChopperMode chopper_mode)
 {
+  setup_driver_parameters_.chopper_mode = chopper_mode;
   Registers::Chopconf chopconf;
   chopconf.raw = registers_ptr_->getStored (Registers::ChopconfAddress);
   chopconf.chm (chopper_mode);
@@ -154,12 +171,14 @@ Driver::writeChopperMode (ChopperMode chopper_mode)
 void
 Driver::writeStealthChopThreshold (uint32_t tstep)
 {
+  setup_driver_parameters_.stealth_chop_threshold = tstep;
   registers_ptr_->write (Registers::TpwmthrsAddress, tstep);
 }
 
 void
 Driver::enableStealthChop ()
 {
+  setup_driver_parameters_.stealth_chop_enabled = true;
   Registers::Gconf gconf;
   gconf.raw = registers_ptr_->getStored (Registers::GconfAddress);
   gconf.en_pwm_mode (true);
@@ -169,6 +188,7 @@ Driver::enableStealthChop ()
 void
 Driver::disableStealthChop ()
 {
+  setup_driver_parameters_.stealth_chop_enabled = false;
   Registers::Gconf gconf;
   gconf.raw = registers_ptr_->getStored (Registers::GconfAddress);
   gconf.en_pwm_mode (false);
@@ -178,6 +198,7 @@ Driver::disableStealthChop ()
 void
 Driver::writeCoolStepThreshold (uint32_t tstep)
 {
+  setup_driver_parameters_.cool_step_threshold = tstep;
   registers_ptr_->write (Registers::TcoolthrsAddress, tstep);
 }
 
@@ -185,6 +206,9 @@ void
 Driver::enableCoolStep (uint8_t min,
                         uint8_t max)
 {
+  setup_driver_parameters_.cool_step_enabled = true;
+  setup_driver_parameters_.cool_step_min = min;
+  setup_driver_parameters_.cool_step_max = max;
   Registers::Coolconf coolconf;
   coolconf.raw = registers_ptr_->getStored (Registers::CoolconfAddress);
   coolconf.semin (min);
@@ -195,6 +219,7 @@ Driver::enableCoolStep (uint8_t min,
 void
 Driver::disableCoolStep ()
 {
+  setup_driver_parameters_.cool_step_enabled = false;
   Registers::Coolconf coolconf;
   coolconf.raw = registers_ptr_->getStored (Registers::CoolconfAddress);
   coolconf.semin (SEMIN_OFF);
@@ -204,12 +229,14 @@ Driver::disableCoolStep ()
 void
 Driver::writeHighVelocityThreshold (uint32_t tstep)
 {
+  setup_driver_parameters_.high_velocity_threshold = tstep;
   registers_ptr_->write (Registers::ThighAddress, tstep);
 }
 
 void
 Driver::enableHighVelocityFullstep ()
 {
+  setup_driver_parameters_.high_velocity_fullstep_enabled = true;
   Registers::Chopconf chopconf;
   chopconf.raw = registers_ptr_->getStored (Registers::ChopconfAddress);
   chopconf.vhighfs (true);
@@ -219,6 +246,7 @@ Driver::enableHighVelocityFullstep ()
 void
 Driver::disableHighVelocityFullstep ()
 {
+  setup_driver_parameters_.high_velocity_fullstep_enabled = false;
   Registers::Chopconf chopconf;
   chopconf.raw = registers_ptr_->getStored (Registers::ChopconfAddress);
   chopconf.vhighfs (false);
@@ -228,6 +256,7 @@ Driver::disableHighVelocityFullstep ()
 void
 Driver::enableHighVelocityChopperSwitch ()
 {
+  setup_driver_parameters_.high_velocity_chopper_switch_enabled = true;
   Registers::Chopconf chopconf;
   chopconf.raw = registers_ptr_->getStored (Registers::ChopconfAddress);
   chopconf.vhighchm (true);
@@ -237,6 +266,7 @@ Driver::enableHighVelocityChopperSwitch ()
 void
 Driver::disableHighVelocityChopperSwitch ()
 {
+  setup_driver_parameters_.high_velocity_chopper_switch_enabled = false;
   Registers::Chopconf chopconf;
   chopconf.raw = registers_ptr_->getStored (Registers::ChopconfAddress);
   chopconf.vhighchm (false);
@@ -246,6 +276,7 @@ Driver::disableHighVelocityChopperSwitch ()
 void
 Driver::writeStallGuardThreshold (int8_t threshold)
 {
+  setup_driver_parameters_.stall_guard_threshold = threshold;
   Registers::Coolconf coolconf;
   coolconf.raw = registers_ptr_->getStored (Registers::CoolconfAddress);
   coolconf.sgt (threshold);
@@ -255,6 +286,7 @@ Driver::writeStallGuardThreshold (int8_t threshold)
 void
 Driver::enableStallGuardFilter ()
 {
+  setup_driver_parameters_.stall_guard_filter_enabled = true;
   Registers::Coolconf coolconf;
   coolconf.raw = registers_ptr_->getStored (Registers::CoolconfAddress);
   coolconf.sfilt (STALL_GUARD_FILTER_ENABLE);
@@ -264,6 +296,7 @@ Driver::enableStallGuardFilter ()
 void
 Driver::disableStallGuardFilter ()
 {
+  setup_driver_parameters_.stall_guard_filter_enabled = false;
   Registers::Coolconf coolconf;
   coolconf.raw = registers_ptr_->getStored (Registers::CoolconfAddress);
   coolconf.sfilt (STALL_GUARD_FILTER_DISABLE);
@@ -297,6 +330,7 @@ Driver::readActualCurrentScaling ()
 void
 Driver::enableShortToGroundProtection ()
 {
+  setup_driver_parameters_.short_to_ground_protection_enabled = true;
   Registers::Chopconf chopconf;
   chopconf.raw = registers_ptr_->getStored (Registers::ChopconfAddress);
   chopconf.diss2g (false);
@@ -306,6 +340,7 @@ Driver::enableShortToGroundProtection ()
 void
 Driver::disableShortToGroundProtection ()
 {
+  setup_driver_parameters_.short_to_ground_protection_enabled = false;
   Registers::Chopconf chopconf;
   chopconf.raw = registers_ptr_->getStored (Registers::ChopconfAddress);
   chopconf.diss2g (true);
@@ -315,6 +350,7 @@ Driver::disableShortToGroundProtection ()
 void
 Driver::writeComparatorBlankTime (ComparatorBlankTime tbl)
 {
+  setup_driver_parameters_.comparator_blank_time = tbl;
   Registers::Chopconf chopconf;
   chopconf.raw = registers_ptr_->getStored (Registers::ChopconfAddress);
   chopconf.tbl (tbl);
@@ -332,6 +368,7 @@ Driver::writeEnabledToff (uint8_t toff)
     {
       toff = ENABLED_TOFF_MAX;
     }
+  setup_driver_parameters_.enabled_toff = toff;
   enabled_toff_ = toff;
   Registers::Chopconf chopconf;
   chopconf.raw = registers_ptr_->getStored (Registers::ChopconfAddress);
@@ -342,6 +379,7 @@ Driver::writeEnabledToff (uint8_t toff)
 void
 Driver::writeDcTime (uint16_t dc_time)
 {
+  setup_driver_parameters_.dc_time = dc_time;
   Registers::Dcctrl dcctrl;
   dcctrl.raw = registers_ptr_->getStored (Registers::DcctrlAddress);
   dcctrl.dc_time (dc_time);
@@ -351,6 +389,7 @@ Driver::writeDcTime (uint16_t dc_time)
 void
 Driver::writeDcStallGuardThreshold (uint8_t dc_stall_guard_threshold)
 {
+  setup_driver_parameters_.dc_stall_guard_threshold = dc_stall_guard_threshold;
   Registers::Dcctrl dcctrl;
   dcctrl.raw = registers_ptr_->getStored (Registers::DcctrlAddress);
   dcctrl.dc_sg (dc_stall_guard_threshold);
@@ -378,6 +417,7 @@ Driver::reinitialize ()
 void
 Driver::writeDriverParameters (DriverParameters parameters)
 {
+  setup_driver_parameters_ = parameters;
   writeGlobalCurrentScaler (parameters.global_current_scaler);
   writeRunCurrent (parameters.run_current);
   writeHoldCurrent (parameters.hold_current);
@@ -386,7 +426,7 @@ Driver::writeDriverParameters (DriverParameters parameters)
   writePwmGradient (parameters.pwm_gradient);
   if (parameters.automatic_current_control_enabled)
     {
-      enableAutomaticCurrentControl ();
+      enableAutomaticCurrentControl (setup_pwm_autograd_, setup_pwm_reg_);
     }
   else
     {
@@ -472,6 +512,8 @@ Driver::cacheDriverSettings ()
   cached_driver_settings_.pwm_offset = pwmconf.pwm_ofs ();
   cached_driver_settings_.pwm_gradient = pwmconf.pwm_grad ();
   cached_driver_settings_.automatic_current_control_enabled = pwmconf.pwm_autoscale ();
+  cached_pwm_autograd_ = pwmconf.pwm_autograd ();
+  cached_pwm_reg_ = pwmconf.pwm_reg ();
   Registers::Gconf gconf;
   gconf.raw = registers_ptr_->getStored (Registers::GconfAddress);
   cached_driver_settings_.motor_direction = (MotorDirection)gconf.shaft ();
@@ -504,6 +546,8 @@ Driver::cacheDriverSettings ()
 void
 Driver::restoreDriverSettings ()
 {
+  setup_pwm_autograd_ = cached_pwm_autograd_;
+  setup_pwm_reg_ = cached_pwm_reg_;
   writeDriverParameters (cached_driver_settings_);
 }
 

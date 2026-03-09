@@ -19,6 +19,8 @@ This update hardens the mirror and adds an explicit recovery path.
   re-synchronization
 - the library can re-read a safe subset of readable configuration registers to
   verify post-reset state
+- recovery replays the latest high-level configuration writes, not just the
+  original `setup(...)` parameter structs
 
 ## Recommended usage
 
@@ -71,3 +73,17 @@ Readable configuration registers can also be refreshed explicitly:
 ```cpp
 bool ok = stepper.resyncReadableConfiguration();
 ```
+
+## Recovery semantics
+
+After this update, high-level configuration writes such as
+`driver.writeRunCurrent(...)`, `controller.writeMaxVelocity(...)`, and
+`encoder.writeFractionalMode(...)` become part of the replayed desired state.
+That makes `recoverFromDeviceReset()` much closer to a true configuration
+restore after an external power-cycle reset.
+
+Runtime motion state is still treated conservatively:
+- actual position and target position are re-seeded rather than reconstructed
+- temporary motion in progress is not resumed automatically
+- arbitrary raw `registers.write(...)` calls are not tracked as replayable
+  desired state

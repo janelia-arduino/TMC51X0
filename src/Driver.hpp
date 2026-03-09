@@ -128,6 +128,10 @@ private:
 
   size_t hardware_enable_pin_;
   uint8_t enabled_toff_;
+  bool setup_pwm_autograd_;
+  uint8_t setup_pwm_reg_;
+  bool cached_pwm_autograd_;
+  uint8_t cached_pwm_reg_;
 
   const static uint8_t STALL_GUARD_FILTER_ENABLE = 1;
   const static uint8_t STALL_GUARD_FILTER_DISABLE = 0;

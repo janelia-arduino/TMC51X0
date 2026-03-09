@@ -18,7 +18,9 @@ This update keeps the existing UART API working while aligning the public surfac
 - Reset seeding is now chip-aware. `TMC51X0::setupSpi(...)` and `setupUart(...)` optionally accept an expected `Registers::DeviceModel` so the mirror can start from the correct reset defaults even before the first successful identity read.
 - The register mirror now tracks confidence per entry via `Registers::MirrorConfidence` (`Unknown`, `ResetDefault`, `AssumedWritten`, `ReadVerified`).
 - SPI now latches the transport-level `reset_flag` and marks the mirror as requiring recovery instead of silently trusting the old cache.
-- `TMC51X0::reinitialize()` now performs the stronger reset-recovery flow: reseed, clear reset flags, replay setup state, and verify a safe subset of readable configuration registers.
+- `TMC51X0::reinitialize()` now performs the stronger reset-recovery flow: reseed, clear reset flags, replay desired configuration state, and verify a safe subset of readable configuration registers.
+- Recovery now replays the latest high-level configuration writes instead of only the original `setup(...)` parameter structs. Direct calls like `driver.writeRunCurrent(...)`, `controller.writeMaxVelocity(...)`, and `encoder.writeFractionalMode(...)` now survive `recoverFromDeviceReset()`.
+- Runtime motion state is still intentionally conservative after recovery: actual/target position are re-seeded and in-flight motion is not resumed automatically.
 - New recovery helpers are available on `TMC51X0`:
   - `notePossibleMirrorDrift()`
   - `mirrorResyncRequired()`

@@ -37,7 +37,7 @@ The TMC5130 includes MOSFETs inside the IC to reduce part count and circuit size
 
 The TMC5160 uses external MOSFETs to drive higher current motors from 1A to several 10A per coil and may be driven at higher voltages than the MOFSFETs included in the TMC5130.
 
-The library now exposes a poll-driven UART path through `TMC51X0::uartBus()` (`uartInterface()` is retained for compatibility). For UART-specific guidance, see [docs/UART.md](./docs/UART.md) and [MIGRATION.md](./MIGRATION.md).
+The library now exposes a poll-driven UART path through `TMC51X0::uartBus()` (`uartInterface()` is retained for compatibility). For UART-specific guidance, see [docs/UART.md](./docs/UART.md). For reset-recovery and mirror resynchronization guidance, see [docs/RECOVERY.md](./docs/RECOVERY.md) and [MIGRATION.md](./MIGRATION.md).
 
 <img src="./images/trinamic-wiring-TMC51X0-description.svg" width="1920px">
 
