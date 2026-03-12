@@ -1,7 +1,7 @@
 # Repo Codex guidance shim
 
-Before making changes, read `.codex/AGENTS.md` and follow it as the canonical project guidance for this repository.
+Read `.codex/AGENTS.md` before planning or editing; it is the canonical Codex guidance for this TMC51X0 repository.
 
-If `.codex/handoff.local.md` exists, read it for current local context before planning or editing.
+If `.codex/handoff.local.md` exists, read it next for current local context and finish-line priorities.
 
-If `.codex/PLANS.md` exists and the task is multi-step, spans more than one session, or changes architecture, use that file as the living plan and keep it updated as work progresses.
+Use `.codex/PLANS.md` for multi-step, risky, or multi-session work and keep it updated as the work progresses.

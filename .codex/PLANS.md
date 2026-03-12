@@ -1,26 +1,86 @@
-# Project plan and execution notes
+# TMC51X0 plan and execution notes
 
 Use this file for work that is multi-step, risky, or likely to span multiple sessions.
 
 ## Current goal
 
-Describe the user-visible outcome.
+Finish `TMC51X0` as a release-ready library without reopening broad architecture churn.
 
-## Context
+## Current state
 
-Summarize the relevant architecture, constraints, and assumptions.
+- The repository already has typed UART results, `uartBus()`, mirror-confidence tracking, recovery helpers, native tests, and CI.
+- The repo is in finish-line mode: most remaining work is documentation, migration clarity, README workflow cleanup, and hardware validation.
+- The current README source-of-truth is still `.metadata/README.org`.
+- The preferred end state is a root `README.org` with committed generated `README.md`.
+- Real hardware bring-up should drive any remaining firmware fixes after the docs / migration pass.
 
-## Milestones
+## Ordered milestones
 
-1. Research and confirm the relevant code paths.
-2. Implement the smallest correct change.
-3. Validate with build, test, lint, and type-check commands as appropriate.
-4. Update docs and follow-up notes if needed.
+1. README workflow patch
+   - choose and document the canonical README source
+   - add `docs/README_WORKFLOW.md`
+   - keep `README.md` reproducible from the canonical source
+   - update `tools/version_sync.py` and related task descriptions if the source moves
+2. Migration guide patch
+   - rewrite `MIGRATION.md` as a real v3 -> v4 guide
+   - add old -> new API mapping
+   - add before / after snippets
+   - add guidance for LLM-assisted or scripted refactors
+3. Hardware validation doc patch
+   - add `docs/HARDWARE_VALIDATION.md`
+   - document SPI and UART smoke tests, reset drills, motion / switch checks, and model-variant checks
+4. Bench bring-up and bug-fix patches
+   - run the hardware validation checklist
+   - make only the fixes that real hardware findings justify
+5. Final polish
+   - README / docs / example consistency
+   - family-style naming and tooling polish where helpful
+   - no speculative redesign
 
-## Verification
+## Architecture checkpoints
 
-List the concrete commands and outcomes that demonstrate success.
+Keep these truths intact unless a task explicitly changes them and documents/tests the change:
+
+- caller-owned transport setup
+- `uartBus()` preferred alias, `uartInterface()` compatibility alias
+- typed `Result<T>` / `UartError` surface
+- poll-driven UART engine shared by blocking and non-blocking paths
+- mirror is best-known intended state, not guaranteed device truth
+- mirror only updates on successful transport outcomes
+- chip-aware reset defaults for `TMC5130A` and `TMC5160A`
+- recovery restores configuration conservatively; it does not reconstruct arbitrary motion history
+- raw `registers.write(...)` is not replay-tracked desired state
+
+## Verification menu
+
+Docs / workflow patch:
+
+- `python tools/version_sync.py check`
+- `python tools/clang_format_all.py --check`
+
+Firmware / behavior patch:
+
+- `python tools/version_sync.py check`
+- `python tools/pio_task.py test --env native`
+
+Representative builds when integration risk exists:
+
+- `python tools/pio_task.py build --example examples/SPI/TestCommunication --env pico`
+- `python tools/pio_task.py build --example examples/UART/TestCommunication --env pico`
+- `python tools/pio_task.py build --example examples/SPI/TestCommunication --env teensy40`
+
+Optional extra CI-parity coverage:
+
+- `python tools/pio_task.py build --example examples/SPI/TestCommunication --env esp32`
+- `python tools/pio_task.py build --example examples/SPI/TestCommunication --env giga_r1_m7`
+- `python tools/pio_task.py build --example examples/SPI/TestCommunication --env nanoatmega328`
+
+Pixi equivalents are acceptable when Pixi is installed.
 
 ## Progress log
 
-Record meaningful discoveries, decisions, and remaining work.
+- [ ] README workflow / source-of-truth patch
+- [ ] `MIGRATION.md` rewrite
+- [ ] `docs/HARDWARE_VALIDATION.md`
+- [ ] real hardware bring-up
+- [ ] final release polish
