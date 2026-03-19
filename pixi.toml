@@ -51,7 +51,7 @@ description = "Check that library metadata files all use the same version."
 cmd = "python tools/version_sync.py check"
 
 [tasks.set-version]
-description = "Set the version across library.properties, .metadata/README.org, and pixi.toml."
+description = "Set the version across library.properties, README.org, and pixi.toml."
 args = [{ arg = "version" }]
 cmd = "python tools/version_sync.py set {{ version }}"
 

@@ -3,7 +3,7 @@
 
 This repo keeps the version number in multiple places:
 - library.properties          (Arduino Library Manager metadata)
-- .metadata/README.org        (source for generated README.md)
+- README.org                  (root repository README)
 - pixi.toml                   (Pixi workspace version)
 
 The goal is to keep them consistent, especially when doing a release.
@@ -138,7 +138,7 @@ def _write_pixi_toml_version(path: Path, version: str) -> None:
 def _read_versions(root: Path) -> Versions:
     return Versions(
         library_properties=_read_library_properties_version(root / "library.properties"),
-        readme_org=_read_readme_org_version(root / ".metadata" / "README.org"),
+        readme_org=_read_readme_org_version(root / "README.org"),
         pixi_toml=_read_pixi_toml_version(root / "pixi.toml"),
     )
 
@@ -160,7 +160,7 @@ def cmd_check() -> int:
 
     print("ERROR: version mismatch")
     print(f"  library.properties: {v.library_properties}")
-    print(f"  .metadata/README.org: {v.readme_org}")
+    print(f"  README.org: {v.readme_org}")
     print(f"  pixi.toml: {v.pixi_toml}")
     return 1
 
@@ -171,7 +171,7 @@ def cmd_set(version: str) -> int:
     root = _repo_root()
 
     lib_path = root / "library.properties"
-    readme_path = root / ".metadata" / "README.org"
+    readme_path = root / "README.org"
     pixi_path = root / "pixi.toml"
 
     _write_library_properties_version(lib_path, version)

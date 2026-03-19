@@ -9,18 +9,17 @@ Finish `TMC51X0` as a release-ready library without reopening broad architecture
 ## Current state
 
 - The repository already has typed UART results, `uartBus()`, mirror-confidence tracking, recovery helpers, native tests, and CI.
-- The repo is in finish-line mode: most remaining work is documentation, migration clarity, README workflow cleanup, and hardware validation.
-- The current README source-of-truth is still `.metadata/README.org`.
-- The preferred end state is a root `README.org` with committed generated `README.md`.
+- The repo is in finish-line mode: most remaining work is documentation, migration clarity, README polish, and hardware validation.
+- The canonical and only repo README is now `README.org` at the repository root.
+- `.metadata/README.org` and a generated `README.md` workflow are intentionally not part of the plan.
 - Real hardware bring-up should drive any remaining firmware fixes after the docs / migration pass.
 
 ## Ordered milestones
 
-1. README workflow patch
-   - choose and document the canonical README source
-   - add `docs/README_WORKFLOW.md`
-   - keep `README.md` reproducible from the canonical source
-   - update `tools/version_sync.py` and related task descriptions if the source moves
+1. README polish patch
+   - keep `README.org` useful as a standalone, GitHub-visible root README
+   - expand setup, UART, recovery, and example guidance without reintroducing duplicate README sources
+   - keep `tools/version_sync.py` and related task descriptions aligned if README metadata handling changes
 2. Migration guide patch
    - rewrite `MIGRATION.md` as a real v3 -> v4 guide
    - add old -> new API mapping
@@ -53,7 +52,7 @@ Keep these truths intact unless a task explicitly changes them and documents/tes
 
 ## Verification menu
 
-Docs / workflow patch:
+Docs / README patch:
 
 - `python tools/version_sync.py check`
 - `python tools/clang_format_all.py --check`
@@ -79,7 +78,8 @@ Pixi equivalents are acceptable when Pixi is installed.
 
 ## Progress log
 
-- [ ] README workflow / source-of-truth patch
+- [x] root `README.org` source-of-truth cleanup
+- [ ] `README.org` release-facing expansion
 - [ ] `MIGRATION.md` rewrite
 - [ ] `docs/HARDWARE_VALIDATION.md`
 - [ ] real hardware bring-up

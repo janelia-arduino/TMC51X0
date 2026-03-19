@@ -1,14 +1,8 @@
-#+EXPORT_FILE_NAME: ../README.md
 #+OPTIONS: toc:1 |:t ^:nil tags:nil
 #+TITLE: TMC51X0
 #+AUTHOR: Peter Polidoro
 #+EMAIL: peter@polidoro.io
 
-# Place warning at the top of the exported file
-#+BEGIN_EXAMPLE
-<!-- This file is generated automatically from metadata -->
-<!-- File edits may be overwritten! -->
-#+END_EXAMPLE
 
 * Library Information
 - Name :: TMC51X0
@@ -45,7 +39,9 @@ included in the TMC5130.
 
 The library now exposes a poll-driven UART path through =TMC51X0::uartBus()=
 (=uartInterface()= is retained for compatibility). For UART-specific guidance,
-see [[./docs/UART.md][docs/UART.md]] and [[./MIGRATION.md][MIGRATION.md]].
+see [[./docs/UART.md][docs/UART.md]]. For reset-recovery and mirror
+resynchronization guidance, see [[./docs/RECOVERY.md][docs/RECOVERY.md]] and
+[[./MIGRATION.md][MIGRATION.md]].
 
 #+html: <img src="./images/trinamic-wiring-TMC51X0-description.svg" width="1920px">
 
@@ -365,4 +361,3 @@ https://github.com/earlephilhower/arduino-pico/releases/download/global/package_
 
 - Teensy by Paul Stroffregen
 - Raspberry Pi Pico/RP2040 by Earle F Philhower, III
-

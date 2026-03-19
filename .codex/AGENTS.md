@@ -12,8 +12,7 @@ If the task is multi-step, risky, likely to span more than one session, or chang
 
 For this repository, the most useful files to inspect early are usually:
 
-- `README.md`
-- `.metadata/README.org`
+- `README.org`
 - `MIGRATION.md`
 - `docs/UART.md`
 - `docs/RECOVERY.md`
@@ -29,22 +28,21 @@ For core behavior changes, also inspect the relevant native tests under `test/na
 
 Current priorities:
 
-1. README workflow cleanup.
-   - Current canonical README source is still `.metadata/README.org`.
-   - Preferred end state is a root `README.org` plus committed generated `README.md`.
-   - If that source-of-truth moves, update the workflow docs and version-sync tooling in the same patch.
-2. Expand the README so it clearly explains:
-   - SPI vs UART setup
-   - caller-owned transport setup
-   - optional TX/RX-enable pin behavior
-   - typed `Result<T>` / `UartError` semantics
-   - blocking vs non-blocking UART usage
-   - reset-recovery / mirror semantics
-   - TMC5130A vs TMC5160A differences
-   - build / upload / example workflow
-3. Rewrite `MIGRATION.md` into a real v3 -> v4 migration guide for both humans and LLM-assisted refactors.
-4. Add `docs/HARDWARE_VALIDATION.md` and use real bench results to drive only the final firmware fixes.
-5. Finish with minor family-style and tooling consistency polish.
+1. README polish and release-facing expansion.
+   - The canonical and only repo README is `README.org` at the repo root.
+   - Do not reintroduce `.metadata/README.org` or a generated `README.md` workflow unless a task explicitly requires it.
+   - Expand `README.org` so it clearly explains:
+     - SPI vs UART setup
+     - caller-owned transport setup
+     - optional TX/RX-enable pin behavior
+     - typed `Result<T>` / `UartError` semantics
+     - blocking vs non-blocking UART usage
+     - reset-recovery / mirror semantics
+     - TMC5130A vs TMC5160A differences
+     - build / upload / example workflow
+2. Rewrite `MIGRATION.md` into a real v3 -> v4 migration guide for both humans and LLM-assisted refactors.
+3. Add `docs/HARDWARE_VALIDATION.md` and use real bench results to drive only the final firmware fixes.
+4. Finish with minor family-style and tooling consistency polish.
 
 Lower priority:
 
@@ -107,15 +105,13 @@ Preserve backward compatibility unless the task explicitly requires a break.
 
 When behavior changes, update the relevant docs and native tests in the same patch.
 
-When touching example selection or build workflow, keep `tools/pio_task.py`, `platformio.ini`, `README.md`, and CI expectations aligned.
+When touching example selection or build workflow, keep `tools/pio_task.py`, `platformio.ini`, `README.org`, and CI expectations aligned.
 
-When touching the README workflow, do not update only one of the files. Keep these consistent in the same patch:
+When touching README metadata or structure, do not update only one of the files. Keep these consistent in the same patch:
 
-- canonical Org source (`.metadata/README.org` today, root `README.org` in the desired end state)
-- `README.md`
+- `README.org`
 - `tools/version_sync.py`
 - relevant `pixi.toml` task descriptions
-- any README workflow documentation
 
 Do not change version metadata casually.
 
@@ -170,7 +166,7 @@ Changes in these areas deserve extra care and usually need tests/docs updates in
 - `src/Registers.hpp`
 - `tools/pio_task.py`
 - `tools/version_sync.py`
-- `README.md` / `.metadata/README.org` / future `README.org`
+- `README.org`
 
 ## Plans
 
