@@ -79,8 +79,8 @@ Pixi equivalents are acceptable when Pixi is installed.
 ## Progress log
 
 - [x] root `README.org` source-of-truth cleanup
-- [ ] `README.org` release-facing expansion
-- [ ] `MIGRATION.md` rewrite
-- [ ] `docs/HARDWARE_VALIDATION.md`
+- [x] `README.org` release-facing expansion
+- [x] `MIGRATION.md` rewrite
+- [x] `docs/HARDWARE_VALIDATION.md`
 - [ ] real hardware bring-up
 - [ ] final release polish

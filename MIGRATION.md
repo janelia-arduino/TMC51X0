@@ -1,77 +1,349 @@
-# Migration notes
+# v3 to v4 Migration Guide
 
-This update keeps the existing UART API working while aligning the public surface with the intended family conventions.
+`TMC51X0` v4 keeps the broad library structure intact, but it tightens UART
+error reporting, adds family-style async UART names, and makes reset recovery
+and register-mirror behavior more explicit.
 
-## What changed
+Most sketches do not need a full rewrite. The usual migration path is:
 
-- `tmc51x0::UartError` now has an explicit `uint8_t` underlying type.
-- `TMC51X0::uartBus()` was added as the preferred family-style alias for async UART access.
-- `TMC51X0::uartInterface()` remains available for compatibility.
-- `UartInterface` now exposes family-style async aliases:
-  - `startRead(...)`
-  - `startWrite(...)`
-  - `done()`
-  - `lastError()`
-- `UartParameters` now exposes `withDrainLimit(...)` for stale-RX handling.
-- RX drain overflow now surfaces as `UartError::RxGarbage` instead of being silently absorbed and later reported ambiguously.
-- The software-side register mirror now updates only after explicit successful transport operations. Failed UART reads/writes no longer poison the stored cache with fallback values.
-- Reset seeding is now chip-aware. `TMC51X0::setupSpi(...)` and `setupUart(...)` optionally accept an expected `Registers::DeviceModel` so the mirror can start from the correct reset defaults even before the first successful identity read.
-- The register mirror now tracks confidence per entry via `Registers::MirrorConfidence` (`Unknown`, `ResetDefault`, `AssumedWritten`, `ReadVerified`).
-- SPI now latches the transport-level `reset_flag` and marks the mirror as requiring recovery instead of silently trusting the old cache.
-- `TMC51X0::reinitialize()` now performs the stronger reset-recovery flow: reseed, clear reset flags, replay desired configuration state, and verify a safe subset of readable configuration registers.
-- Recovery now replays the latest high-level configuration writes instead of only the original `setup(...)` parameter structs. Direct calls like `driver.writeRunCurrent(...)`, `controller.writeMaxVelocity(...)`, and `encoder.writeFractionalMode(...)` now survive `recoverFromDeviceReset()`.
-- Runtime motion state is still intentionally conservative after recovery: actual/target position are re-seeded and in-flight motion is not resumed automatically.
-- New recovery helpers are available on `TMC51X0`:
-  - `notePossibleMirrorDrift()`
-  - `mirrorResyncRequired()`
-  - `recoverFromDeviceReset()`
-  - `recoverIfNeeded()`
-  - `resyncReadableConfiguration()`
-- Advanced recovery code can inspect `stepper.registers.storedConfidence(...)`, `stepper.registers.resyncRequired()`, and `stepper.registers.deviceModel()` directly when needed.
-- See [docs/RECOVERY.md](./docs/RECOVERY.md) for the recommended reset / re-sync workflow.
+1. Keep existing SPI or blocking UART code working first.
+2. Update any new async UART code to prefer the v4 naming.
+3. Adopt the new recovery helpers if your hardware can reset independently of
+   the MCU.
+4. Audit any code that assumed the software register mirror always matched chip
+   state.
 
-## Existing code compatibility
+## Executive summary
 
-Existing blocking code continues to work:
+What changes for most users:
+
+- Existing blocking register access continues to work.
+- Existing `uartInterface()`-based async code continues to work.
+- New async code should prefer `uartBus()`.
+- UART failures now use typed `tmc51x0::Result<T>` and `tmc51x0::UartError`.
+- Recovery after reset is more explicit and more conservative.
+- If you know the device model up front, pass it into `setupSpi(...)` or
+  `setupUart(...)`.
+
+## Compatibility overview
+
+Source compatibility expectations:
+
+- SPI sketches using `setupSpi(...)` still compile.
+- Blocking UART sketches using `setupUart(...)`, `readRegister(...)`, and
+  `writeRegister(...)` still compile.
+- Async UART sketches using `uartInterface()` still compile.
+- Older async names such as `startReadRegister(...)`,
+  `startWriteRegister(...)`, and `resultReady()` remain available.
+
+Behavior changes you should review:
+
+- UART drain overflow now reports `UartError::RxGarbage`.
+- Failed reads and writes no longer update the software-side register mirror.
+- SPI reset detection now marks the mirror as needing recovery.
+- Recovery replays high-level configuration state but does not reconstruct
+  arbitrary in-flight motion.
+
+## Old to new API map
+
+### Async UART access
+
+Preferred v4 naming:
+
+- `stepper.uartInterface()` -> `stepper.uartBus()`
+- `startReadRegister(address)` -> `startRead(address)`
+- `startWriteRegister(address, data)` -> `startWrite(address, data)`
+- `resultReady()` -> `done()`
+
+Compatibility note:
+
+- The old names are still available. Migration is recommended for consistency,
+  not because the older code is immediately broken.
+
+### Typed UART results
+
+The async and result-returning UART surfaces now center on:
+
+- `tmc51x0::Result<T>`
+- `tmc51x0::Result<void>`
+- `tmc51x0::UartError`
+
+Current UART errors:
+
+- `None`
+- `Busy`
+- `NotInitialized`
+- `ReplyTimeout`
+- `CrcMismatch`
+- `UnexpectedFrame`
+- `RxGarbage`
+
+### Reset and recovery helpers
+
+Newer recovery-oriented helpers on `TMC51X0` include:
+
+- `notePossibleMirrorDrift()`
+- `mirrorResyncRequired()`
+- `recoverFromDeviceReset()`
+- `recoverIfNeeded()`
+- `resyncReadableConfiguration()`
+
+## Before and after examples
+
+### 1. Blocking UART code
+
+Existing blocking code generally does not need structural changes.
+
+v3-style code that still works in v4:
 
 ```cpp
 stepper.setupUart(uart_parameters);
-auto value = stepper.registers.read(tmc51x0::Registers::GconfAddress);
+
+while (!stepper.communicating())
+  {
+    delay(1000);
+  }
+
+uint32_t gconf = stepper.registers.read(tmc51x0::Registers::GconfAddress);
+stepper.registers.write(tmc51x0::Registers::GconfAddress, gconf);
 ```
 
-Existing async code that used `uartInterface()` also continues to work:
+Recommended v4 adjustment when the target chip is known:
+
+```cpp
+stepper.setupUart(
+    uart_parameters,
+    tmc51x0::Registers::DeviceModel::TMC5160A);
+
+while (!stepper.communicating())
+  {
+    delay(1000);
+  }
+
+uint32_t gconf = stepper.registers.read(tmc51x0::Registers::GconfAddress);
+stepper.registers.write(tmc51x0::Registers::GconfAddress, gconf);
+```
+
+Why update:
+
+- Passing the expected device model gives deterministic reset seeding before
+  the first successful identity read.
+
+### 2. Async UART code
+
+Older async code:
 
 ```cpp
 auto &uart = stepper.uartInterface();
 uart.poll();
-```
 
-## Preferred style going forward
-
-Use `uartBus()` when writing new non-blocking code so this library matches the broader UART-driver family more closely:
-
-```cpp
-auto &bus = stepper.uartBus();
-auto start = bus.startRead(tmc51x0::Registers::GconfAddress);
+auto start = uart.startReadRegister(tmc51x0::Registers::GconfAddress);
 if (start.ok())
   {
-    // keep polling until bus.done()
+    while (!uart.resultReady())
+      {
+        uart.poll();
+      }
+
+    auto result = uart.takeReadResult();
   }
 ```
 
-If you have external power supervision or watchdog logic, the preferred recovery pattern after any suspected drift is:
+Preferred v4 style:
+
+```cpp
+auto &bus = stepper.uartBus();
+bus.poll();
+
+auto start = bus.startRead(tmc51x0::Registers::GconfAddress);
+if (start.ok())
+  {
+    while (!bus.done())
+      {
+        bus.poll();
+      }
+
+    auto result = bus.takeReadResult();
+    if (!result.ok())
+      {
+        // Handle result.error.
+      }
+  }
+```
+
+Why update:
+
+- The new names align `TMC51X0` with the wider family of poll-driven UART
+  drivers.
+
+### 3. UART error handling
+
+If your code previously depended on ad hoc error inspection, migrate to typed
+results explicitly.
+
+Recommended v4 pattern:
+
+```cpp
+auto result = stepper.readRegisterResult(tmc51x0::Registers::GconfAddress);
+if (!result.ok())
+  {
+    if (result.error == tmc51x0::UartError::ReplyTimeout)
+      {
+        // Retry or flag transport failure.
+      }
+    return;
+  }
+
+uint32_t gconf = result.value;
+```
+
+### 4. Recovery after external reset
+
+Older application code often assumed a reinitialize-style call or a fresh setup
+was enough after power loss. In v4, recovery is explicit and should follow the
+reset semantics documented by the library.
+
+Recommended v4 flow:
 
 ```cpp
 stepper.notePossibleMirrorDrift();
 
-// Optionally power-cycle the driver externally here.
+// Optionally perform the external reset or power cycle here.
 
 if (stepper.mirrorResyncRequired())
   {
     bool ok = stepper.recoverFromDeviceReset();
     if (!ok)
       {
-        // Communication is still not healthy.
+        // Transport is still unhealthy.
       }
   }
 ```
+
+For polling maintenance loops:
+
+```cpp
+(void)stepper.recoverIfNeeded();
+```
+
+## Semantic changes that matter
+
+### The register mirror is not chip truth
+
+In v4, the software-side mirror is explicitly treated as best-known intended
+state.
+
+This means:
+
+- successful transport operations update the mirror
+- failed transport operations do not poison the mirror with fallback data
+- external resets can invalidate confidence in mirrored values
+
+If your v3-era code assumed a failed read still refreshed cache state, that
+assumption is no longer valid.
+
+### Recovery replays high-level desired state
+
+Recovery is stronger than before, but it is deliberately scoped.
+
+What is replayed:
+
+- high-level configuration writes made through the driver, controller, and
+  encoder layers
+- setup-derived configuration state
+
+What is not replayed automatically:
+
+- arbitrary raw `registers.write(...)` calls
+- in-flight motion history
+- exact runtime motion continuity after a chip reset
+
+If your application writes critical configuration through raw
+`registers.write(...)`, consider moving that logic behind higher-level helpers
+or explicitly reapplying it after recovery.
+
+### Device-model-aware reset defaults
+
+`TMC5130A` and `TMC5160A` are similar but not identical. v4 makes that
+difference matter earlier in setup and recovery.
+
+Recommended pattern:
+
+```cpp
+stepper.setupSpi(
+    spi_parameters,
+    tmc51x0::Registers::DeviceModel::TMC5130A);
+```
+
+or:
+
+```cpp
+stepper.setupUart(
+    uart_parameters,
+    tmc51x0::Registers::DeviceModel::TMC5160A);
+```
+
+## Migration checklist
+
+Use this checklist when updating an existing project:
+
+1. Build the project without changing logic to confirm baseline compatibility.
+2. If you use async UART, replace `uartInterface()` with `uartBus()` in new or
+   touched code.
+3. Replace `startReadRegister(...)` / `startWriteRegister(...)` with
+   `startRead(...)` / `startWrite(...)` where practical.
+4. Replace `resultReady()` with `done()` where practical.
+5. Audit UART error handling and branch on `tmc51x0::UartError` explicitly.
+6. Pass `Registers::DeviceModel` to setup when your hardware target is known.
+7. Add reset-recovery handling if the driver can reset independently of the
+   host MCU.
+8. Review any raw `registers.write(...)` configuration that should be restored
+   after reset.
+
+## Suggested LLM-assisted or scripted refactors
+
+If you are using Codex, another LLM, or a scripted rename pass, make the
+migration in narrow stages instead of one broad rewrite.
+
+Recommended order:
+
+1. Rename `uartInterface()` to `uartBus()` in non-blocking code only.
+2. Rename `startReadRegister` to `startRead` and `startWriteRegister` to
+   `startWrite`.
+3. Rename `resultReady()` to `done()`.
+4. Inspect each call site that checks UART completion or error handling.
+5. Add explicit `DeviceModel` setup arguments where the board target is fixed.
+6. Add recovery-flow calls only where the application truly has reset or power
+   supervision responsibilities.
+
+Safe search targets:
+
+- `uartInterface(`
+- `startReadRegister(`
+- `startWriteRegister(`
+- `resultReady(`
+- `reinitialize(`
+- `registers.write(`
+
+Review each raw `registers.write(...)` hit manually. Those call sites are the
+most likely places where recovery expectations need human judgment.
+
+## Validation after migration
+
+At minimum, run:
+
+```sh
+python3 tools/version_sync.py check
+```
+
+If the environment has the required tools, also run:
+
+```sh
+python3 tools/clang_format_all.py --check
+python3 tools/pio_task.py test --env native
+python3 tools/pio_task.py build --example examples/SPI/TestCommunication --env pico
+python3 tools/pio_task.py build --example examples/UART/TestCommunication --env pico
+```
+
+See [docs/UART.md](./docs/UART.md) for UART usage details and
+[docs/RECOVERY.md](./docs/RECOVERY.md) for the reset-recovery model.

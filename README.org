@@ -41,9 +41,234 @@ The library now exposes a poll-driven UART path through =TMC51X0::uartBus()=
 (=uartInterface()= is retained for compatibility). For UART-specific guidance,
 see [[./docs/UART.md][docs/UART.md]]. For reset-recovery and mirror
 resynchronization guidance, see [[./docs/RECOVERY.md][docs/RECOVERY.md]] and
-[[./MIGRATION.md][MIGRATION.md]].
+[[./MIGRATION.md][MIGRATION.md]]. For bench bring-up and release validation,
+see [[./docs/HARDWARE_VALIDATION.md][docs/HARDWARE_VALIDATION.md]].
 
 #+html: <img src="./images/trinamic-wiring-TMC51X0-description.svg" width="1920px">
+
+* Quick Start
+
+This library is intended to keep transport ownership explicit. Your sketch owns
+=SPI= / =Serial= setup, pin muxing, and begin/end timing. =TMC51X0= then uses
+that already-configured transport for register and motion-control work.
+
+** Choose SPI or UART
+
+- Use SPI when you want the simplest and most robust bring-up path.
+- Use UART when board wiring or system architecture favors a shared half-duplex
+  serial bus.
+- Both paths use the same higher-level driver, controller, encoder, converter,
+  and printer interfaces after setup.
+
+** SPI setup
+
+SPI setup is caller-owned. Configure the MCU SPI peripheral first, then pass a
+=tmc51x0::SpiParameters= object into =setupSpi(...)=:
+
+#+BEGIN_SRC cpp
+#include <TMC51X0.hpp>
+
+SPIClass &spi = SPI;
+
+const auto spi_parameters = tmc51x0::SpiParameters{}
+                                .withSpi (&spi)
+                                .withChipSelectPin (8);
+
+TMC51X0 stepper;
+
+void setup ()
+{
+  spi.begin ();
+  stepper.setupSpi (
+      spi_parameters,
+      tmc51x0::Registers::DeviceModel::TMC5160A);
+}
+#+END_SRC
+
+If you already know the chip family, pass the expected
+=Registers::DeviceModel= so reset defaults are seeded correctly before the
+first successful identity read.
+
+** UART setup
+
+UART setup is also caller-owned. Configure the serial port first, then call
+=setupUart(...)=:
+
+#+BEGIN_SRC cpp
+#include <TMC51X0.hpp>
+
+HardwareSerial &uart = Serial2;
+
+const auto uart_parameters = tmc51x0::UartParameters{}
+                                 .withUart (&uart)
+                                 .withEnableTxRxPin (14)
+                                 .withBaudRate (115200)
+                                 .withReplyTimeoutUs (2000)
+                                 .withMaxRetries (1)
+                                 .withDrainLimit (256);
+
+TMC51X0 stepper;
+
+void setup ()
+{
+  uart.begin (115200);
+  stepper.setupUart (
+      uart_parameters,
+      tmc51x0::Registers::DeviceModel::TMC5130A);
+}
+#+END_SRC
+
+The =enable_txrx_pin= field is optional:
+
+- If you do not configure it, the library does not touch any direction-control
+  pin.
+- If you do configure it, the UART layer toggles that pin around each
+  half-duplex transaction.
+
+See [[./docs/UART.md][docs/UART.md]] for timing and stale-RX handling details.
+
+** Blocking and non-blocking UART
+
+Blocking helpers remain available for straightforward sketches:
+
+- =writeRegister(register_address, data)=
+- =readRegister(register_address)=
+- =writeRegisterResult(register_address, data)=
+- =readRegisterResult(register_address)=
+- =getLastUartError()=
+
+For event loops and poll-driven integrations, use =uartBus()= for async access:
+
+#+BEGIN_SRC cpp
+auto &bus = stepper.uartBus ();
+bus.poll ();
+
+auto start = bus.startRead (tmc51x0::Registers::GconfAddress);
+if (start.ok ())
+  {
+    while (!bus.done ())
+      {
+        bus.poll ();
+      }
+
+    auto result = bus.takeReadResult ();
+    if (result.ok ())
+      {
+        // result.value contains the register contents.
+      }
+  }
+#+END_SRC
+
+=uartBus()= is the preferred family-style alias. =uartInterface()= remains
+available for compatibility with older code.
+
+** Typed UART results
+
+UART failures use the typed =tmc51x0::Result<T>= / =tmc51x0::UartError=
+surface instead of ambiguous integer status codes. Current UART errors are:
+
+- =None=
+- =Busy=
+- =NotInitialized=
+- =ReplyTimeout=
+- =CrcMismatch=
+- =UnexpectedFrame=
+- =RxGarbage=
+
+This makes it practical to distinguish retryable framing problems from setup
+failures and stale-RX conditions in application code.
+
+** Reset recovery and mirror semantics
+
+The software-side register mirror is the library's best-known intended state,
+not guaranteed device truth.
+
+- Mirror entries update only after successful transport operations.
+- Recovery is conservative and configuration-oriented.
+- High-level configuration writes are replayed after reset recovery.
+- Raw =registers.write(...)= calls are not automatically tracked as replayable
+  desired state.
+- In-flight motion is not reconstructed automatically after reset.
+
+Recommended recovery flow after suspected drift or an external reset:
+
+#+BEGIN_SRC cpp
+stepper.notePossibleMirrorDrift ();
+
+// Optionally power-cycle or reset the chip externally here.
+
+if (stepper.mirrorResyncRequired ())
+  {
+    bool ok = stepper.recoverFromDeviceReset ();
+    if (!ok)
+      {
+        // Communication is still not healthy.
+      }
+  }
+#+END_SRC
+
+Use =recoverIfNeeded()= when your application just needs a single polling-style
+maintenance call. See [[./docs/RECOVERY.md][docs/RECOVERY.md]] for the full model.
+
+** TMC5130A vs TMC5160A
+
+The library supports both chips through one API because they are largely
+register-compatible, but they are not identical:
+
+- =TMC5130A= includes integrated MOSFETs and targets lower-current designs.
+- =TMC5160A= uses external MOSFETs and is intended for higher-current stages.
+- Some reset defaults differ, so supplying the expected device model at setup
+  improves deterministic mirror seeding and recovery behavior.
+
+* Build and Example Workflow
+
+The repository keeps representative SPI and UART examples under
+[[./examples/SPI][examples/SPI]] and [[./examples/UART][examples/UART]].
+
+Useful starting points:
+
+- SPI smoke test:
+  [[./examples/SPI/TestCommunication/TestCommunication.ino][examples/SPI/TestCommunication/TestCommunication.ino]]
+- UART smoke test:
+  [[./examples/UART/TestCommunication/TestCommunication.ino][examples/UART/TestCommunication/TestCommunication.ino]]
+- UART blocking register read:
+  [[./examples/UART/ReadRegister/ReadRegister.ino][examples/UART/ReadRegister/ReadRegister.ino]]
+- UART non-blocking register read:
+  [[./examples/UART/NonBlockingReadRegister/NonBlockingReadRegister.ino][examples/UART/NonBlockingReadRegister/NonBlockingReadRegister.ino]]
+
+Preferred local workflow with Pixi:
+
+#+BEGIN_SRC sh
+pixi run check-version
+pixi run format-check
+pixi run test
+pixi run build examples/SPI/TestCommunication pico
+pixi run build examples/UART/TestCommunication pico
+#+END_SRC
+
+Direct Python / PlatformIO equivalents:
+
+#+BEGIN_SRC sh
+python tools/version_sync.py check
+python tools/clang_format_all.py --check
+python tools/pio_task.py test --env native
+python tools/pio_task.py build --example examples/SPI/TestCommunication --env pico
+python tools/pio_task.py build --example examples/UART/TestCommunication --env pico
+#+END_SRC
+
+Typical upload and monitor commands:
+
+#+BEGIN_SRC sh
+pixi run upload examples/SPI/TestCommunication pico /dev/ttyACM0
+pixi run monitor /dev/ttyACM0 115200
+#+END_SRC
+
+Or without Pixi:
+
+#+BEGIN_SRC sh
+python tools/pio_task.py upload --example examples/SPI/TestCommunication --env pico --port /dev/ttyACM0
+python tools/pio_task.py monitor --port /dev/ttyACM0 --baud 115200
+#+END_SRC
 
 * Stepper Motors
 
@@ -298,48 +523,26 @@ After this file is installed, physically unplug and reconnect your board.
 
 *** Compile the firmware
 
-**** Gnu/Linux
-
 #+BEGIN_SRC sh
-make pico-firmware
-# or make teensy-firmware
-#+END_SRC
-
-**** Other
-
-#+BEGIN_SRC sh
-pio run -e pico
-# or pio run -e teensy40
+pixi run build examples/SPI/TestCommunication pico
+# or
+python tools/pio_task.py build --example examples/SPI/TestCommunication --env teensy40
 #+END_SRC
 
 *** Upload the firmware
 
-**** Gnu/Linux
-
 #+BEGIN_SRC sh
-make pico-upload
-# or make teensy-upload
-#+END_SRC
-
-**** Other
-
-#+BEGIN_SRC sh
-pio run -e pico -t upload
-# or pio run -e teensy40 -t upload
+pixi run upload examples/SPI/TestCommunication pico /dev/ttyACM0
+# or
+python tools/pio_task.py upload --example examples/SPI/TestCommunication --env teensy40 --port /dev/ttyACM0
 #+END_SRC
 
 *** Serial Terminal Monitor
 
-**** Gnu/Linux
-
 #+BEGIN_SRC sh
-make monitor
-#+END_SRC
-
-**** Other
-
-#+BEGIN_SRC sh
-pio device monitor --echo --eol=LF
+pixi run monitor /dev/ttyACM0 115200
+# or
+python tools/pio_task.py monitor --port /dev/ttyACM0 --baud 115200
 #+END_SRC
 
 ** Arduino Ide
