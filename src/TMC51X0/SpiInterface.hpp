@@ -36,8 +36,8 @@ private:
     uint8_t raw{ 0 };
 
     static bool
-    bit (uint8_t r,
-         uint8_t pos)
+    readBit (uint8_t r,
+             uint8_t pos)
     {
       return ((r >> pos) & 0x01) != 0;
     }
@@ -45,42 +45,42 @@ private:
     bool
     reset_flag () const
     {
-      return bit (raw, 0);
+      return readBit (raw, 0);
     }
     bool
     driver_error () const
     {
-      return bit (raw, 1);
+      return readBit (raw, 1);
     }
     bool
     sg2 () const
     {
-      return bit (raw, 2);
+      return readBit (raw, 2);
     }
     bool
     standstill () const
     {
-      return bit (raw, 3);
+      return readBit (raw, 3);
     }
     bool
     velocity_reached () const
     {
-      return bit (raw, 4);
+      return readBit (raw, 4);
     }
     bool
     position_reached () const
     {
-      return bit (raw, 5);
+      return readBit (raw, 5);
     }
     bool
     status_stop_l () const
     {
-      return bit (raw, 6);
+      return readBit (raw, 6);
     }
     bool
     status_stop_r () const
     {
-      return bit (raw, 7);
+      return readBit (raw, 7);
     }
   };
   SpiStatus spi_status_;

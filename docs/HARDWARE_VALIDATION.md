@@ -258,6 +258,57 @@ When a bench test fails, classify it before changing firmware:
 - documentation gap
 
 Do not make speculative firmware changes from a single ambiguous symptom. Prefer
+capturing the failure in a repeatable bench sketch first.
+
+## Recorded bench results
+
+### 2026-03-20 SPI bench: Pico W5500 + TMC5130A Prism setup
+
+- Engineer: Codex + local operator
+- MCU / board: RP2040 Pico W5500
+- Chip model: `TMC5130A`
+- Transport: SPI on `SPI1`
+- Wiring used:
+  - `SCK=10`
+  - `COPI=11`
+  - `CIPO=12`
+  - `CS=8`
+  - board power enable pin `15`, active high
+- Example used: `examples/SPI/PrismValidation`
+
+Observed results:
+
+- SPI communication bring-up passed after fixing the bench power supply.
+- Repeated register reads were stable and reported `version: 0x11`.
+- A Prism-specific motion validation sketch was added and tuned from older
+  working settings:
+  - external clock set to `16 MHz`
+  - run current `50%`
+  - `SpreadCycle`
+  - `pwm_offset=15`
+  - `pwm_gradient=5`
+  - velocity target `120 rpm`
+- The motor spun cleanly on hardware and sounded healthy during the validation
+  loop.
+- A controlled power-cycle recovery drill passed:
+  - `notePossibleMirrorDrift()` called before power removal
+  - chip power-cycled while MCU remained alive
+  - `recoverFromDeviceReset()` returned true
+  - `resyncReadableConfiguration()` returned true
+  - `mirrorResyncRequired()` cleared after recovery
+- Post-recovery communication remained healthy and the chip returned to a safe
+  non-moving state with readable status output.
+
+Known caveats from this bench:
+
+- `zeroVelocity()` did not become true promptly during stop phases on this
+  setup, so `PrismValidation` now uses a bounded timeout and reports when the
+  timeout path is taken.
+- The timeout path keeps the validation loop usable, but the underlying reason
+  for the delayed / absent zero-velocity indication remains unresolved.
+- UART validation was not run because no UART bench hardware is currently
+  available.
+- Switch / homing validation was not run in this session.
 capturing the bench conditions first, then reproducing with the smallest
 possible example.
 

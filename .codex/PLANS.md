@@ -83,4 +83,10 @@ Pixi equivalents are acceptable when Pixi is installed.
 - [x] `MIGRATION.md` rewrite
 - [x] `docs/HARDWARE_VALIDATION.md`
 - [ ] real hardware bring-up
+  - SPI bench validated on 2026-03-20 with `TMC5130A + Pico W5500`
+  - `examples/SPI/PrismValidation` now covers bring-up, motion smoke, bounded stop waits, and a controlled recovery drill
+  - controlled chip power-cycle recovery passed on hardware via `recoverFromDeviceReset()`
+  - stop diagnostics show `HoldMode` with `VMAX=0` and `VSTART=0`, but nonzero `VACTUAL` and `vzero=0` at timeout
+  - current working hypothesis: missing / zero deceleration configuration in the v4 Prism example is the reason stop phases do not settle
+  - remaining bring-up gaps are UART validation, switch / homing validation, and broader chip / MCU coverage
 - [ ] final release polish
