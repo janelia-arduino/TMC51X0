@@ -96,3 +96,9 @@ Pixi equivalents are acceptable when Pixi is installed.
   - native tests now cover the new health and stall-home behavior, and `examples/SPI/HomeToStall` builds on `pico`
   - remaining bring-up gaps are UART validation, switch / homing validation, and broader chip / MCU coverage
 - [ ] final release polish
+  - added a repo-local PlatformIO core directory via `tools/pio_task.py` so local validation no longer depends on `~/.platformio`
+  - added `tools/release_check.py` and `pixi run release-check` as a single pre-release gate
+  - cleaned up `platformio.ini` so it no longer advertises the old comment/uncomment example-selection workflow
+  - expanded CI coverage to include `examples/SPI/HomeToStall` and `examples/SPI/PrismValidation` on `pico`
+  - added release-status notes to `README.org`, bench-status recording to `docs/HARDWARE_VALIDATION.md`, and a top-level `CHANGELOG.md`
+  - ran full-repo clang-format and completed the release-check validation successfully on 2026-03-24

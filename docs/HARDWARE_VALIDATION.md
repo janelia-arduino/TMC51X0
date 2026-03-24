@@ -7,6 +7,33 @@ The goal is not exhaustive characterization. The goal is to confirm that the
 library's documented SPI, UART, motion, switch, and recovery behavior matches
 real hardware on representative setups.
 
+## Current release status
+
+Bench-validated so far for the v4 release line:
+
+- 2026-03-20 to 2026-03-24
+- engineer: Peter Polidoro
+- setup: `TMC5130A + Pico W5500` Prism setup
+- transport: SPI on `SPI1`
+- validated sketch: `examples/SPI/PrismValidation`
+- validated behaviors:
+  - SPI bring-up
+  - forward / reverse motion smoke
+  - bounded stop behavior in velocity-mode ramp-down flow
+  - controlled chip power-cycle recovery via `recoverFromDeviceReset()`
+  - post-recovery mirror resynchronization check via
+    `resyncReadableConfiguration()`
+
+Current remaining release gaps:
+
+- UART hardware validation not yet recorded
+- switch / homing bench validation not yet recorded
+- `TMC5160A` hardware validation not yet recorded
+- broader second-MCU hardware validation not yet recorded
+
+If `4.0.0` is tagged before those gaps close, treat them as known validation
+limits of the release rather than implied coverage.
+
 ## Scope
 
 Validate all of the following on real hardware when possible:

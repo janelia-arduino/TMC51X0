@@ -50,6 +50,10 @@ cmd = "python tools/clang_format_all.py --check"
 description = "Check that library metadata files all use the same version."
 cmd = "python tools/version_sync.py check"
 
+[tasks.release-check]
+description = "Run the pre-release validation gate: metadata, formatting, tests, and representative builds."
+cmd = "python tools/release_check.py"
+
 [tasks.set-version]
 description = "Set the version across library.properties, README.org, and pixi.toml."
 args = [{ arg = "version" }]

@@ -10,6 +10,7 @@
 \#*\#
 .\#*
 .pio
+.platformio
 .pixi
 .tools
 .venv

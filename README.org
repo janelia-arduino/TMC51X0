@@ -248,6 +248,12 @@ Useful starting points:
 Preferred local workflow with Pixi:
 
 #+BEGIN_SRC sh
+pixi run release-check
+#+END_SRC
+
+Expanded equivalent release-gate commands:
+
+#+BEGIN_SRC sh
 pixi run check-version
 pixi run format-check
 pixi run test
@@ -264,6 +270,22 @@ python tools/pio_task.py test --env native
 python tools/pio_task.py build --example examples/SPI/TestCommunication --env pico
 python tools/pio_task.py build --example examples/UART/TestCommunication --env pico
 #+END_SRC
+
+** Current Validation Status
+
+Current release-line status:
+
+- SPI communication, motion smoke, and controlled reset-recovery were bench
+  validated on a =TMC5130A + Pico W5500= Prism setup.
+- =examples/SPI/PrismValidation= is the main release bench sketch for that
+  setup.
+- UART hardware validation is still pending on real hardware.
+- Broader switch / homing bench coverage and second-chip-family validation are
+  still pending unless recorded otherwise in
+  [[./docs/HARDWARE_VALIDATION.md][docs/HARDWARE_VALIDATION.md]].
+
+Use [[./docs/HARDWARE_VALIDATION.md][docs/HARDWARE_VALIDATION.md]] as the
+source of truth for what was actually bench-validated before tagging.
 
 Typical upload and monitor commands:
 

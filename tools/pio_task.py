@@ -152,6 +152,9 @@ def main(argv: list[str]) -> int:
 
     root = _project_root()
     env = os.environ.copy()
+    # Keep PlatformIO state inside the repository so local validation does not
+    # depend on a writable ~/.platformio on the host machine.
+    env.setdefault("PLATFORMIO_CORE_DIR", str((root / ".platformio").resolve()))
 
     if args.command in ("build", "clean", "upload", "flash", "rebuild"):
         src_dir = _example_src_dir(root, args.example)
