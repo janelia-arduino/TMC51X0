@@ -12,6 +12,9 @@ TMC51X0::TMC51X0 ()
 {
   enable_power_pin_ = NO_PIN;
   pin_value_when_enabled_ = HIGH;
+  home_mode_ = HomeMode::None;
+  home_succeeded_ = false;
+  home_failed_ = false;
 }
 
 void
@@ -164,6 +167,9 @@ void
 TMC51X0::beginHomeToSwitch (tmc51x0::HomeParameters home_parameters,
                             tmc51x0::SwitchParameters switch_parameters)
 {
+  resetHomeTracking_ ();
+  home_mode_ = HomeMode::Switch;
+
   driver.cacheDriverSettings ();
   controller.cacheControllerSettings ();
   controller.cacheSwitchSettings ();
@@ -201,6 +207,9 @@ void
 TMC51X0::beginHomeToStall (tmc51x0::HomeParameters home_parameters,
                            tmc51x0::StallParameters stall_parameters)
 {
+  resetHomeTracking_ ();
+  home_mode_ = HomeMode::Stall;
+
   driver.cacheDriverSettings ();
   controller.cacheControllerSettings ();
   controller.cacheSwitchSettings ();
@@ -253,20 +262,53 @@ TMC51X0::endHome ()
   registers.read (Registers::RampStatAddress);
 
   controller.writeRampMode (PositionMode);
+  home_mode_ = HomeMode::None;
 }
 
 bool
 TMC51X0::homed ()
 {
+  if (home_succeeded_)
+    {
+      return true;
+    }
+  if (home_failed_)
+    {
+      return false;
+    }
+
   // reading ramp_stat clears flags and may cause motion after stall stop
   // better to read actual velocity instead
   int32_t actual_velocity = controller.readActualVelocity ();
   bool still = (actual_velocity == 0);
+  if (!still)
+    {
+      return false;
+    }
+
+  if (home_mode_ == HomeMode::Stall)
+    {
+      Registers::RampStat ramp_stat;
+      ramp_stat.raw = registers.read (Registers::RampStatAddress);
+      const bool stopped_by_stall = ramp_stat.event_stop_sg () || ramp_stat.status_sg ();
+
+      controller.writeRampMode (HoldMode);
+      if (stopped_by_stall)
+        {
+          home_succeeded_ = true;
+          return true;
+        }
+
+      home_failed_ = true;
+      return false;
+    }
+
   if (still)
     {
       controller.writeRampMode (HoldMode);
+      home_succeeded_ = true;
     }
-  return still;
+  return true;
 }
 
 // private
@@ -320,4 +362,11 @@ TMC51X0::finishSetupOrRecovery_ ()
       registers.clearResyncRequired ();
     }
   return version_ok && readable_ok;
+}
+
+void
+TMC51X0::resetHomeTracking_ ()
+{
+  home_succeeded_ = false;
+  home_failed_ = false;
 }

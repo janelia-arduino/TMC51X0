@@ -47,7 +47,9 @@ const auto controller_parameters_real = tmc51x0::ControllerParameters{}
                                             .withRampMode (tmc51x0::VelocityPositiveMode)
                                             .withStopMode (tmc51x0::HardMode)
                                             .withMaxVelocity (120)
-                                            .withMaxAcceleration (45);
+                                            .withMaxAcceleration (45)
+                                            .withMaxDeceleration (45)
+                                            .withFirstDeceleration (45);
 
 const uint32_t SERIAL_BAUD_RATE = 115200;
 const uint16_t COMMUNICATION_RETRY_DELAY_MS = 1000;
@@ -188,8 +190,8 @@ runStopPhase (const char *label)
 {
   Serial.print ("Commanded phase: ");
   Serial.println (label);
-  stepper.controller.writeRampMode (tmc51x0::HoldMode);
   bool reached_zero_velocity = waitForZeroVelocity ();
+  stepper.controller.writeRampMode (tmc51x0::HoldMode);
   delay (STOP_SETTLE_DELAY_MS);
   if (!reached_zero_velocity)
     {
@@ -297,12 +299,6 @@ loop ()
   printStatusSnapshot ();
 
   Serial.println ("Phase 6: disable outputs and verify communication remains healthy");
-  stepper.controller.writeRampMode (tmc51x0::HoldMode);
-  bool reached_zero_velocity = waitForZeroVelocity ();
-  if (!reached_zero_velocity)
-    {
-      Serial.println ("Disabling outputs after zero-velocity timeout.");
-    }
   stepper.driver.disable ();
   delay (STOP_SETTLE_DELAY_MS);
   printStatusSnapshot ();

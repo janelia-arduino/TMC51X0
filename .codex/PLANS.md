@@ -87,6 +87,12 @@ Pixi equivalents are acceptable when Pixi is installed.
   - `examples/SPI/PrismValidation` now covers bring-up, motion smoke, bounded stop waits, and a controlled recovery drill
   - controlled chip power-cycle recovery passed on hardware via `recoverFromDeviceReset()`
   - stop diagnostics show `HoldMode` with `VMAX=0` and `VSTART=0`, but nonzero `VACTUAL` and `vzero=0` at timeout
-  - current working hypothesis: missing / zero deceleration configuration in the v4 Prism example is the reason stop phases do not settle
+  - explicit deceleration values were added to `examples/SPI/PrismValidation` and rerun on hardware; the stop timeout still reproduces in both stop directions
+  - current evidence says the timeout is not explained solely by missing deceleration configuration in the example
+  - latest follow-up patch removes the premature `HoldMode` switch in `PrismValidation` so stop attempts now follow the velocity-mode ramp-down path before entering hold
+  - bench rerun after that patch showed the main stop phases now reach zero; remaining timeout noise came from redundant post-stop waits after entering `HoldMode`
+  - cleanup patch removed those redundant waits and the full Prism loop now runs cleanly end-to-end on hardware, while recovery still passes
+  - library hardening added `readHealthStatus()`, `recoverIfUnhealthy()`, and stricter stall-home completion semantics via `homeFailed()`
+  - native tests now cover the new health and stall-home behavior, and `examples/SPI/HomeToStall` builds on `pico`
   - remaining bring-up gaps are UART validation, switch / homing validation, and broader chip / MCU coverage
 - [ ] final release polish

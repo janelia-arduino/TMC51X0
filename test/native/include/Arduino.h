@@ -21,6 +21,9 @@
 #ifndef BIN
 #define BIN 2
 #endif
+#ifndef HEX
+#define HEX 16
+#endif
 
 class Print
 {
@@ -90,6 +93,8 @@ public:
   {
   }
 };
+
+inline Stream Serial;
 
 inline void
 pinMode (size_t, uint8_t)

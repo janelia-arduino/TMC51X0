@@ -210,6 +210,15 @@ if (stepper.mirrorResyncRequired ())
 Use =recoverIfNeeded()= when your application just needs a single polling-style
 maintenance call. See [[./docs/RECOVERY.md][docs/RECOVERY.md]] for the full model.
 
+Use =recoverIfUnhealthy()= when your application wants one conservative poll
+that also treats =GSTAT.reset=, =GSTAT.drv_err=, =GSTAT.uv_cp=, and lost
+communication as reasons to mark the mirror uncertain and attempt recovery.
+
+For stall homing, =homed()= now confirms that a stall-home actually stopped via
+stall detection. If motion stops without a confirmed stall event, =homed()=
+stays false and =homeFailed()= becomes true so the application can bail out or
+recover explicitly instead of silently accepting an ambiguous stop.
+
 ** TMC5130A vs TMC5160A
 
 The library supports both chips through one API because they are largely

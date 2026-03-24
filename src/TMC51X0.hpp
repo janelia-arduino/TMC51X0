@@ -22,6 +22,18 @@
 #include "Encoder.hpp"
 #include "Printer.hpp"
 
+namespace tmc51x0
+{
+struct HealthStatus
+{
+  bool communication_ok{ false };
+  bool reset{ false };
+  bool driver_error{ false };
+  bool charge_pump_undervoltage{ false };
+  bool mirror_resync_required{ false };
+};
+}
+
 struct TMC51X0
 {
   tmc51x0::Registers registers;
@@ -76,6 +88,18 @@ struct TMC51X0
   bool mirrorResyncRequired () const;
   tmc51x0::Registers::DeviceModel deviceModel () const;
   bool resyncReadableConfiguration ();
+  tmc51x0::HealthStatus
+  readHealthStatus ()
+  {
+    tmc51x0::HealthStatus status;
+    tmc51x0::Registers::Gstat gstat = registers.readAndClearGstat ();
+    status.reset = gstat.reset ();
+    status.driver_error = gstat.drv_err ();
+    status.charge_pump_undervoltage = gstat.uv_cp ();
+    status.communication_ok = communicating ();
+    status.mirror_resync_required = mirrorResyncRequired ();
+    return status;
+  }
 
   // Call reinitialize after cycling power to the chip. This reseeds the
   // software-side register mirror to known reset defaults, clears reset flags,
@@ -83,6 +107,19 @@ struct TMC51X0
   void reinitialize ();
   bool recoverFromDeviceReset ();
   bool recoverIfNeeded ();
+  bool
+  recoverIfUnhealthy ()
+  {
+    tmc51x0::HealthStatus status = readHealthStatus ();
+    if (!status.communication_ok
+        || status.reset
+        || status.driver_error
+        || status.charge_pump_undervoltage)
+      {
+        notePossibleMirrorDrift ();
+      }
+    return recoverIfNeeded ();
+  }
 
   void beginHomeToSwitch (tmc51x0::HomeParameters home_parameters,
                           tmc51x0::SwitchParameters switch_parameters);
@@ -90,15 +127,31 @@ struct TMC51X0
                          tmc51x0::StallParameters stall_parameters);
   void endHome ();
   bool homed ();
+  bool
+  homeFailed () const
+  {
+    return home_failed_;
+  }
 
 private:
+  enum class HomeMode : uint8_t
+  {
+    None = 0,
+    Switch,
+    Stall,
+  };
+
   tmc51x0::SpiInterface interface_spi_;
   tmc51x0::UartInterface interface_uart_;
   size_t enable_power_pin_;
   uint8_t pin_value_when_enabled_;
+  HomeMode home_mode_;
+  bool home_succeeded_;
+  bool home_failed_;
   void initialize ();
   bool updateDeviceModelFromVersion_ (uint8_t version);
   bool finishSetupOrRecovery_ ();
+  void resetHomeTracking_ ();
 };
 
 #endif

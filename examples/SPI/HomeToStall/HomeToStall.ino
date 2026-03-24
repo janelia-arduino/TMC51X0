@@ -114,8 +114,9 @@ loop ()
   stepper.beginHomeToStall (home_parameters_chip, stall_parameters_chip);
 
   int32_t actual_position_real = 0;
-  while (not stepper.homed ())
+  while ((!stepper.homed ()) && (!stepper.homeFailed ()))
     {
+      (void)stepper.recoverIfUnhealthy ();
       // stepper.printer.readAndPrintDrvStatus();
       int32_t actual_position_chip = stepper.controller.readActualPosition ();
       actual_position_real = stepper.converter.positionChipToReal (actual_position_chip);
@@ -127,6 +128,14 @@ loop ()
       Serial.print ("stall guard threshold: ");
       Serial.println (stall_parameters_real.stall_guard_threshold);
       delay (LOOP_DELAY);
+    }
+  if (stepper.homeFailed ())
+    {
+      Serial.println ("Homing stopped without a confirmed stall event.");
+      stepper.endHome ();
+      Serial.println ("--------------------------");
+      delay (PAUSE_DELAY);
+      return;
     }
   stepper.endHome ();
   Serial.println ("Homed!");

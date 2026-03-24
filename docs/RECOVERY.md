@@ -59,6 +59,16 @@ For polling-style maintenance code, `recoverIfNeeded()` offers a single call:
 (void)stepper.recoverIfNeeded();
 ```
 
+When applications also want to react conservatively to `GSTAT.reset`,
+`GSTAT.drv_err`, `GSTAT.uv_cp`, or lost communication, use:
+
+```cpp
+(void)stepper.recoverIfUnhealthy();
+```
+
+That helper reads and clears `GSTAT`, marks the mirror uncertain when health
+signals look bad, and then runs the normal recovery path if needed.
+
 ## Advanced inspection
 
 Advanced code can inspect the lower-level mirror directly:
@@ -87,3 +97,8 @@ Runtime motion state is still treated conservatively:
 - temporary motion in progress is not resumed automatically
 - arbitrary raw `registers.write(...)` calls are not tracked as replayable
   desired state
+
+For stall homing, the library is also conservative about success reporting:
+- `homed()` only returns true for stall-home after a confirmed stall-stop event
+- if motion stops without a confirmed stall-stop event, `homeFailed()` becomes
+  true so the application can treat that as an ambiguous or failed home

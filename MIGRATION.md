@@ -86,6 +86,8 @@ Newer recovery-oriented helpers on `TMC51X0` include:
 - `mirrorResyncRequired()`
 - `recoverFromDeviceReset()`
 - `recoverIfNeeded()`
+- `recoverIfUnhealthy()`
+- `readHealthStatus()`
 - `resyncReadableConfiguration()`
 
 ## Before and after examples
@@ -226,6 +228,45 @@ For polling maintenance loops:
 (void)stepper.recoverIfNeeded();
 ```
 
+For applications that want one conservative poll covering reset, driver-fault,
+charge-pump-undervoltage, mirror drift, and communication-loss scenarios:
+
+```cpp
+(void)stepper.recoverIfUnhealthy();
+```
+
+### 5. Stall-home completion semantics
+
+If your v3-era code treated any stop during stall homing as success, review it
+carefully.
+
+Recommended v4 pattern:
+
+```cpp
+stepper.beginHomeToStall(home_parameters, stall_parameters);
+
+while ((!stepper.homed()) && (!stepper.homeFailed()))
+  {
+    (void)stepper.recoverIfUnhealthy();
+    delay(10);
+  }
+
+if (stepper.homeFailed())
+  {
+    // Motion stopped without a confirmed stall-stop event.
+    stepper.endHome();
+    return;
+  }
+
+stepper.endHome();
+```
+
+Why update:
+
+- v4 no longer treats a generic zero-velocity stop as a successful stall home
+- `homed()` now requires a confirmed stall-stop event for stall-home mode
+- `homeFailed()` lets the application reject ambiguous stops explicitly
+
 ## Semantic changes that matter
 
 ### The register mirror is not chip truth
@@ -257,6 +298,24 @@ What is not replayed automatically:
 - arbitrary raw `registers.write(...)` calls
 - in-flight motion history
 - exact runtime motion continuity after a chip reset
+
+### Conservative health polling
+
+Projects with independent power control, watchdog recovery, or fault
+supervision should prefer the new conservative health poll.
+
+Recommended pattern:
+
+```cpp
+tmc51x0::HealthStatus health = stepper.readHealthStatus();
+if (!health.communication_ok || health.driver_error || health.charge_pump_undervoltage)
+  {
+    (void)stepper.recoverIfUnhealthy();
+  }
+```
+
+This is especially relevant if your v3-era project sometimes power-cycled the
+driver IC after stall-home failures or suspected driver faults.
 
 If your application writes critical configuration through raw
 `registers.write(...)`, consider moving that logic behind higher-level helpers
@@ -297,7 +356,9 @@ Use this checklist when updating an existing project:
 6. Pass `Registers::DeviceModel` to setup when your hardware target is known.
 7. Add reset-recovery handling if the driver can reset independently of the
    host MCU.
-8. Review any raw `registers.write(...)` configuration that should be restored
+8. For stall-home flows, switch polling loops to use `homed()` together with
+   `homeFailed()` rather than assuming any stop is success.
+9. Review any raw `registers.write(...)` configuration that should be restored
    after reset.
 
 ## Suggested LLM-assisted or scripted refactors
@@ -315,6 +376,8 @@ Recommended order:
 5. Add explicit `DeviceModel` setup arguments where the board target is fixed.
 6. Add recovery-flow calls only where the application truly has reset or power
    supervision responsibilities.
+7. Inspect any stall-home loops that previously assumed zero velocity implied a
+   successful home and update them to use `homeFailed()`.
 
 Safe search targets:
 

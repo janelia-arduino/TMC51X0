@@ -301,16 +301,18 @@ Observed results:
 
 Known caveats from this bench:
 
-- `zeroVelocity()` did not become true promptly during stop phases on this
-  setup, so `PrismValidation` now uses a bounded timeout and reports when the
-  timeout path is taken.
-- The timeout path keeps the validation loop usable, but the underlying reason
-  for the delayed / absent zero-velocity indication remains unresolved.
+- A follow-up rerun after adding explicit nonzero deceleration values to
+  `PrismValidation` still reproduced the timeout in both forward-stop and
+  reverse-stop phases, so missing deceleration configuration was not the full
+  explanation.
+- A subsequent fix removed the premature `HoldMode` switch before
+  `beginRampToZeroVelocity()`, so stop phases now ramp down while still in
+  velocity mode and enter `HoldMode` only after the ramp-down attempt.
+- With that change, both forward-stop and reverse-stop phases reached zero on
+  hardware in about `2753 ms`, and the full validation loop completed cleanly.
 - UART validation was not run because no UART bench hardware is currently
   available.
 - Switch / homing validation was not run in this session.
-capturing the bench conditions first, then reproducing with the smallest
-possible example.
 
 ## Release gate suggestion
 
