@@ -25,115 +25,69 @@
 #define HEX 16
 #endif
 
-class Print
-{
+class Print {
 public:
-  virtual ~Print () = default;
+  virtual ~Print() = default;
 
-  size_t
-  print (const char *)
-  {
+  size_t print(const char*) {
     return 0;
   }
 
-  size_t
-  print (uint32_t, int = DEC)
-  {
+  size_t print(uint32_t, int = DEC) {
     return 0;
   }
 
-  size_t
-  print (int32_t, int = DEC)
-  {
+  size_t print(int32_t, int = DEC) {
     return 0;
   }
 
-  size_t
-  println (const char * = "")
-  {
+  size_t println(const char* = "") {
     return 0;
   }
 
-  size_t
-  println (uint32_t, int = DEC)
-  {
+  size_t println(uint32_t, int = DEC) {
     return 0;
   }
 
-  size_t
-  println (int32_t, int = DEC)
-  {
+  size_t println(int32_t, int = DEC) {
     return 0;
   }
 };
 
-class Stream : public Print
-{
+class Stream : public Print {
 public:
-  virtual int
-  available ()
-  {
+  virtual int available() {
     return 0;
   }
 
-  virtual int
-  read ()
-  {
+  virtual int read() {
     return -1;
   }
 
-  virtual size_t
-  write (uint8_t)
-  {
+  virtual size_t write(uint8_t) {
     return 1;
   }
 
-  virtual void
-  flush ()
-  {
-  }
+  virtual void flush() {}
 };
 
 inline Stream Serial;
 
-inline void
-pinMode (size_t, uint8_t)
-{
-}
-inline void
-digitalWrite (size_t, uint8_t)
-{
-}
+inline void pinMode(size_t, uint8_t) {}
+inline void digitalWrite(size_t, uint8_t) {}
 
-inline void
-noInterrupts ()
-{
-}
+inline void noInterrupts() {}
 
-inline void
-interrupts ()
-{
-}
+inline void interrupts() {}
 
-inline unsigned long
-micros ()
-{
+inline unsigned long micros() {
   return 0;
 }
 
-inline long
-map (long x,
-     long in_min,
-     long in_max,
-     long out_min,
-     long out_max)
-{
+inline long map(long x, long in_min, long in_max, long out_min, long out_max) {
   return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
 }
 
-inline void
-delayMicroseconds (unsigned int)
-{
-}
+inline void delayMicroseconds(unsigned int) {}
 
 #endif

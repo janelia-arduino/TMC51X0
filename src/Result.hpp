@@ -10,12 +10,10 @@
 
 #include <stdint.h>
 
-namespace tmc51x0
-{
+namespace tmc51x0 {
 // UART-specific error codes. Intended to be surfaced for debugging and for
 // event-loop / QP-friendly non-blocking APIs.
-enum class UartError : uint8_t
-{
+enum class UartError : uint8_t {
   None = 0,
   Busy,
   NotInitialized,
@@ -25,26 +23,18 @@ enum class UartError : uint8_t
   RxGarbage,
 };
 
-template <typename T>
-struct Result
-{
+template <typename T> struct Result {
   T value{};
-  UartError error{ UartError::None };
-  constexpr bool
-  ok () const
-  {
+  UartError error{UartError::None};
+  constexpr bool ok() const {
     return error == UartError::None;
   }
 };
 
 // Specialization for "no value".
-template <>
-struct Result<void>
-{
-  UartError error{ UartError::None };
-  constexpr bool
-  ok () const
-  {
+template <> struct Result<void> {
+  UartError error{UartError::None};
+  constexpr bool ok() const {
     return error == UartError::None;
   }
 };

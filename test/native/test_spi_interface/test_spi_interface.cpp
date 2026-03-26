@@ -12,39 +12,26 @@
 
 using namespace tmc51x0;
 
-namespace
-{
-class FakeSPI : public SPIClass
-{
+namespace {
+class FakeSPI : public SPIClass {
 public:
   std::vector<uint8_t> rx_bytes;
-  size_t index{ 0 };
+  size_t index{0};
 
-  uint8_t
-  transfer (uint8_t) override
-  {
-    if (index < rx_bytes.size ())
-      {
-        return rx_bytes[index++];
-      }
+  uint8_t transfer(uint8_t) override {
+    if (index < rx_bytes.size()) {
+      return rx_bytes[index++];
+    }
     return 0;
   }
 };
 } // namespace
 
-void
-setUp ()
-{
-}
+void setUp() {}
 
-void
-tearDown ()
-{
-}
+void tearDown() {}
 
-static void
-test_spi_read_latches_reset_flag_once (void)
-{
+static void test_spi_read_latches_reset_flag_once(void) {
   FakeSPI spi;
   spi.rx_bytes = {
     0x00,
@@ -60,20 +47,17 @@ test_spi_read_latches_reset_flag_once (void)
   };
 
   SpiInterface interface;
-  interface.setup (SpiParameters{}.withSpi (&spi).withChipSelectPin (8));
+  interface.setup(SpiParameters{}.withSpi(&spi).withChipSelectPin(8));
 
-  TEST_ASSERT_EQUAL_HEX32 (0x11223344UL, interface.readRegister (0x6C));
-  TEST_ASSERT_TRUE (interface.consumeDeviceResetObserved ());
-  TEST_ASSERT_FALSE (interface.consumeDeviceResetObserved ());
+  TEST_ASSERT_EQUAL_HEX32(0x11223344UL, interface.readRegister(0x6C));
+  TEST_ASSERT_TRUE(interface.consumeDeviceResetObserved());
+  TEST_ASSERT_FALSE(interface.consumeDeviceResetObserved());
 }
 
-int
-main (int argc,
-      char **argv)
-{
-  UNITY_BEGIN ();
+int main(int argc, char** argv) {
+  UNITY_BEGIN();
 
-  RUN_TEST (test_spi_read_latches_reset_flag_once);
+  RUN_TEST(test_spi_read_latches_reset_flag_once);
 
-  return UNITY_END ();
+  return UNITY_END();
 }

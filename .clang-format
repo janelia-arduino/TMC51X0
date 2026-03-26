@@ -1,18 +1,48 @@
-# clang-format configuration for the TMC2209 Arduino library.
-#
-# The existing codebase uses a GNU-ish style with spaces before parentheses
-# (e.g. `foo (bar)`), 2-space indents, and braces on their own lines.
-#
-# This file is used by:
-#   - pixi run format
-#   - pixi run format-wip
-#   - pixi run format-all
-#   - pixi run format-check
-#
-BasedOnStyle: GNU
+---
+Language: Cpp
+BasedOnStyle: LLVM
+
 IndentWidth: 2
+ContinuationIndentWidth: 2
 TabWidth: 2
 UseTab: Never
-ColumnLimit: 0
-SpaceBeforeParens: Always
-SortIncludes: false
+
+ColumnLimit: 80
+
+BreakBeforeBraces: Attach
+AllowShortFunctionsOnASingleLine: Empty
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortLoopsOnASingleLine: false
+AllowShortBlocksOnASingleLine: Never
+AllowShortCaseLabelsOnASingleLine: false
+
+PointerAlignment: Left
+ReferenceAlignment: Left
+
+BinPackArguments: false
+BinPackParameters: false
+AlignAfterOpenBracket: Align
+PackConstructorInitializers: Never
+
+SpaceBeforeParens: ControlStatements
+SpacesInParentheses: false
+SpacesInSquareBrackets: false
+SpaceInEmptyParentheses: false
+
+Cpp11BracedListStyle: true
+SortIncludes: Never
+IncludeBlocks: Preserve
+
+IndentCaseLabels: true
+AccessModifierOffset: -2
+
+NamespaceIndentation: None
+FixNamespaceComments: false
+
+ReflowComments: false
+KeepEmptyLinesAtTheStartOfBlocks: false
+MaxEmptyLinesToKeep: 1
+
+DerivePointerAlignment: false
+Standard: Latest
+...

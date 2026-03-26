@@ -1,6 +1,6 @@
 [workspace]
 name = "TMC51X0"
-version = "4.0.0"
+version = "4.0.1"
 description = "Arduino library for the Trinamic TMC5130/TMC5160 controller+driver family."
 authors = ["Peter Polidoro <peter@polidoro.io>"]
 channels = ["conda-forge"]
@@ -14,8 +14,7 @@ platforms = ["linux-64", "osx-64", "osx-arm64", "win-64"]
 platformio = ">=6.1.19,<7"
 # Explicit Python for repo helper scripts.
 python = ">=3.12,<=3.14"
-# Optional but handy for formatting and basic tooling parity with other repos.
-clang-tools = "*"
+clang-format = ">=18,<21"
 git = "*"
 
 # --------------------------------------------------------------------------------------
@@ -33,6 +32,10 @@ cmd = "git archive --format=zip --output=../TMC51X0.zip HEAD"
 [tasks.format]
 description = "Format staged changes only (git clang-format) for C/C++/Arduino (.ino)."
 cmd = "git clang-format --staged --style=file --binary clang-format --extensions c,cc,cpp,cxx,h,hh,hpp,hxx,ino"
+
+[tasks.check-format]
+description = "Check formatting (no writes). Fails if files need reformatting."
+cmd = "python tools/clang_format_all.py --check"
 
 [tasks.format-wip]
 description = "Format working tree changes (allows unstaged files) for C/C++/Arduino (.ino)."

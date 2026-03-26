@@ -102,3 +102,4 @@ Pixi equivalents are acceptable when Pixi is installed.
   - expanded CI coverage to include `examples/SPI/HomeToStall` and `examples/SPI/PrismValidation` on `pico`
   - added release-status notes to `README.org`, bench-status recording to `docs/HARDWARE_VALIDATION.md`, and a top-level `CHANGELOG.md`
   - ran full-repo clang-format and completed the release-check validation successfully on 2026-03-24
+  - synced `.clang-format` to match `TCA6408`, added a `pixi run check-format` alias alongside the existing formatting tasks, reformatted the repo, and bumped version metadata to `4.0.1` on 2026-03-26

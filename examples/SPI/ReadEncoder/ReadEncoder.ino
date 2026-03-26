@@ -1,22 +1,21 @@
 #include <TMC51X0.hpp>
 
 #if defined(ARDUINO_ARCH_RP2040)
-SPIClassRP2040 &spi = SPI;
+SPIClassRP2040& spi = SPI;
 size_t SCK_PIN = 18;
 size_t TX_PIN = 19;
 size_t RX_PIN = 20;
 #else
-SPIClass &spi = SPI;
+SPIClass& spi = SPI;
 #endif
 
-const auto spi_parameters = tmc51x0::SpiParameters{}
-                                .withSpi (&spi)
-                                .withChipSelectPin (8);
+const auto spi_parameters =
+  tmc51x0::SpiParameters{}.withSpi(&spi).withChipSelectPin(8);
 
 const auto encoder_parameters = tmc51x0::EncoderParameters{}
-                                    .withFractionalMode (tmc51x0::BinaryMode)
-                                    .withMicrostepsPerPulseInteger (64)
-                                    .withMicrostepsPerPulseFractional (0);
+                                  .withFractionalMode(tmc51x0::BinaryMode)
+                                  .withMicrostepsPerPulseInteger(64)
+                                  .withMicrostepsPerPulseFractional(0);
 // 200 encoder single signal pulses per revolution
 // 200*4 = 800 quadrature encoder pulses per revolution
 // 200 motor fullsteps per revolution
@@ -32,38 +31,34 @@ TMC51X0 stepper;
 int32_t encoder_actual_position;
 tmc51x0::Registers::EncStatus encoder_status;
 
-void
-setup ()
-{
-  Serial.begin (SERIAL_BAUD_RATE);
+void setup() {
+  Serial.begin(SERIAL_BAUD_RATE);
 
 #if defined(ARDUINO_ARCH_RP2040)
-  spi.setSCK (SCK_PIN);
-  spi.setTX (TX_PIN);
-  spi.setRX (RX_PIN);
+  spi.setSCK(SCK_PIN);
+  spi.setTX(TX_PIN);
+  spi.setRX(RX_PIN);
 #endif
-  spi.begin ();
-  stepper.setupSpi (spi_parameters);
+  spi.begin();
+  stepper.setupSpi(spi_parameters);
 
-  stepper.encoder.setup (encoder_parameters);
+  stepper.encoder.setup(encoder_parameters);
 
-  while (!stepper.communicating ())
-    {
-      Serial.println ("No communication detected, check motor power and connections.");
-      delay (LOOP_DELAY);
-    }
+  while (!stepper.communicating()) {
+    Serial.println(
+      "No communication detected, check motor power and connections.");
+    delay(LOOP_DELAY);
+  }
 }
 
-void
-loop ()
-{
-  encoder_actual_position = stepper.encoder.readActualPosition ();
-  Serial.print ("encoder_actual_position: ");
-  Serial.println (encoder_actual_position);
-  encoder_status = stepper.encoder.readAndClearStatus ();
-  Serial.print ("encoder_status.n_event(): ");
-  Serial.print (encoder_status.n_event ());
-  Serial.print (" , encoder_status.deviation_warn() (only works on TMC5160): ");
-  Serial.println (encoder_status.deviation_warn ());
-  delay (LOOP_DELAY);
+void loop() {
+  encoder_actual_position = stepper.encoder.readActualPosition();
+  Serial.print("encoder_actual_position: ");
+  Serial.println(encoder_actual_position);
+  encoder_status = stepper.encoder.readAndClearStatus();
+  Serial.print("encoder_status.n_event(): ");
+  Serial.print(encoder_status.n_event());
+  Serial.print(" , encoder_status.deviation_warn() (only works on TMC5160): ");
+  Serial.println(encoder_status.deviation_warn());
+  delay(LOOP_DELAY);
 }
