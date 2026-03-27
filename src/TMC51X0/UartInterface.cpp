@@ -25,7 +25,7 @@ void UartInterface::setup(UartParameters uart_parameters) {
   callbacks.write = &UartInterface::engineSerialWrite_;
   callbacks.flush = &UartInterface::engineSerialFlush_;
   callbacks.set_tx_enable =
-    txrxPinEnabled() ? &UartInterface::engineSetTxEnable_ : nullptr;
+      txrxPinEnabled() ? &UartInterface::engineSetTxEnable_ : nullptr;
 
   UartEngine::Config config;
   config.baud_rate = uart_parameters_.baud_rate;
@@ -96,8 +96,8 @@ Result<void> UartInterface::startWriteRegister(uint8_t register_address,
     return r;
   }
 
-  r = uart_engine_.startWrite(
-    uart_parameters_.node_address, register_address, data);
+  r = uart_engine_.startWrite(uart_parameters_.node_address, register_address,
+                              data);
   last_uart_error_ = r.error;
   return r;
 }
@@ -117,13 +117,9 @@ Result<void> UartInterface::startReadRegister(uint8_t register_address) {
   return r;
 }
 
-void UartInterface::poll(uint32_t now_us) {
-  uart_engine_.poll(now_us);
-}
+void UartInterface::poll(uint32_t now_us) { uart_engine_.poll(now_us); }
 
-void UartInterface::poll() {
-  uart_engine_.poll(micros());
-}
+void UartInterface::poll() { uart_engine_.poll(micros()); }
 
 Result<void> UartInterface::takeWriteResult() {
   Result<void> r = uart_engine_.takeWriteResult();
@@ -141,24 +137,24 @@ Result<uint32_t> UartInterface::takeReadResult() {
 // Engine callbacks
 // --------------------------------------------------------------------------
 
-int UartInterface::engineSerialAvailable_(void* ctx) {
-  return static_cast<UartInterface*>(ctx)->serialAvailable();
+int UartInterface::engineSerialAvailable_(void *ctx) {
+  return static_cast<UartInterface *>(ctx)->serialAvailable();
 }
 
-int UartInterface::engineSerialRead_(void* ctx) {
-  return static_cast<UartInterface*>(ctx)->serialRead();
+int UartInterface::engineSerialRead_(void *ctx) {
+  return static_cast<UartInterface *>(ctx)->serialRead();
 }
 
-size_t UartInterface::engineSerialWrite_(void* ctx, uint8_t b) {
-  return static_cast<UartInterface*>(ctx)->serialWrite(b);
+size_t UartInterface::engineSerialWrite_(void *ctx, uint8_t b) {
+  return static_cast<UartInterface *>(ctx)->serialWrite(b);
 }
 
-void UartInterface::engineSerialFlush_(void* ctx) {
-  static_cast<UartInterface*>(ctx)->serialFlush();
+void UartInterface::engineSerialFlush_(void *ctx) {
+  static_cast<UartInterface *>(ctx)->serialFlush();
 }
 
-void UartInterface::engineSetTxEnable_(void* ctx, bool enable) {
-  UartInterface* self = static_cast<UartInterface*>(ctx);
+void UartInterface::engineSetTxEnable_(void *ctx, bool enable) {
+  UartInterface *self = static_cast<UartInterface *>(ctx);
   if (enable) {
     self->enableTxDisableRx();
   } else {

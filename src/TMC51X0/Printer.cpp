@@ -13,9 +13,7 @@ Printer::Printer() {
   registers_ptr_ = nullptr;
 }
 
-void Printer::setup(Print& print) {
-  print_ptr_ = &print;
-}
+void Printer::setup(Print &print) { print_ptr_ = &print; }
 
 void Printer::readAndPrintGconf() {
   Registers::Gconf gconf;
@@ -25,28 +23,26 @@ void Printer::readAndPrintGconf() {
 
 void Printer::printRegister(Registers::Gconf gconf) {
   printRegisterPortion("gconf", gconf.raw, HEX);
-  printRegisterPortion(
-    "recalibrate_i_scale_analog", gconf.recalibrate_i_scale_analog(), BIN);
+  printRegisterPortion("recalibrate_i_scale_analog",
+                       gconf.recalibrate_i_scale_analog(), BIN);
   printRegisterPortion("faststandstill_internal_rsense",
-                       gconf.faststandstill_internal_rsense(),
-                       BIN);
+                       gconf.faststandstill_internal_rsense(), BIN);
   printRegisterPortion("en_pwm_mode", gconf.en_pwm_mode(), BIN);
   printRegisterPortion("multistep_filt_enc_commutation",
-                       gconf.multistep_filt_enc_commutation(),
-                       BIN);
+                       gconf.multistep_filt_enc_commutation(), BIN);
   printRegisterPortion("shaft", gconf.shaft(), BIN);
   printRegisterPortion("diag0_error", gconf.diag0_error(), BIN);
   printRegisterPortion("diag0_otpw", gconf.diag0_otpw(), BIN);
-  printRegisterPortion(
-    "diag0_stall_int_step", gconf.diag0_stall_int_step(), BIN);
-  printRegisterPortion(
-    "diag1_stall_poscomp_dir", gconf.diag1_stall_poscomp_dir(), BIN);
+  printRegisterPortion("diag0_stall_int_step", gconf.diag0_stall_int_step(),
+                       BIN);
+  printRegisterPortion("diag1_stall_poscomp_dir",
+                       gconf.diag1_stall_poscomp_dir(), BIN);
   printRegisterPortion("diag1_index", gconf.diag1_index(), BIN);
   printRegisterPortion("diag1_onstate", gconf.diag1_onstate(), BIN);
   printRegisterPortion("diag1_steps_skipped", gconf.diag1_steps_skipped(), BIN);
   printRegisterPortion("diag0_int_pushpull", gconf.diag0_int_pushpull(), BIN);
-  printRegisterPortion(
-    "diag1_poscomp_pushpull", gconf.diag1_poscomp_pushpull(), BIN);
+  printRegisterPortion("diag1_poscomp_pushpull", gconf.diag1_poscomp_pushpull(),
+                       BIN);
   printRegisterPortion("small_hysteresis", gconf.small_hysteresis(), BIN);
   printRegisterPortion("stop_enable", gconf.stop_enable(), BIN);
   printRegisterPortion("direct_mode", gconf.direct_mode(), BIN);
@@ -234,22 +230,22 @@ void Printer::printRegister(Registers::PwmAuto pwm_auto) {
 
 // private
 
-void Printer::initialize(Registers& registers) {
+void Printer::initialize(Registers &registers) {
   print_ptr_ = &Serial;
   registers_ptr_ = &registers;
 }
 
-void Printer::printRegisterPortion(const char* str, uint32_t value, int base) {
+void Printer::printRegisterPortion(const char *str, uint32_t value, int base) {
   print_ptr_->print(str);
   switch (base) {
-    case BIN:
-      print_ptr_->print(": 0b");
-      break;
-    case HEX:
-      print_ptr_->print(": 0x");
-      break;
-    default:
-      print_ptr_->print(": ");
+  case BIN:
+    print_ptr_->print(": 0b");
+    break;
+  case HEX:
+    print_ptr_->print(": 0x");
+    break;
+  default:
+    print_ptr_->print(": ");
   }
   print_ptr_->print(value, base);
   print_ptr_->println();

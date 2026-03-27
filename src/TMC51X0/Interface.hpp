@@ -22,9 +22,7 @@ public:
 
   virtual void writeRegister(uint8_t /* register_address */,
                              uint32_t /* data */) {};
-  virtual uint32_t readRegister(uint8_t /* register_address */) {
-    return 0;
-  };
+  virtual uint32_t readRegister(uint8_t /* register_address */) { return 0; };
 
   // Explicit-error variants. The default implementation preserves the legacy
   // behavior for transports like SPI that do not currently surface a richer
@@ -44,9 +42,7 @@ public:
   // SPI surfaces a reset flag alongside every access. Transports that can
   // detect a device-side reset should latch it and surface it here so the
   // register mirror can demand a re-seed/recovery pass.
-  virtual bool consumeDeviceResetObserved() {
-    return false;
-  }
+  virtual bool consumeDeviceResetObserved() { return false; }
 };
-}
+} // namespace tmc51x0
 #endif

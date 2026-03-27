@@ -33,21 +33,21 @@ struct EncoderParameters {
   // "Named parameter" style helpers
 
   constexpr EncoderParameters withFractionalMode(FractionalMode mode) const {
-    return EncoderParameters(
-      mode, microsteps_per_pulse_integer, microsteps_per_pulse_fractional);
+    return EncoderParameters(mode, microsteps_per_pulse_integer,
+                             microsteps_per_pulse_fractional);
   }
 
   constexpr EncoderParameters
   withMicrostepsPerPulseInteger(int32_t value) const {
-    return EncoderParameters(
-      fractional_mode, value, microsteps_per_pulse_fractional);
+    return EncoderParameters(fractional_mode, value,
+                             microsteps_per_pulse_fractional);
   }
 
   constexpr EncoderParameters
   withMicrostepsPerPulseFractional(int32_t value) const {
-    return EncoderParameters(
-      fractional_mode, microsteps_per_pulse_integer, value);
+    return EncoderParameters(fractional_mode, microsteps_per_pulse_integer,
+                             value);
   }
 };
-}
+} // namespace tmc51x0
 #endif

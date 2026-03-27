@@ -17,7 +17,7 @@ class Printer {
 public:
   Printer();
 
-  void setup(Print& print);
+  void setup(Print &print);
 
   void readAndPrintGconf();
   void printRegister(Registers::Gconf gconf);
@@ -50,13 +50,13 @@ public:
   void printRegister(Registers::PwmAuto pwm_auto);
 
 private:
-  Print* print_ptr_;
-  Registers* registers_ptr_;
+  Print *print_ptr_;
+  Registers *registers_ptr_;
 
-  void initialize(Registers& registers);
-  void printRegisterPortion(const char* str, uint32_t value, int base = DEC);
+  void initialize(Registers &registers);
+  void printRegisterPortion(const char *str, uint32_t value, int base = DEC);
 
   friend class ::TMC51X0;
 };
-}
+} // namespace tmc51x0
 #endif

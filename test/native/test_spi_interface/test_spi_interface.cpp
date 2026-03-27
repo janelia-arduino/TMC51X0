@@ -34,16 +34,7 @@ void tearDown() {}
 static void test_spi_read_latches_reset_flag_once(void) {
   FakeSPI spi;
   spi.rx_bytes = {
-    0x00,
-    0x00,
-    0x00,
-    0x00,
-    0x00,
-    0x01,
-    0x11,
-    0x22,
-    0x33,
-    0x44,
+      0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x11, 0x22, 0x33, 0x44,
   };
 
   SpiInterface interface;
@@ -54,7 +45,7 @@ static void test_spi_read_latches_reset_flag_once(void) {
   TEST_ASSERT_FALSE(interface.consumeDeviceResetObserved());
 }
 
-int main(int argc, char** argv) {
+int main(int argc, char **argv) {
   UNITY_BEGIN();
 
   RUN_TEST(test_spi_read_latches_reset_flag_once);

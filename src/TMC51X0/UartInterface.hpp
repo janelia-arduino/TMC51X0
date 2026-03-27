@@ -9,8 +9,8 @@
 #define TMC51X0_UART_INTERFACE_HPP
 #include <Arduino.h>
 
-#include "UartParameters.hpp"
 #include "Interface.hpp"
+#include "UartParameters.hpp"
 
 #include "Result.hpp"
 #include "UartEngine.hpp"
@@ -36,13 +36,9 @@ public:
                                    uint32_t data) override;
   Result<uint32_t> readRegisterResult(uint8_t register_address) override;
 
-  UartError getLastUartError() const {
-    return last_uart_error_;
-  }
+  UartError getLastUartError() const { return last_uart_error_; }
 
-  UartError lastError() const {
-    return getLastUartError();
-  }
+  UartError lastError() const { return getLastUartError(); }
 
   // --------------------------------------------------------------------------
   // Non-blocking API (poll-driven)
@@ -62,15 +58,9 @@ public:
   void poll(uint32_t now_us);
   void poll();
 
-  bool busy() const {
-    return uart_engine_.busy();
-  }
-  bool resultReady() const {
-    return uart_engine_.resultReady();
-  }
-  bool done() const {
-    return resultReady();
-  }
+  bool busy() const { return uart_engine_.busy(); }
+  bool resultReady() const { return uart_engine_.resultReady(); }
+  bool done() const { return resultReady(); }
 
   Result<void> takeWriteResult();
   Result<uint32_t> takeReadResult();
@@ -82,11 +72,11 @@ private:
   UartEngine uart_engine_;
 
   // Engine callbacks
-  static int engineSerialAvailable_(void* ctx);
-  static int engineSerialRead_(void* ctx);
-  static size_t engineSerialWrite_(void* ctx, uint8_t b);
-  static void engineSerialFlush_(void* ctx);
-  static void engineSetTxEnable_(void* ctx, bool enable);
+  static int engineSerialAvailable_(void *ctx);
+  static int engineSerialRead_(void *ctx);
+  static size_t engineSerialWrite_(void *ctx, uint8_t b);
+  static void engineSerialFlush_(void *ctx);
+  static void engineSetTxEnable_(void *ctx, bool enable);
 
   bool txrxPinEnabled() const;
 
@@ -101,5 +91,5 @@ private:
 
 // Low-friction public bus abstraction for family-wide API parity.
 using UartBus = UartInterface;
-}
+} // namespace tmc51x0
 #endif

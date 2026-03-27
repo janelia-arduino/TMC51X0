@@ -13,9 +13,7 @@ Encoder::Encoder() {
   setup_encoder_parameters_ = EncoderParameters{};
 }
 
-void Encoder::setup() {
-  writeEncoderParameters(setup_encoder_parameters_);
-}
+void Encoder::setup() { writeEncoderParameters(setup_encoder_parameters_); }
 
 void Encoder::setup(tmc51x0::EncoderParameters parameters) {
   setup_encoder_parameters_ = parameters;
@@ -47,14 +45,12 @@ void Encoder::writeActualPosition(int32_t position) {
   return registers_ptr_->write(Registers::XencAddress, position);
 }
 
-void Encoder::zeroActualPosition() {
-  return writeActualPosition(0);
-}
+void Encoder::zeroActualPosition() { return writeActualPosition(0); }
 
 Registers::EncStatus Encoder::readAndClearStatus() {
   Registers::EncStatus enc_status_read, enc_status_write;
   enc_status_read.raw =
-    registers_ptr_->read(tmc51x0::Registers::EncStatusAddress);
+      registers_ptr_->read(tmc51x0::Registers::EncStatusAddress);
   enc_status_write.n_event(true);
   enc_status_write.deviation_warn(true);
   registers_ptr_->write(tmc51x0::Registers::EncStatusAddress,
@@ -64,7 +60,7 @@ Registers::EncStatus Encoder::readAndClearStatus() {
 
 // private
 
-void Encoder::initialize(Registers& registers) {
+void Encoder::initialize(Registers &registers) {
   registers_ptr_ = &registers;
 
   reinitialize();

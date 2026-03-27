@@ -20,11 +20,9 @@ class SPIClass {
 public:
   virtual ~SPIClass() = default;
 
-  virtual uint8_t transfer(uint8_t data) {
-    return data;
-  }
+  virtual uint8_t transfer(uint8_t data) { return data; }
 
-  virtual void beginTransaction(const SPISettings&) {}
+  virtual void beginTransaction(const SPISettings &) {}
 
   virtual void endTransaction() {}
 };

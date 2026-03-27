@@ -8,8 +8,8 @@
 #ifndef TMC51X0_ENCODER_HPP
 #define TMC51X0_ENCODER_HPP
 
-#include "Registers.hpp"
 #include "EncoderParameters.hpp"
+#include "Registers.hpp"
 
 class TMC51X0;
 
@@ -40,14 +40,14 @@ public:
   Registers::EncStatus readAndClearStatus();
 
 private:
-  Registers* registers_ptr_;
+  Registers *registers_ptr_;
   EncoderParameters setup_encoder_parameters_;
 
-  void initialize(Registers& registers);
+  void initialize(Registers &registers);
   void reinitialize();
   void writeEncoderParameters(EncoderParameters parameters);
 
   friend class ::TMC51X0;
 };
-}
+} // namespace tmc51x0
 #endif

@@ -9,8 +9,8 @@
 #define TMC51X0_DRIVER_HPP
 #include <Arduino.h>
 
-#include "Registers.hpp"
 #include "DriverParameters.hpp"
+#include "Registers.hpp"
 
 class TMC51X0;
 
@@ -118,7 +118,7 @@ public:
   void writeDcStallGuardThreshold(uint8_t dc_stall_guard_threshold);
 
 private:
-  Registers* registers_ptr_;
+  Registers *registers_ptr_;
   DriverParameters setup_driver_parameters_;
   DriverParameters cached_driver_settings_;
 
@@ -139,7 +139,7 @@ private:
 
   const static uint8_t SEMIN_OFF = 0;
 
-  void initialize(Registers& registers);
+  void initialize(Registers &registers);
   void reinitialize();
   void writeDriverParameters(DriverParameters parameters);
   void cacheDriverSettings();
@@ -152,5 +152,5 @@ private:
 
   friend class ::TMC51X0;
 };
-}
+} // namespace tmc51x0
 #endif

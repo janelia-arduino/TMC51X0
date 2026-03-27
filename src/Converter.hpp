@@ -9,11 +9,11 @@
 #define TMC51X0_CONVERTER_HPP
 #include <Arduino.h>
 
+#include "Controller.hpp"
 #include "ConverterParameters.hpp"
+#include "Driver.hpp"
 #include "HomeParameters.hpp"
 #include "StallParameters.hpp"
-#include "Driver.hpp"
-#include "Controller.hpp"
 
 namespace tmc51x0 {
 class Converter {
@@ -96,5 +96,5 @@ private:
 
   uint32_t constrain_(uint32_t value, uint32_t low, uint32_t high);
 };
-}
+} // namespace tmc51x0
 #endif

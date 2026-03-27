@@ -27,7 +27,7 @@ constexpr size_t READ_REQUEST_SIZE = 4;
 constexpr size_t WRITE_REQUEST_SIZE = 8;
 constexpr size_t REPLY_SIZE = 8;
 
-inline uint8_t crc8(const uint8_t* bytes, size_t len) {
+inline uint8_t crc8(const uint8_t *bytes, size_t len) {
   // Trinamic UART CRC-8 (polynomial 0x07), LSB-first per byte.
   uint8_t crc = 0;
   for (size_t i = 0; i < len; ++i) {
@@ -44,15 +44,14 @@ inline uint8_t crc8(const uint8_t* bytes, size_t len) {
   return crc;
 }
 
-inline bool checkCrc(const uint8_t* bytes, size_t size) {
+inline bool checkCrc(const uint8_t *bytes, size_t size) {
   if (size == 0) {
     return false;
   }
   return crc8(bytes, size - 1) == bytes[size - 1];
 }
 
-inline void packReadRequest(uint8_t node_address,
-                            uint8_t register_address,
+inline void packReadRequest(uint8_t node_address, uint8_t register_address,
                             uint8_t out[READ_REQUEST_SIZE]) {
   out[0] = SYNC;
   out[1] = node_address;
@@ -60,10 +59,8 @@ inline void packReadRequest(uint8_t node_address,
   out[3] = crc8(out, READ_REQUEST_SIZE - 1);
 }
 
-inline void packWriteRequest(uint8_t node_address,
-                             uint8_t register_address,
-                             uint32_t data,
-                             uint8_t out[WRITE_REQUEST_SIZE]) {
+inline void packWriteRequest(uint8_t node_address, uint8_t register_address,
+                             uint32_t data, uint8_t out[WRITE_REQUEST_SIZE]) {
   out[0] = SYNC;
   out[1] = node_address;
   out[2] = (register_address & 0x7F) | (RW_WRITE << 7);
@@ -77,9 +74,7 @@ inline void packWriteRequest(uint8_t node_address,
   out[7] = crc8(out, WRITE_REQUEST_SIZE - 1);
 }
 
-inline uint8_t replyNode(const uint8_t in[REPLY_SIZE]) {
-  return in[1];
-}
+inline uint8_t replyNode(const uint8_t in[REPLY_SIZE]) { return in[1]; }
 
 inline uint8_t replyRegister(const uint8_t in[REPLY_SIZE]) {
   return static_cast<uint8_t>(in[2] & 0x7F);

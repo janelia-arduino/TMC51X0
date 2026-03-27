@@ -11,8 +11,8 @@
 // Native tests do not link the Arduino library sources. Pull the small
 // implementation units under test directly into this translation unit so the
 // regression remains self-contained under `pio test -e native`.
-#include "../../../src/TMC51X0/Registers.cpp"
 #include "../../../src/TMC51X0/Driver.cpp"
+#include "../../../src/TMC51X0/Registers.cpp"
 
 using namespace tmc51x0;
 
@@ -30,9 +30,7 @@ struct FakeInterface : public Interface {
   bool device_reset_observed{false};
   uint32_t register_image[Registers::AddressCount] = {0};
 
-  FakeInterface() {
-    interface_mode = SpiMode;
-  }
+  FakeInterface() { interface_mode = SpiMode; }
 
   Result<void> writeRegisterResult(uint8_t register_address,
                                    uint32_t data) override {
@@ -80,7 +78,7 @@ void setUp() {}
 
 void tearDown() {}
 
-static void initRegisters(Registers& registers, FakeInterface& interface) {
+static void initRegisters(Registers &registers, FakeInterface &interface) {
   registers.initialize(interface);
 }
 
@@ -142,7 +140,7 @@ static void test_failed_read_does_not_poison_the_stored_mirror(void) {
 
 static void
 test_assume_device_reset_reseeds_known_defaults_and_invalidates_runtime_only_entries(
-  void) {
+    void) {
   FakeInterface interface;
   Registers registers;
   initRegisters(registers, interface);
@@ -180,12 +178,12 @@ test_driver_cache_tracks_short_to_ground_protection_enable_state(void) {
   driver.disableShortToGroundProtection();
   driver.cacheDriverSettings();
   TEST_ASSERT_FALSE(
-    driver.cached_driver_settings_.short_to_ground_protection_enabled);
+      driver.cached_driver_settings_.short_to_ground_protection_enabled);
 
   driver.enableShortToGroundProtection();
   driver.cacheDriverSettings();
   TEST_ASSERT_TRUE(
-    driver.cached_driver_settings_.short_to_ground_protection_enabled);
+      driver.cached_driver_settings_.short_to_ground_protection_enabled);
 }
 
 static void test_chip_specific_reset_defaults_seed_pwmconf(void) {
@@ -198,8 +196,8 @@ static void test_chip_specific_reset_defaults_seed_pwmconf(void) {
   TEST_ASSERT_EQUAL_HEX32(0x00050480UL,
                           registers.getStored(Registers::PwmconfAddress));
   TEST_ASSERT_EQUAL_INT(
-    static_cast<int>(Registers::MirrorConfidence::ResetDefault),
-    static_cast<int>(registers.storedConfidence(Registers::PwmconfAddress)));
+      static_cast<int>(Registers::MirrorConfidence::ResetDefault),
+      static_cast<int>(registers.storedConfidence(Registers::PwmconfAddress)));
 
   registers.setDeviceModel(Registers::DeviceModel::TMC5160A);
   registers.assumeDeviceReset();
@@ -221,12 +219,13 @@ static void test_transport_reset_marks_the_mirror_for_recovery(void) {
   TEST_ASSERT_EQUAL_HEX32(value,
                           registers.getStored(Registers::IholdIrunAddress));
   TEST_ASSERT_EQUAL_INT(
-    static_cast<int>(Registers::MirrorConfidence::AssumedWritten),
-    static_cast<int>(registers.storedConfidence(Registers::IholdIrunAddress)));
+      static_cast<int>(Registers::MirrorConfidence::AssumedWritten),
+      static_cast<int>(
+          registers.storedConfidence(Registers::IholdIrunAddress)));
   TEST_ASSERT_TRUE(registers.storedValid(Registers::PwmconfAddress));
   TEST_ASSERT_EQUAL_INT(
-    static_cast<int>(Registers::MirrorConfidence::ResetDefault),
-    static_cast<int>(registers.storedConfidence(Registers::PwmconfAddress)));
+      static_cast<int>(Registers::MirrorConfidence::ResetDefault),
+      static_cast<int>(registers.storedConfidence(Registers::PwmconfAddress)));
 }
 
 static void test_resync_readable_configuration_refreshes_verified_values(void) {
@@ -250,21 +249,21 @@ static void test_resync_readable_configuration_refreshes_verified_values(void) {
   TEST_ASSERT_EQUAL_HEX32(0xABCDEF12UL,
                           registers.getStored(Registers::ChopconfAddress));
   TEST_ASSERT_EQUAL_INT(
-    static_cast<int>(Registers::MirrorConfidence::ReadVerified),
-    static_cast<int>(registers.storedConfidence(Registers::GconfAddress)));
+      static_cast<int>(Registers::MirrorConfidence::ReadVerified),
+      static_cast<int>(registers.storedConfidence(Registers::GconfAddress)));
   TEST_ASSERT_EQUAL_INT(
-    static_cast<int>(Registers::MirrorConfidence::ReadVerified),
-    static_cast<int>(registers.storedConfidence(Registers::ChopconfAddress)));
+      static_cast<int>(Registers::MirrorConfidence::ReadVerified),
+      static_cast<int>(registers.storedConfidence(Registers::ChopconfAddress)));
 }
 
-int main(int argc, char** argv) {
+int main(int argc, char **argv) {
   UNITY_BEGIN();
 
   RUN_TEST(test_write_success_updates_the_stored_mirror);
   RUN_TEST(test_failed_write_does_not_overwrite_last_known_good_value);
   RUN_TEST(test_failed_read_does_not_poison_the_stored_mirror);
   RUN_TEST(
-    test_assume_device_reset_reseeds_known_defaults_and_invalidates_runtime_only_entries);
+      test_assume_device_reset_reseeds_known_defaults_and_invalidates_runtime_only_entries);
   RUN_TEST(test_driver_cache_tracks_short_to_ground_protection_enable_state);
   RUN_TEST(test_chip_specific_reset_defaults_seed_pwmconf);
   RUN_TEST(test_transport_reset_marks_the_mirror_for_recovery);

@@ -17,11 +17,8 @@ static void test_spi_pack_datagram() {
 
 static void test_spi_unpack() {
   const uint8_t buf[spi::DATAGRAM_SIZE] = {
-    0x5A, // status
-    0x11,
-    0x22,
-    0x33,
-    0x44,
+      0x5A, // status
+      0x11, 0x22, 0x33, 0x44,
   };
 
   TEST_ASSERT_EQUAL_UINT8(0x5A, spi::unpackStatus(buf));
@@ -32,7 +29,7 @@ void setUp() {}
 
 void tearDown() {}
 
-int main(int argc, char** argv) {
+int main(int argc, char **argv) {
   UNITY_BEGIN();
 
   RUN_TEST(test_spi_pack_datagram);

@@ -7,14 +7,14 @@
 #include "TMC51X0/Interface.hpp"
 #undef private
 
-#include "../../../src/TMC51X0/Registers.cpp"
-#include "../../../src/TMC51X0/Driver.cpp"
 #include "../../../src/TMC51X0/Controller.cpp"
+#include "../../../src/TMC51X0/Driver.cpp"
 #include "../../../src/TMC51X0/Encoder.cpp"
 #include "../../../src/TMC51X0/Printer.cpp"
+#include "../../../src/TMC51X0/Registers.cpp"
 #include "../../../src/TMC51X0/SpiInterface.cpp"
-#include "../../../src/TMC51X0/UartInterface.cpp"
 #include "../../../src/TMC51X0/TMC51X0.cpp"
+#include "../../../src/TMC51X0/UartInterface.cpp"
 
 using namespace tmc51x0;
 
@@ -27,9 +27,7 @@ struct FakeInterface : public Interface {
   bool device_reset_observed{false};
   uint32_t register_image[Registers::AddressCount] = {0};
 
-  FakeInterface() {
-    interface_mode = SpiMode;
-  }
+  FakeInterface() { interface_mode = SpiMode; }
 
   Result<void> writeRegisterResult(uint8_t register_address,
                                    uint32_t data) override {
@@ -67,7 +65,7 @@ struct FakeInterface : public Interface {
   }
 };
 
-void initStepper(TMC51X0& stepper, FakeInterface& interface) {
+void initStepper(TMC51X0 &stepper, FakeInterface &interface) {
   stepper.registers.initialize(interface);
   stepper.registers.setDeviceModel(Registers::DeviceModel::TMC5130A);
   stepper.initialize();
@@ -147,7 +145,7 @@ static void test_recover_if_unhealthy_marks_drift_and_recovers(void) {
   TEST_ASSERT_FALSE(stepper.mirrorResyncRequired());
 }
 
-int main(int argc, char** argv) {
+int main(int argc, char **argv) {
   UNITY_BEGIN();
 
   RUN_TEST(test_homed_requires_confirmed_stall_for_stall_home);

@@ -11,23 +11,21 @@ using namespace tmc51x0;
 namespace {
 uint32_t pwmconfResetDefault(Registers::DeviceModel device_model) {
   switch (device_model) {
-    case Registers::DeviceModel::TMC5130A:
-      return 0x00050480UL;
-    case Registers::DeviceModel::TMC5160A:
-    case Registers::DeviceModel::Unknown:
-    default:
-      return 0xC40C001EUL;
+  case Registers::DeviceModel::TMC5130A:
+    return 0x00050480UL;
+  case Registers::DeviceModel::TMC5160A:
+  case Registers::DeviceModel::Unknown:
+  default:
+    return 0xC40C001EUL;
   }
 }
-}
+} // namespace
 
 void Registers::setDeviceModel(DeviceModel device_model) {
   device_model_ = device_model;
 }
 
-Registers::DeviceModel Registers::deviceModel() const {
-  return device_model_;
-}
+Registers::DeviceModel Registers::deviceModel() const { return device_model_; }
 
 bool Registers::deviceModelKnown() const {
   return device_model_ != DeviceModel::Unknown;
@@ -37,7 +35,7 @@ void Registers::write(RegisterAddress register_address, uint32_t data) {
   if ((register_address < AddressCount) && (writeable_[register_address]) &&
       (interface_ptr_ != nullptr)) {
     Result<void> result =
-      interface_ptr_->writeRegisterResult(register_address, data);
+        interface_ptr_->writeRegisterResult(register_address, data);
     recordTransportReset_();
     if (result.ok()) {
       // Only advance the software mirror after an explicit successful
@@ -53,7 +51,7 @@ uint32_t Registers::read(RegisterAddress register_address) {
   if ((register_address < AddressCount) && (readable_[register_address]) &&
       (interface_ptr_ != nullptr)) {
     Result<uint32_t> result =
-      interface_ptr_->readRegisterResult(register_address);
+        interface_ptr_->readRegisterResult(register_address);
     recordTransportReset_();
     if (result.ok()) {
       // Keep the last-known-good mirror intact if the transport reports an
@@ -72,7 +70,7 @@ bool Registers::refresh(RegisterAddress register_address) {
   if ((register_address < AddressCount) && (readable_[register_address]) &&
       (interface_ptr_ != nullptr)) {
     Result<uint32_t> result =
-      interface_ptr_->readRegisterResult(register_address);
+        interface_ptr_->readRegisterResult(register_address);
     recordTransportReset_();
     if (result.ok()) {
       stored_[register_address] = result.value;
@@ -87,12 +85,8 @@ bool Registers::refresh(RegisterAddress register_address) {
 
 bool Registers::resyncReadableConfiguration() {
   const RegisterAddress addresses[] = {
-    GconfAddress,
-    FactoryConfAddress,
-    RampmodeAddress,
-    SwModeAddress,
-    EncmodeAddress,
-    ChopconfAddress,
+      GconfAddress,  FactoryConfAddress, RampmodeAddress,
+      SwModeAddress, EncmodeAddress,     ChopconfAddress,
   };
 
   bool ok = true;
@@ -127,21 +121,13 @@ Registers::storedConfidence(RegisterAddress register_address) const {
   }
 }
 
-void Registers::assumeDeviceReset() {
-  seedStoredResetValues_();
-}
+void Registers::assumeDeviceReset() { seedStoredResetValues_(); }
 
-void Registers::notePossibleDrift() {
-  resync_required_ = true;
-}
+void Registers::notePossibleDrift() { resync_required_ = true; }
 
-bool Registers::resyncRequired() const {
-  return resync_required_;
-}
+bool Registers::resyncRequired() const { return resync_required_; }
 
-void Registers::clearResyncRequired() {
-  resync_required_ = false;
-}
+void Registers::clearResyncRequired() { resync_required_ = false; }
 
 bool Registers::writeable(RegisterAddress register_address) {
   if (register_address < AddressCount) {
@@ -209,7 +195,7 @@ void Registers::seedStoredResetValues_() {
 }
 
 // private
-void Registers::initialize(Interface& interface) {
+void Registers::initialize(Interface &interface) {
   interface_ptr_ = &interface;
   resync_required_ = false;
 

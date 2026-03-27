@@ -23,11 +23,9 @@ template <unsigned Pos> struct Bit {
 
   static constexpr uint32_t mask = (uint32_t(1) << Pos);
 
-  static bool get(uint32_t reg) {
-    return (reg & mask) != 0;
-  }
+  static bool get(uint32_t reg) { return (reg & mask) != 0; }
 
-  static void set(uint32_t& reg, bool on) {
+  static void set(uint32_t &reg, bool on) {
     reg = on ? (reg | mask) : (reg & ~mask);
   }
 };
@@ -37,13 +35,11 @@ template <unsigned Pos, unsigned Width> struct Field {
   static_assert(Pos + Width <= 32, "Field exceeds 32-bit range");
 
   static constexpr uint32_t mask =
-    uint32_t(((uint64_t(1) << Width) - 1u) << Pos);
+      uint32_t(((uint64_t(1) << Width) - 1u) << Pos);
 
-  static uint32_t get(uint32_t reg) {
-    return (reg & mask) >> Pos;
-  }
+  static uint32_t get(uint32_t reg) { return (reg & mask) >> Pos; }
 
-  static void set(uint32_t& reg, uint32_t value) {
+  static void set(uint32_t &reg, uint32_t value) {
     reg = (reg & ~mask) | ((value << Pos) & mask);
   }
 };

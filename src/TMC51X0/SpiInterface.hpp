@@ -10,8 +10,8 @@
 #include <Arduino.h>
 #include <SPI.h>
 
-#include "SpiParameters.hpp"
 #include "Interface.hpp"
+#include "SpiParameters.hpp"
 
 #include "SpiProtocol.hpp"
 
@@ -35,30 +35,14 @@ private:
       return ((r >> pos) & 0x01) != 0;
     }
 
-    bool reset_flag() const {
-      return readBit(raw, 0);
-    }
-    bool driver_error() const {
-      return readBit(raw, 1);
-    }
-    bool sg2() const {
-      return readBit(raw, 2);
-    }
-    bool standstill() const {
-      return readBit(raw, 3);
-    }
-    bool velocity_reached() const {
-      return readBit(raw, 4);
-    }
-    bool position_reached() const {
-      return readBit(raw, 5);
-    }
-    bool status_stop_l() const {
-      return readBit(raw, 6);
-    }
-    bool status_stop_r() const {
-      return readBit(raw, 7);
-    }
+    bool reset_flag() const { return readBit(raw, 0); }
+    bool driver_error() const { return readBit(raw, 1); }
+    bool sg2() const { return readBit(raw, 2); }
+    bool standstill() const { return readBit(raw, 3); }
+    bool velocity_reached() const { return readBit(raw, 4); }
+    bool position_reached() const { return readBit(raw, 5); }
+    bool status_stop_l() const { return readBit(raw, 6); }
+    bool status_stop_r() const { return readBit(raw, 7); }
   };
   SpiStatus spi_status_;
   bool device_reset_observed_{false};
@@ -74,5 +58,5 @@ private:
   void beginTransaction();
   void endTransaction();
 };
-}
+} // namespace tmc51x0
 #endif

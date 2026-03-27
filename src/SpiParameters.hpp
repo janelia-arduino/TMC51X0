@@ -12,20 +12,19 @@
 
 namespace tmc51x0 {
 struct SpiParameters {
-  SPIClass* spi_ptr;
+  SPIClass *spi_ptr;
   uint32_t clock_rate;
   size_t chip_select_pin;
 
-  constexpr SpiParameters(SPIClass* spi_ptr = nullptr,
+  constexpr SpiParameters(SPIClass *spi_ptr = nullptr,
                           uint32_t clock_rate = 1000000,
                           size_t chip_select_pin = 0)
-      : spi_ptr(spi_ptr),
-        clock_rate(clock_rate),
+      : spi_ptr(spi_ptr), clock_rate(clock_rate),
         chip_select_pin(chip_select_pin) {}
 
   // "Named parameter" style helpers
 
-  constexpr SpiParameters withSpi(SPIClass* spi) const {
+  constexpr SpiParameters withSpi(SPIClass *spi) const {
     return SpiParameters(spi, clock_rate, chip_select_pin);
   }
 

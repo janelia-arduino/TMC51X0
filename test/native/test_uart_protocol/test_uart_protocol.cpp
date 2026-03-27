@@ -38,14 +38,11 @@ static void test_uart_pack_write_request() {
 
 static void test_uart_reply_crc_detection() {
   uint8_t reply[uart::REPLY_SIZE] = {
-    0x05, // sync
-    0x01, // node
-    0x12, // reg (read)
-    0xAA,
-    0xBB,
-    0xCC,
-    0xDD,
-    0x00, // crc (filled below)
+      0x05, // sync
+      0x01, // node
+      0x12, // reg (read)
+      0xAA, 0xBB, 0xCC, 0xDD,
+      0x00, // crc (filled below)
   };
 
   reply[7] = uart::crc8(reply, uart::REPLY_SIZE - 1);
@@ -60,7 +57,7 @@ void setUp() {}
 
 void tearDown() {}
 
-int main(int argc, char** argv) {
+int main(int argc, char **argv) {
   UNITY_BEGIN();
 
   RUN_TEST(test_uart_pack_read_request);

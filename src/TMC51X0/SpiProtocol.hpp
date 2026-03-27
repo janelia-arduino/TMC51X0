@@ -23,9 +23,7 @@ constexpr size_t DATAGRAM_SIZE = 5;
 constexpr uint8_t RW_READ = 0;
 constexpr uint8_t RW_WRITE = 1;
 
-inline void packDatagram(uint8_t register_address,
-                         uint8_t rw,
-                         uint32_t data,
+inline void packDatagram(uint8_t register_address, uint8_t rw, uint32_t data,
                          uint8_t out[DATAGRAM_SIZE]) {
   // Byte order on the wire:
   //   [0] addr|rw

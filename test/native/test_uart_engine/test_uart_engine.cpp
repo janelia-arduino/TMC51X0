@@ -21,9 +21,7 @@ struct FakeSerial {
 
   bool flush_called{false};
 
-  void scheduleBytes(uint32_t at_us,
-                     const uint8_t* bytes,
-                     size_t len,
+  void scheduleBytes(uint32_t at_us, const uint8_t *bytes, size_t len,
                      uint32_t spacing_us = 0) {
     for (size_t i = 0; i < len; ++i) {
       Scheduled s;
@@ -35,7 +33,7 @@ struct FakeSerial {
 
   void update(uint32_t now_us) {
     while (!scheduled.empty()) {
-      const Scheduled& s = scheduled.front();
+      const Scheduled &s = scheduled.front();
       // Wrap-safe compare: now_us >= s.at_us
       if (static_cast<int32_t>(now_us - s.at_us) < 0) {
         break;
@@ -45,9 +43,7 @@ struct FakeSerial {
     }
   }
 
-  int available() const {
-    return static_cast<int>(rx.size());
-  }
+  int available() const { return static_cast<int>(rx.size()); }
 
   int read() {
     if (rx.empty()) {
@@ -63,16 +59,12 @@ struct FakeSerial {
     return 1;
   }
 
-  void flush() {
-    flush_called = true;
-  }
+  void flush() { flush_called = true; }
 };
 
 struct PinSpy {
   std::vector<bool> states;
-  void set(bool en) {
-    states.push_back(en);
-  }
+  void set(bool en) { states.push_back(en); }
 };
 
 struct Context {
@@ -80,28 +72,26 @@ struct Context {
   PinSpy pin;
 };
 
-static int cbAvailable(void* ctx) {
-  return static_cast<Context*>(ctx)->serial.available();
+static int cbAvailable(void *ctx) {
+  return static_cast<Context *>(ctx)->serial.available();
 }
 
-static int cbRead(void* ctx) {
-  return static_cast<Context*>(ctx)->serial.read();
+static int cbRead(void *ctx) {
+  return static_cast<Context *>(ctx)->serial.read();
 }
 
-static size_t cbWrite(void* ctx, uint8_t b) {
-  return static_cast<Context*>(ctx)->serial.write(b);
+static size_t cbWrite(void *ctx, uint8_t b) {
+  return static_cast<Context *>(ctx)->serial.write(b);
 }
 
-static void cbFlush(void* ctx) {
-  static_cast<Context*>(ctx)->serial.flush();
+static void cbFlush(void *ctx) { static_cast<Context *>(ctx)->serial.flush(); }
+
+static void cbSetTxEnable(void *ctx, bool enable) {
+  static_cast<Context *>(ctx)->pin.set(enable);
 }
 
-static void cbSetTxEnable(void* ctx, bool enable) {
-  static_cast<Context*>(ctx)->pin.set(enable);
-}
-
-static UartEngine::Callbacks
-makeCallbacks(Context& ctx, bool with_flush = true, bool with_pin = true) {
+static UartEngine::Callbacks makeCallbacks(Context &ctx, bool with_flush = true,
+                                           bool with_pin = true) {
   UartEngine::Callbacks cb;
   cb.ctx = &ctx;
   cb.available = &cbAvailable;
@@ -127,17 +117,13 @@ static void assertUartError(UartError expected, UartError actual) {
   TEST_ASSERT_EQUAL_INT(static_cast<int>(expected), static_cast<int>(actual));
 }
 
-static void packReply(uint8_t node_address,
-                      uint8_t register_address,
-                      uint32_t data,
-                      uint8_t out[uart::REPLY_SIZE]) {
+static void packReply(uint8_t node_address, uint8_t register_address,
+                      uint32_t data, uint8_t out[uart::REPLY_SIZE]) {
   // The engine validates sync, CRC, node, register, and payload bytes only.
   uart::packWriteRequest(node_address, register_address, data, out);
 }
 
-static void driveUntilDone(UartEngine& engine,
-                           Context& ctx,
-                           uint32_t t_end_us,
+static void driveUntilDone(UartEngine &engine, Context &ctx, uint32_t t_end_us,
                            uint32_t step_us) {
   for (uint32_t now = 0; now <= t_end_us; now += step_us) {
     ctx.serial.update(now);
@@ -203,8 +189,8 @@ static void test_read_success_chunked_reply(void) {
   uint8_t req[uart::READ_REQUEST_SIZE];
   uart::packReadRequest(0, 0x10, req);
   TEST_ASSERT_EQUAL_UINT8(uart::READ_REQUEST_SIZE, ctx.serial.tx.size());
-  TEST_ASSERT_EQUAL_UINT8_ARRAY(
-    req, ctx.serial.tx.data(), uart::READ_REQUEST_SIZE);
+  TEST_ASSERT_EQUAL_UINT8_ARRAY(req, ctx.serial.tx.data(),
+                                uart::READ_REQUEST_SIZE);
 
   // Verify half-duplex direction toggles (TX then RX).
   TEST_ASSERT_EQUAL(2, ctx.pin.states.size());
@@ -241,8 +227,8 @@ static void test_read_timeout_then_retry_succeeds(void) {
   uint8_t req[uart::READ_REQUEST_SIZE];
   uart::packReadRequest(0, 0x22, req);
   TEST_ASSERT_EQUAL_UINT8(uart::READ_REQUEST_SIZE * 2, ctx.serial.tx.size());
-  TEST_ASSERT_EQUAL_UINT8_ARRAY(
-    req, ctx.serial.tx.data(), uart::READ_REQUEST_SIZE);
+  TEST_ASSERT_EQUAL_UINT8_ARRAY(req, ctx.serial.tx.data(),
+                                uart::READ_REQUEST_SIZE);
   TEST_ASSERT_EQUAL_UINT8_ARRAY(req,
                                 ctx.serial.tx.data() + uart::READ_REQUEST_SIZE,
                                 uart::READ_REQUEST_SIZE);
@@ -338,8 +324,8 @@ static void test_write_success_completes_without_reply(void) {
   uint8_t req[uart::WRITE_REQUEST_SIZE];
   uart::packWriteRequest(0, 0x12, 0x11223344UL, req);
   TEST_ASSERT_EQUAL_UINT8(uart::WRITE_REQUEST_SIZE, ctx.serial.tx.size());
-  TEST_ASSERT_EQUAL_UINT8_ARRAY(
-    req, ctx.serial.tx.data(), uart::WRITE_REQUEST_SIZE);
+  TEST_ASSERT_EQUAL_UINT8_ARRAY(req, ctx.serial.tx.data(),
+                                uart::WRITE_REQUEST_SIZE);
 
   TEST_ASSERT_EQUAL(2, ctx.pin.states.size());
   TEST_ASSERT_TRUE(ctx.pin.states[0]);
@@ -350,7 +336,7 @@ void setUp(void) {}
 
 void tearDown(void) {}
 
-int main(int argc, char** argv) {
+int main(int argc, char **argv) {
   (void)argc;
   (void)argv;
 

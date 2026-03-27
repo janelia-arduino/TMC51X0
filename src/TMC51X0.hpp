@@ -9,18 +9,18 @@
 #define TMC51X0_HPP
 #include <Arduino.h>
 
+#include "HomeParameters.hpp"
+#include "StallParameters.hpp"
+#include "SwitchParameters.hpp"
 #include "TMC51X0/SpiInterface.hpp"
 #include "TMC51X0/UartInterface.hpp"
-#include "HomeParameters.hpp"
-#include "SwitchParameters.hpp"
-#include "StallParameters.hpp"
 
-#include "Registers.hpp"
+#include "Controller.hpp"
 #include "Converter.hpp"
 #include "Driver.hpp"
-#include "Controller.hpp"
 #include "Encoder.hpp"
 #include "Printer.hpp"
+#include "Registers.hpp"
 
 namespace tmc51x0 {
 struct HealthStatus {
@@ -30,7 +30,7 @@ struct HealthStatus {
   bool charge_pump_undervoltage{false};
   bool mirror_resync_required{false};
 };
-}
+} // namespace tmc51x0
 
 struct TMC51X0 {
   tmc51x0::Registers registers;
@@ -44,26 +44,21 @@ struct TMC51X0 {
 
   void setupSpi(tmc51x0::SpiParameters spi_parameters,
                 tmc51x0::Registers::DeviceModel expected_device_model =
-                  tmc51x0::Registers::DeviceModel::Unknown);
+                    tmc51x0::Registers::DeviceModel::Unknown);
   void setupUart(tmc51x0::UartParameters uart_parameters,
                  tmc51x0::Registers::DeviceModel expected_device_model =
-                   tmc51x0::Registers::DeviceModel::Unknown);
+                     tmc51x0::Registers::DeviceModel::Unknown);
 
-  // Advanced access to the underlying UART interface (for non-blocking polling).
-  tmc51x0::UartInterface& uartInterface() {
-    return interface_uart_;
-  }
-  const tmc51x0::UartInterface& uartInterface() const {
+  // Advanced access to the underlying UART interface (for non-blocking
+  // polling).
+  tmc51x0::UartInterface &uartInterface() { return interface_uart_; }
+  const tmc51x0::UartInterface &uartInterface() const {
     return interface_uart_;
   }
 
   // Preferred family-style alias for async / event-loop driven UART access.
-  tmc51x0::UartBus& uartBus() {
-    return interface_uart_;
-  }
-  const tmc51x0::UartBus& uartBus() const {
-    return interface_uart_;
-  }
+  tmc51x0::UartBus &uartBus() { return interface_uart_; }
+  const tmc51x0::UartBus &uartBus() const { return interface_uart_; }
 
   uint8_t readVersion();
   bool communicating();
@@ -109,9 +104,7 @@ struct TMC51X0 {
                         tmc51x0::StallParameters stall_parameters);
   void endHome();
   bool homed();
-  bool homeFailed() const {
-    return home_failed_;
-  }
+  bool homeFailed() const { return home_failed_; }
 
 private:
   enum class HomeMode : uint8_t {

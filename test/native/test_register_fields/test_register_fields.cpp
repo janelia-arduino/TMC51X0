@@ -6,13 +6,9 @@
 
 using namespace tmc51x0;
 
-static uint32_t bit32(unsigned pos) {
-  return (uint32_t(1) << pos);
-}
+static uint32_t bit32(unsigned pos) { return (uint32_t(1) << pos); }
 
-static uint32_t field32(unsigned pos, uint32_t value) {
-  return (value << pos);
-}
+static uint32_t field32(unsigned pos, uint32_t value) { return (value << pos); }
 
 static void test_gconf_gstat_nodeconf_ioin(void) {
   // --------------------------------------------------------------------------
@@ -867,7 +863,7 @@ void setUp(void) {}
 
 void tearDown(void) {}
 
-int main(int argc, char** argv) {
+int main(int argc, char **argv) {
   (void)argc;
   (void)argv;
 

@@ -70,18 +70,14 @@ SPI setup is caller-owned. Configure the MCU SPI peripheral first, then pass a
 
 SPIClass &spi = SPI;
 
-const auto spi_parameters = tmc51x0::SpiParameters{}
-                                .withSpi (&spi)
-                                .withChipSelectPin (8);
+const auto spi_parameters =
+    tmc51x0::SpiParameters{}.withSpi(&spi).withChipSelectPin(8);
 
 TMC51X0 stepper;
 
-void setup ()
-{
-  spi.begin ();
-  stepper.setupSpi (
-      spi_parameters,
-      tmc51x0::Registers::DeviceModel::TMC5160A);
+void setup() {
+  spi.begin();
+  stepper.setupSpi(spi_parameters, tmc51x0::Registers::DeviceModel::TMC5160A);
 }
 #+END_SRC
 
@@ -100,21 +96,18 @@ UART setup is also caller-owned. Configure the serial port first, then call
 HardwareSerial &uart = Serial2;
 
 const auto uart_parameters = tmc51x0::UartParameters{}
-                                 .withUart (&uart)
-                                 .withEnableTxRxPin (14)
-                                 .withBaudRate (115200)
-                                 .withReplyTimeoutUs (2000)
-                                 .withMaxRetries (1)
-                                 .withDrainLimit (256);
+                                 .withUart(&uart)
+                                 .withEnableTxRxPin(14)
+                                 .withBaudRate(115200)
+                                 .withReplyTimeoutUs(2000)
+                                 .withMaxRetries(1)
+                                 .withDrainLimit(256);
 
 TMC51X0 stepper;
 
-void setup ()
-{
-  uart.begin (115200);
-  stepper.setupUart (
-      uart_parameters,
-      tmc51x0::Registers::DeviceModel::TMC5130A);
+void setup() {
+  uart.begin(115200);
+  stepper.setupUart(uart_parameters, tmc51x0::Registers::DeviceModel::TMC5130A);
 }
 #+END_SRC
 
@@ -140,23 +133,20 @@ Blocking helpers remain available for straightforward sketches:
 For event loops and poll-driven integrations, use =uartBus()= for async access:
 
 #+BEGIN_SRC cpp
-auto &bus = stepper.uartBus ();
-bus.poll ();
+auto &bus = stepper.uartBus();
+bus.poll();
 
-auto start = bus.startRead (tmc51x0::Registers::GconfAddress);
-if (start.ok ())
-  {
-    while (!bus.done ())
-      {
-        bus.poll ();
-      }
-
-    auto result = bus.takeReadResult ();
-    if (result.ok ())
-      {
-        // result.value contains the register contents.
-      }
+auto start = bus.startRead(tmc51x0::Registers::GconfAddress);
+if (start.ok()) {
+  while (!bus.done()) {
+    bus.poll();
   }
+
+  auto result = bus.takeReadResult();
+  if (result.ok()) {
+    // result.value contains the register contents.
+  }
+}
 #+END_SRC
 
 =uartBus()= is the preferred family-style alias. =uartInterface()= remains
@@ -193,18 +183,16 @@ not guaranteed device truth.
 Recommended recovery flow after suspected drift or an external reset:
 
 #+BEGIN_SRC cpp
-stepper.notePossibleMirrorDrift ();
+stepper.notePossibleMirrorDrift();
 
 // Optionally power-cycle or reset the chip externally here.
 
-if (stepper.mirrorResyncRequired ())
-  {
-    bool ok = stepper.recoverFromDeviceReset ();
-    if (!ok)
-      {
-        // Communication is still not healthy.
-      }
+if (stepper.mirrorResyncRequired()) {
+  bool ok = stepper.recoverFromDeviceReset();
+  if (!ok) {
+    // Communication is still not healthy.
   }
+}
 #+END_SRC
 
 Use =recoverIfNeeded()= when your application just needs a single polling-style

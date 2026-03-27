@@ -8,8 +8,8 @@
 #ifndef TMC51X0_CONTROLLER_HPP
 #define TMC51X0_CONTROLLER_HPP
 
-#include "Registers.hpp"
 #include "ControllerParameters.hpp"
+#include "Registers.hpp"
 #include "SwitchParameters.hpp"
 
 class TMC51X0;
@@ -115,7 +115,7 @@ public:
   bool rightStopEvent();
 
 private:
-  Registers* registers_ptr_;
+  Registers *registers_ptr_;
   ControllerParameters setup_controller_parameters_;
   ControllerParameters cached_controller_settings_;
   SwitchParameters setup_switch_parameters_;
@@ -124,7 +124,7 @@ private:
   const static int32_t MAX_POSITIVE_VELOCITY = 8388607;
   const static int32_t VELOCITY_SIGN_CONVERSION = 16777216;
 
-  void initialize(Registers& registers);
+  void initialize(Registers &registers);
   void reinitialize();
   void writeControllerParameters(ControllerParameters parameters);
   void cacheControllerSettings();
@@ -135,5 +135,5 @@ private:
 
   friend class ::TMC51X0;
 };
-}
+} // namespace tmc51x0
 #endif

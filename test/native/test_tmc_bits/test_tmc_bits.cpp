@@ -49,7 +49,7 @@ static void test_field_get_set() {
   TEST_ASSERT_EQUAL_UINT32(0x7u, F::get(r));
 }
 
-int main(int argc, char** argv) {
+int main(int argc, char **argv) {
   (void)argc;
   (void)argv;
 

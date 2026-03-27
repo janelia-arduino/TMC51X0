@@ -10,10 +10,10 @@
 #include "TMC51X0/Interface.hpp"
 #undef private
 
-#include "../../../src/TMC51X0/Registers.cpp"
-#include "../../../src/TMC51X0/Driver.cpp"
 #include "../../../src/TMC51X0/Controller.cpp"
+#include "../../../src/TMC51X0/Driver.cpp"
 #include "../../../src/TMC51X0/Encoder.cpp"
+#include "../../../src/TMC51X0/Registers.cpp"
 
 using namespace tmc51x0;
 
@@ -26,9 +26,7 @@ struct FakeInterface : public Interface {
   bool device_reset_observed{false};
   uint32_t register_image[Registers::AddressCount] = {0};
 
-  FakeInterface() {
-    interface_mode = SpiMode;
-  }
+  FakeInterface() { interface_mode = SpiMode; }
 
   Result<void> writeRegisterResult(uint8_t register_address,
                                    uint32_t data) override {
@@ -66,10 +64,10 @@ struct FakeInterface : public Interface {
   }
 };
 
-void initRegisters(Registers& registers, FakeInterface& interface) {
+void initRegisters(Registers &registers, FakeInterface &interface) {
   registers.initialize(interface);
 }
-}
+} // namespace
 
 void setUp() {}
 
@@ -113,7 +111,7 @@ static void test_driver_reinitialize_replays_latest_high_level_writes(void) {
 
 static void
 test_driver_reinitialize_preserves_custom_automatic_current_control_shape(
-  void) {
+    void) {
   FakeInterface interface;
   Registers registers;
   initRegisters(registers, interface);
@@ -153,11 +151,11 @@ test_controller_reinitialize_replays_latest_configuration_writes(void) {
   controller.reinitialize();
 
   TEST_ASSERT_EQUAL_UINT32(
-    PositionMode, interface.register_image[Registers::RampmodeAddress]);
+      PositionMode, interface.register_image[Registers::RampmodeAddress]);
   TEST_ASSERT_EQUAL_UINT32(12345UL,
                            interface.register_image[Registers::VmaxAddress]);
   TEST_ASSERT_EQUAL_UINT32(
-    99UL, interface.register_image[Registers::TzerowaitAddress]);
+      99UL, interface.register_image[Registers::TzerowaitAddress]);
   TEST_ASSERT_EQUAL_UINT32(456UL,
                            interface.register_image[Registers::VdcminAddress]);
 
@@ -176,9 +174,10 @@ static void test_restore_switch_settings_updates_recovery_state(void) {
   controller.initialize(registers);
 
   SwitchParameters original =
-    SwitchParameters{}.withLeftStopEnabled(true).withLatchEncoderEnabled(true);
+      SwitchParameters{}.withLeftStopEnabled(true).withLatchEncoderEnabled(
+          true);
   SwitchParameters temporary =
-    SwitchParameters{}.withRightStopEnabled(true).withSwapLeftRight(true);
+      SwitchParameters{}.withRightStopEnabled(true).withSwapLeftRight(true);
 
   controller.setupSwitches(original);
   controller.cacheSwitchSettings();
@@ -221,12 +220,12 @@ test_encoder_reinitialize_replays_latest_configuration_writes(void) {
   TEST_ASSERT_EQUAL_UINT16(5000, enc_const.fractional());
 }
 
-int main(int argc, char** argv) {
+int main(int argc, char **argv) {
   UNITY_BEGIN();
 
   RUN_TEST(test_driver_reinitialize_replays_latest_high_level_writes);
   RUN_TEST(
-    test_driver_reinitialize_preserves_custom_automatic_current_control_shape);
+      test_driver_reinitialize_preserves_custom_automatic_current_control_shape);
   RUN_TEST(test_controller_reinitialize_replays_latest_configuration_writes);
   RUN_TEST(test_restore_switch_settings_updates_recovery_state);
   RUN_TEST(test_encoder_reinitialize_replays_latest_configuration_writes);

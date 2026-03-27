@@ -64,9 +64,7 @@ int32_t Controller::readActualVelocity() {
   return actual_velocity;
 }
 
-void Controller::zeroActualPosition() {
-  return writeActualPosition(0);
-}
+void Controller::zeroActualPosition() { return writeActualPosition(0); }
 
 bool Controller::velocityReached() {
   Registers::RampStat ramp_stat;
@@ -86,9 +84,7 @@ void Controller::beginRampToZeroVelocity() {
   writeMaxVelocity(0);
 }
 
-void Controller::endRampToZeroVelocity() {
-  restoreControllerSettings();
-}
+void Controller::endRampToZeroVelocity() { restoreControllerSettings(); }
 
 bool Controller::zeroVelocity() {
   Registers::RampStat ramp_stat;
@@ -155,9 +151,7 @@ void Controller::writeTargetPosition(int32_t position) {
   registers_ptr_->write(Registers::XtargetAddress, position);
 }
 
-void Controller::zeroTargetPosition() {
-  return writeTargetPosition(0);
-}
+void Controller::zeroTargetPosition() { return writeTargetPosition(0); }
 
 void Controller::writeComparePosition(int32_t position) {
   registers_ptr_->write(Registers::XCompareAddress, position);
@@ -231,7 +225,7 @@ bool Controller::rightStopEvent() {
 
 // private
 
-void Controller::initialize(Registers& registers) {
+void Controller::initialize(Registers &registers) {
   registers_ptr_ = &registers;
 
   reinitialize();
@@ -280,31 +274,31 @@ void Controller::cacheControllerSettings() {
   (void)registers_ptr_->read(Registers::SwModeAddress);
 
   cached_controller_settings_.ramp_mode =
-    (RampMode)registers_ptr_->getStored(Registers::RampmodeAddress);
+      (RampMode)registers_ptr_->getStored(Registers::RampmodeAddress);
   Registers::SwMode sw_mode;
   sw_mode.raw = registers_ptr_->getStored(Registers::SwModeAddress);
   cached_controller_settings_.stop_mode = (StopMode)sw_mode.en_softstop();
   cached_controller_settings_.max_velocity =
-    registers_ptr_->getStored(Registers::VmaxAddress);
+      registers_ptr_->getStored(Registers::VmaxAddress);
   cached_controller_settings_.max_acceleration =
-    registers_ptr_->getStored(Registers::AmaxAddress);
+      registers_ptr_->getStored(Registers::AmaxAddress);
   cached_controller_settings_.start_velocity =
-    registers_ptr_->getStored(Registers::VstartAddress);
+      registers_ptr_->getStored(Registers::VstartAddress);
   cached_controller_settings_.stop_velocity =
-    registers_ptr_->getStored(Registers::VstopAddress);
+      registers_ptr_->getStored(Registers::VstopAddress);
   cached_controller_settings_.first_velocity =
-    registers_ptr_->getStored(Registers::Velocity1Address);
+      registers_ptr_->getStored(Registers::Velocity1Address);
   cached_controller_settings_.first_acceleration =
-    registers_ptr_->getStored(Registers::Acceleration1Address);
+      registers_ptr_->getStored(Registers::Acceleration1Address);
   cached_controller_settings_.max_deceleration =
-    registers_ptr_->getStored(Registers::DmaxAddress);
+      registers_ptr_->getStored(Registers::DmaxAddress);
   cached_controller_settings_.first_deceleration =
-    registers_ptr_->getStored(Registers::Deceleration1Address);
+      registers_ptr_->getStored(Registers::Deceleration1Address);
   cached_controller_settings_.zero_wait_duration =
-    registers_ptr_->getStored(Registers::TzerowaitAddress);
+      registers_ptr_->getStored(Registers::TzerowaitAddress);
   cached_controller_settings_.stall_stop_enabled = sw_mode.sg_stop();
   cached_controller_settings_.min_dc_step_velocity =
-    registers_ptr_->getStored(Registers::VdcminAddress);
+      registers_ptr_->getStored(Registers::VdcminAddress);
 }
 
 void Controller::restoreControllerSettings() {

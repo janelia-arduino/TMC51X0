@@ -19,9 +19,7 @@ Driver::Driver() {
   cached_pwm_reg_ = 4;
 }
 
-void Driver::setup() {
-  writeDriverParameters(setup_driver_parameters_);
-}
+void Driver::setup() { writeDriverParameters(setup_driver_parameters_); }
 
 void Driver::setup(tmc51x0::DriverParameters parameters) {
   setup_driver_parameters_ = parameters;
@@ -315,7 +313,7 @@ void Driver::writeDcStallGuardThreshold(uint8_t dc_stall_guard_threshold) {
 
 // private
 
-void Driver::initialize(Registers& registers) {
+void Driver::initialize(Registers &registers) {
   registers_ptr_ = &registers;
 
   reinitialize();
@@ -390,7 +388,7 @@ void Driver::cacheDriverSettings() {
   (void)registers_ptr_->read(Registers::ChopconfAddress);
 
   cached_driver_settings_.global_current_scaler =
-    registers_ptr_->getStored(Registers::GlobalScalerAddress);
+      registers_ptr_->getStored(Registers::GlobalScalerAddress);
   Registers::IholdIrun ihold_irun;
   ihold_irun.raw = registers_ptr_->getStored(Registers::IholdIrunAddress);
   cached_driver_settings_.run_current = ihold_irun.irun();
@@ -401,7 +399,7 @@ void Driver::cacheDriverSettings() {
   cached_driver_settings_.pwm_offset = pwmconf.pwm_ofs();
   cached_driver_settings_.pwm_gradient = pwmconf.pwm_grad();
   cached_driver_settings_.automatic_current_control_enabled =
-    pwmconf.pwm_autoscale();
+      pwmconf.pwm_autoscale();
   cached_pwm_autograd_ = pwmconf.pwm_autograd();
   cached_pwm_reg_ = pwmconf.pwm_reg();
   Registers::Gconf gconf;
@@ -412,28 +410,28 @@ void Driver::cacheDriverSettings() {
   chopconf.raw = registers_ptr_->getStored(Registers::ChopconfAddress);
   cached_driver_settings_.chopper_mode = (ChopperMode)chopconf.chm();
   cached_driver_settings_.stealth_chop_threshold =
-    registers_ptr_->getStored(Registers::TpwmthrsAddress);
+      registers_ptr_->getStored(Registers::TpwmthrsAddress);
   cached_driver_settings_.stealth_chop_enabled = gconf.en_pwm_mode();
   cached_driver_settings_.cool_step_threshold =
-    registers_ptr_->getStored(Registers::TcoolthrsAddress);
+      registers_ptr_->getStored(Registers::TcoolthrsAddress);
   Registers::Coolconf coolconf;
   coolconf.raw = registers_ptr_->getStored(Registers::CoolconfAddress);
   cached_driver_settings_.cool_step_min = coolconf.semin();
   cached_driver_settings_.cool_step_max = coolconf.semax();
   cached_driver_settings_.cool_step_enabled =
-    not(coolconf.semin() == SEMIN_OFF);
+      not(coolconf.semin() == SEMIN_OFF);
   cached_driver_settings_.high_velocity_threshold =
-    registers_ptr_->getStored(Registers::ThighAddress);
+      registers_ptr_->getStored(Registers::ThighAddress);
   cached_driver_settings_.high_velocity_fullstep_enabled = chopconf.vhighfs();
   cached_driver_settings_.high_velocity_chopper_switch_enabled =
-    chopconf.vhighchm();
+      chopconf.vhighchm();
   cached_driver_settings_.stall_guard_threshold = coolconf.sgt();
   cached_driver_settings_.stall_guard_filter_enabled = coolconf.sfilt();
   cached_driver_settings_.short_to_ground_protection_enabled =
-    !chopconf.diss2g();
+      !chopconf.diss2g();
   cached_driver_settings_.enabled_toff = enabled_toff_;
   cached_driver_settings_.comparator_blank_time =
-    (ComparatorBlankTime)chopconf.tbl();
+      (ComparatorBlankTime)chopconf.tbl();
   Registers::Dcctrl dcctrl;
   dcctrl.raw = registers_ptr_->getStored(Registers::DcctrlAddress);
   cached_driver_settings_.dc_time = dcctrl.dc_time();

@@ -82,9 +82,7 @@ void TMC51X0::disablePower() {
   }
 }
 
-void TMC51X0::notePossibleMirrorDrift() {
-  registers.notePossibleDrift();
-}
+void TMC51X0::notePossibleMirrorDrift() { registers.notePossibleDrift(); }
 
 bool TMC51X0::mirrorResyncRequired() const {
   return registers.resyncRequired();
@@ -98,9 +96,7 @@ bool TMC51X0::resyncReadableConfiguration() {
   return registers.resyncReadableConfiguration();
 }
 
-void TMC51X0::reinitialize() {
-  (void)recoverFromDeviceReset();
-}
+void TMC51X0::reinitialize() { (void)recoverFromDeviceReset(); }
 
 bool TMC51X0::recoverFromDeviceReset() {
   if (!registers.deviceModelKnown()) {
@@ -236,7 +232,7 @@ bool TMC51X0::homed() {
     Registers::RampStat ramp_stat;
     ramp_stat.raw = registers.read(Registers::RampStatAddress);
     const bool stopped_by_stall =
-      ramp_stat.event_stop_sg() || ramp_stat.status_sg();
+        ramp_stat.event_stop_sg() || ramp_stat.status_sg();
 
     controller.writeRampMode(HoldMode);
     if (stopped_by_stall) {
@@ -282,7 +278,7 @@ bool TMC51X0::finishSetupOrRecovery_() {
   const Registers::DeviceModel model_before = registers.deviceModel();
   const bool version_ok = communicating();
   const bool model_changed =
-    version_ok && (registers.deviceModel() != model_before);
+      version_ok && (registers.deviceModel() != model_before);
   if (model_changed) {
     registers.assumeDeviceReset();
     driver.reinitialize();
@@ -293,7 +289,7 @@ bool TMC51X0::finishSetupOrRecovery_() {
   }
 
   const bool readable_ok =
-    version_ok ? registers.resyncReadableConfiguration() : false;
+      version_ok ? registers.resyncReadableConfiguration() : false;
   if (version_ok && readable_ok) {
     registers.clearResyncRequired();
   }

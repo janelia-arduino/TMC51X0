@@ -24,21 +24,21 @@ struct ConverterParameters {
   // "Named parameter" style helpers
 
   constexpr ConverterParameters withClockFrequencyMHz(uint8_t value) const {
-    return ConverterParameters(
-      value, microsteps_per_real_position_unit, seconds_per_real_velocity_unit);
+    return ConverterParameters(value, microsteps_per_real_position_unit,
+                               seconds_per_real_velocity_unit);
   }
 
   constexpr ConverterParameters
   withMicrostepsPerRealPositionUnit(uint32_t value) const {
-    return ConverterParameters(
-      clock_frequency_mhz, value, seconds_per_real_velocity_unit);
+    return ConverterParameters(clock_frequency_mhz, value,
+                               seconds_per_real_velocity_unit);
   }
 
   constexpr ConverterParameters
   withSecondsPerRealVelocityUnit(uint32_t value) const {
-    return ConverterParameters(
-      clock_frequency_mhz, microsteps_per_real_position_unit, value);
+    return ConverterParameters(clock_frequency_mhz,
+                               microsteps_per_real_position_unit, value);
   }
 };
-}
+} // namespace tmc51x0
 #endif

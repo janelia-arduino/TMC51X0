@@ -26,17 +26,13 @@ enum class UartError : uint8_t {
 template <typename T> struct Result {
   T value{};
   UartError error{UartError::None};
-  constexpr bool ok() const {
-    return error == UartError::None;
-  }
+  constexpr bool ok() const { return error == UartError::None; }
 };
 
 // Specialization for "no value".
 template <> struct Result<void> {
   UartError error{UartError::None};
-  constexpr bool ok() const {
-    return error == UartError::None;
-  }
+  constexpr bool ok() const { return error == UartError::None; }
 };
 } // namespace tmc51x0
 
