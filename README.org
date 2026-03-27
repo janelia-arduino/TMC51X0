@@ -6,7 +6,7 @@
 
 * Library Information
 - Name :: TMC51X0
-- Version :: 4.0.1
+- Version :: 4.0.3
 - License :: BSD
 - URL :: https://github.com/janelia-arduino/TMC51X0
 - Author :: Peter Polidoro

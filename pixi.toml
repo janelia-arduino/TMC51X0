@@ -1,6 +1,6 @@
 [workspace]
 name = "TMC51X0"
-version = "4.0.1"
+version = "4.0.3"
 description = "Arduino library for the Trinamic TMC5130/TMC5160 controller+driver family."
 authors = ["Peter Polidoro <peter@polidoro.io>"]
 channels = ["conda-forge"]
