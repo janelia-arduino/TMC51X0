@@ -101,10 +101,9 @@ v3-style code that still works in v4:
 ```cpp
 stepper.setupUart(uart_parameters);
 
-while (!stepper.communicating())
-  {
-    delay(1000);
-  }
+while (!stepper.communicating()) {
+  delay(1000);
+}
 
 uint32_t gconf = stepper.registers.read(tmc51x0::Registers::GconfAddress);
 stepper.registers.write(tmc51x0::Registers::GconfAddress, gconf);
@@ -113,14 +112,11 @@ stepper.registers.write(tmc51x0::Registers::GconfAddress, gconf);
 Recommended v4 adjustment when the target chip is known:
 
 ```cpp
-stepper.setupUart(
-    uart_parameters,
-    tmc51x0::Registers::DeviceModel::TMC5160A);
+stepper.setupUart(uart_parameters, tmc51x0::Registers::DeviceModel::TMC5160A);
 
-while (!stepper.communicating())
-  {
-    delay(1000);
-  }
+while (!stepper.communicating()) {
+  delay(1000);
+}
 
 uint32_t gconf = stepper.registers.read(tmc51x0::Registers::GconfAddress);
 stepper.registers.write(tmc51x0::Registers::GconfAddress, gconf);
@@ -140,15 +136,13 @@ auto &uart = stepper.uartInterface();
 uart.poll();
 
 auto start = uart.startReadRegister(tmc51x0::Registers::GconfAddress);
-if (start.ok())
-  {
-    while (!uart.resultReady())
-      {
-        uart.poll();
-      }
-
-    auto result = uart.takeReadResult();
+if (start.ok()) {
+  while (!uart.resultReady()) {
+    uart.poll();
   }
+
+  auto result = uart.takeReadResult();
+}
 ```
 
 Preferred v4 style:
@@ -158,19 +152,16 @@ auto &bus = stepper.uartBus();
 bus.poll();
 
 auto start = bus.startRead(tmc51x0::Registers::GconfAddress);
-if (start.ok())
-  {
-    while (!bus.done())
-      {
-        bus.poll();
-      }
-
-    auto result = bus.takeReadResult();
-    if (!result.ok())
-      {
-        // Handle result.error.
-      }
+if (start.ok()) {
+  while (!bus.done()) {
+    bus.poll();
   }
+
+  auto result = bus.takeReadResult();
+  if (!result.ok()) {
+    // Handle result.error.
+  }
+}
 ```
 
 Why update:
@@ -187,14 +178,12 @@ Recommended v4 pattern:
 
 ```cpp
 auto result = stepper.readRegisterResult(tmc51x0::Registers::GconfAddress);
-if (!result.ok())
-  {
-    if (result.error == tmc51x0::UartError::ReplyTimeout)
-      {
-        // Retry or flag transport failure.
-      }
-    return;
+if (!result.ok()) {
+  if (result.error == tmc51x0::UartError::ReplyTimeout) {
+    // Retry or flag transport failure.
   }
+  return;
+}
 
 uint32_t gconf = result.value;
 ```
@@ -212,14 +201,12 @@ stepper.notePossibleMirrorDrift();
 
 // Optionally perform the external reset or power cycle here.
 
-if (stepper.mirrorResyncRequired())
-  {
-    bool ok = stepper.recoverFromDeviceReset();
-    if (!ok)
-      {
-        // Transport is still unhealthy.
-      }
+if (stepper.mirrorResyncRequired()) {
+  bool ok = stepper.recoverFromDeviceReset();
+  if (!ok) {
+    // Transport is still unhealthy.
   }
+}
 ```
 
 For polling maintenance loops:
@@ -245,18 +232,16 @@ Recommended v4 pattern:
 ```cpp
 stepper.beginHomeToStall(home_parameters, stall_parameters);
 
-while ((!stepper.homed()) && (!stepper.homeFailed()))
-  {
-    (void)stepper.recoverIfUnhealthy();
-    delay(10);
-  }
+while ((!stepper.homed()) && (!stepper.homeFailed())) {
+  (void)stepper.recoverIfUnhealthy();
+  delay(10);
+}
 
-if (stepper.homeFailed())
-  {
-    // Motion stopped without a confirmed stall-stop event.
-    stepper.endHome();
-    return;
-  }
+if (stepper.homeFailed()) {
+  // Motion stopped without a confirmed stall-stop event.
+  stepper.endHome();
+  return;
+}
 
 stepper.endHome();
 ```
@@ -308,10 +293,10 @@ Recommended pattern:
 
 ```cpp
 tmc51x0::HealthStatus health = stepper.readHealthStatus();
-if (!health.communication_ok || health.driver_error || health.charge_pump_undervoltage)
-  {
-    (void)stepper.recoverIfUnhealthy();
-  }
+if (!health.communication_ok || health.driver_error ||
+    health.charge_pump_undervoltage) {
+  (void)stepper.recoverIfUnhealthy();
+}
 ```
 
 This is especially relevant if your v3-era project sometimes power-cycled the
@@ -329,17 +314,13 @@ difference matter earlier in setup and recovery.
 Recommended pattern:
 
 ```cpp
-stepper.setupSpi(
-    spi_parameters,
-    tmc51x0::Registers::DeviceModel::TMC5130A);
+stepper.setupSpi(spi_parameters, tmc51x0::Registers::DeviceModel::TMC5130A);
 ```
 
 or:
 
 ```cpp
-stepper.setupUart(
-    uart_parameters,
-    tmc51x0::Registers::DeviceModel::TMC5160A);
+stepper.setupUart(uart_parameters, tmc51x0::Registers::DeviceModel::TMC5160A);
 ```
 
 ## Migration checklist

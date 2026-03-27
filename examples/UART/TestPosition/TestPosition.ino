@@ -1,22 +1,22 @@
 #include <TMC51X0.hpp>
 
 #if !defined(ARDUINO_ARCH_RP2040)
-HardwareSerial& uart = Serial2;
+HardwareSerial &uart = Serial2;
 #else
-SerialUART& uart = Serial2;
+SerialUART &uart = Serial2;
 size_t TX_PIN = 4;
 size_t RX_PIN = 5;
 #endif
 
 const auto uart_parameters =
-  tmc51x0::UartParameters{}.withUart(&uart).withEnableTxRxPin(14);
+    tmc51x0::UartParameters{}.withUart(&uart).withEnableTxRxPin(14);
 
 const uint32_t UART_BAUD_RATE = 115200;
 
 const auto converter_parameters =
-  tmc51x0::ConverterParameters{}
-    //.withClockFrequencyMHz(16) // (typical external clock)
-    .withMicrostepsPerRealPositionUnit(4881);
+    tmc51x0::ConverterParameters{}
+        //.withClockFrequencyMHz(16) // (typical external clock)
+        .withMicrostepsPerRealPositionUnit(4881);
 // clock_frequency_mhz default is 12 (internal clock)
 // set clock_frequency_mhz if using external clock instead
 // 200 fullsteps per revolution for many steppers * 256 microsteps per fullstep
@@ -24,24 +24,24 @@ const auto converter_parameters =
 // one "real unit" in this example is one millimeters of linear travel
 
 const auto driver_parameters_real =
-  tmc51x0::DriverParameters{}
-    .withRunCurrent(100) // (percent)
-    .withPwmOffset(30)   // (percent)
-    .withPwmGradient(10) // (percent)
-    .withMotorDirection(tmc51x0::ReverseDirection)
-    .withStealthChopThreshold(100); // (millimeters/s)
+    tmc51x0::DriverParameters{}
+        .withRunCurrent(100) // (percent)
+        .withPwmOffset(30)   // (percent)
+        .withPwmGradient(10) // (percent)
+        .withMotorDirection(tmc51x0::ReverseDirection)
+        .withStealthChopThreshold(100); // (millimeters/s)
 
 const auto controller_parameters_real =
-  tmc51x0::ControllerParameters{}
-    .withRampMode(tmc51x0::PositionMode)
-    .withMaxVelocity(20)        // (millimeters/s)
-    .withMaxAcceleration(2)     // ((millimeters/s)/s)
-    .withStartVelocity(1)       // (millimeters/s)
-    .withStopVelocity(5)        // (millimeters/s)
-    .withFirstVelocity(10)      // (millimeters/s)
-    .withFirstAcceleration(10)  // ((millimeters/s)/s)
-    .withMaxDeceleration(20)    // ((millimeters/s)/s)
-    .withFirstDeceleration(25); // ((millimeters/s)/s)
+    tmc51x0::ControllerParameters{}
+        .withRampMode(tmc51x0::PositionMode)
+        .withMaxVelocity(20)        // (millimeters/s)
+        .withMaxAcceleration(2)     // ((millimeters/s)/s)
+        .withStartVelocity(1)       // (millimeters/s)
+        .withStopVelocity(5)        // (millimeters/s)
+        .withFirstVelocity(10)      // (millimeters/s)
+        .withFirstAcceleration(10)  // ((millimeters/s)/s)
+        .withMaxDeceleration(20)    // ((millimeters/s)/s)
+        .withFirstDeceleration(25); // ((millimeters/s)/s)
 
 const int32_t MIN_TARGET_POSITION = 20;  // millimeters
 const int32_t MAX_TARGET_POSITION = 600; // millimeters
@@ -67,18 +67,18 @@ void setup() {
   stepper.converter.setup(converter_parameters);
 
   tmc51x0::DriverParameters driver_parameters_chip =
-    stepper.converter.driverParametersRealToChip(driver_parameters_real);
+      stepper.converter.driverParametersRealToChip(driver_parameters_real);
   stepper.driver.setup(driver_parameters_chip);
   // stepper.driver.setEnableHardwarePin(ENABLE_HARDWARE_PIN);
 
   tmc51x0::ControllerParameters controller_parameters_chip =
-    stepper.converter.controllerParametersRealToChip(
-      controller_parameters_real);
+      stepper.converter.controllerParametersRealToChip(
+          controller_parameters_real);
   stepper.controller.setup(controller_parameters_chip);
 
   while (!stepper.communicating()) {
     Serial.println(
-      "No communication detected, check motor power and connections.");
+        "No communication detected, check motor power and connections.");
     delay(LOOP_DELAY);
   }
 
@@ -104,7 +104,7 @@ void setup() {
 
   target_position = MIN_TARGET_POSITION;
   stepper.controller.writeTargetPosition(
-    stepper.converter.positionRealToChip(target_position));
+      stepper.converter.positionRealToChip(target_position));
 }
 
 void loop() {
@@ -116,19 +116,19 @@ void loop() {
 
   int32_t actual_velocity_chip = stepper.controller.readActualVelocity();
   int32_t actual_velocity_real =
-    stepper.converter.velocityChipToReal(actual_velocity_chip);
+      stepper.converter.velocityChipToReal(actual_velocity_chip);
   Serial.print("actual_velocity (millimeters per second): ");
   Serial.println(actual_velocity_real);
 
   int32_t actual_position_chip = stepper.controller.readActualPosition();
   int32_t actual_position_real =
-    stepper.converter.positionChipToReal(actual_position_chip);
+      stepper.converter.positionChipToReal(actual_position_chip);
   Serial.print("actual position (millimeters): ");
   Serial.println(actual_position_real);
 
   int32_t target_position_chip = stepper.controller.readTargetPosition();
   int32_t target_position_real =
-    stepper.converter.positionChipToReal(target_position_chip);
+      stepper.converter.positionChipToReal(target_position_chip);
   Serial.print("target position (millimeters): ");
   Serial.println(target_position_real);
   Serial.println("--------------------------");
@@ -144,7 +144,7 @@ void loop() {
       target_position = MIN_TARGET_POSITION;
     }
     stepper.controller.writeTargetPosition(
-      stepper.converter.positionRealToChip(target_position));
+        stepper.converter.positionRealToChip(target_position));
   }
 
   Serial.println("--------------------------");

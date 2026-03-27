@@ -1,16 +1,16 @@
 #include <TMC51X0.hpp>
 
 #if defined(ARDUINO_ARCH_RP2040)
-SPIClassRP2040& spi = SPI1;
+SPIClassRP2040 &spi = SPI1;
 size_t SCK_PIN = 10;
 size_t TX_PIN = 11;
 size_t RX_PIN = 12;
 #else
-SPIClass& spi = SPI;
+SPIClass &spi = SPI;
 #endif
 
 const auto spi_parameters =
-  tmc51x0::SpiParameters{}.withSpi(&spi).withChipSelectPin(8);
+    tmc51x0::SpiParameters{}.withSpi(&spi).withChipSelectPin(8);
 
 const uint32_t SERIAL_BAUD_RATE = 115200;
 const uint16_t DELAY = 4000;
@@ -39,7 +39,7 @@ void setup() {
 
   while (!stepper.communicating()) {
     Serial.println(
-      "No communication detected, check motor power and connections.");
+        "No communication detected, check motor power and connections.");
     delay(DELAY);
   }
 

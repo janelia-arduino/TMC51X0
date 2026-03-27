@@ -1,16 +1,16 @@
 #include <TMC51X0.hpp>
 
 #if defined(ARDUINO_ARCH_RP2040)
-SPIClassRP2040& spi = SPI;
+SPIClassRP2040 &spi = SPI;
 size_t SCK_PIN = 18;
 size_t TX_PIN = 19;
 size_t RX_PIN = 20;
 #else
-SPIClass& spi = SPI;
+SPIClass &spi = SPI;
 #endif
 
 const auto spi_parameters =
-  tmc51x0::SpiParameters{}.withSpi(&spi).withChipSelectPin(8);
+    tmc51x0::SpiParameters{}.withSpi(&spi).withChipSelectPin(8);
 
 const size_t ENABLE_HARDWARE_PIN = 4;
 
@@ -36,7 +36,7 @@ void setup() {
 
   while (!stepper.communicating()) {
     Serial.println(
-      "No communication detected, check motor power and connections.");
+        "No communication detected, check motor power and connections.");
     delay(LOOP_DELAY);
   }
 

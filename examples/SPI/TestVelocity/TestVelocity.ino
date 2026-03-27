@@ -1,41 +1,41 @@
 #include <TMC51X0.hpp>
 
 #if defined(ARDUINO_ARCH_RP2040)
-SPIClassRP2040& spi = SPI;
+SPIClassRP2040 &spi = SPI;
 size_t SCK_PIN = 18;
 size_t TX_PIN = 19;
 size_t RX_PIN = 20;
 #else
-SPIClass& spi = SPI;
+SPIClass &spi = SPI;
 #endif
 
 const auto spi_parameters =
-  tmc51x0::SpiParameters{}.withSpi(&spi).withChipSelectPin(8);
+    tmc51x0::SpiParameters{}.withSpi(&spi).withChipSelectPin(8);
 
 const auto converter_parameters =
-  tmc51x0::ConverterParameters{}
-    //.withClockFrequencyMHz(16) // (typical external clock)
-    .withMicrostepsPerRealPositionUnit(51200)
-    .withSecondsPerRealVelocityUnit(60);
+    tmc51x0::ConverterParameters{}
+        //.withClockFrequencyMHz(16) // (typical external clock)
+        .withMicrostepsPerRealPositionUnit(51200)
+        .withSecondsPerRealVelocityUnit(60);
 // clock_frequency_mhz default is 12 (internal clock)
 // set clock_frequency_mhz if using external clock instead
-// 200 fullsteps per revolution for many steppers * 256 microsteps per fullstep = 51200
-// one "real unit" in this example is one rotation of the motor shaft
+// 200 fullsteps per revolution for many steppers * 256 microsteps per fullstep
+// = 51200 one "real unit" in this example is one rotation of the motor shaft
 // rotations/s -> rotations/min
 // rotations/(s^2) -> (rotations/min)/s
 
 const auto driver_parameters_real =
-  tmc51x0::DriverParameters{}
-    .withRunCurrent(100)           // (percent)
-    .withPwmOffset(30)             // (percent)
-    .withPwmGradient(10)           // (percent)
-    .withStealthChopThreshold(60); // (rotations/s)
+    tmc51x0::DriverParameters{}
+        .withRunCurrent(100)           // (percent)
+        .withPwmOffset(30)             // (percent)
+        .withPwmGradient(10)           // (percent)
+        .withStealthChopThreshold(60); // (rotations/s)
 
 const auto controller_parameters_real =
-  tmc51x0::ControllerParameters{}
-    .withRampMode(tmc51x0::VelocityPositiveMode)
-    .withMaxVelocity(45)      // (rotations/min)
-    .withMaxAcceleration(45); // ((rotations/min)/s)
+    tmc51x0::ControllerParameters{}
+        .withRampMode(tmc51x0::VelocityPositiveMode)
+        .withMaxVelocity(45)      // (rotations/min)
+        .withMaxAcceleration(45); // ((rotations/min)/s)
 
 const uint32_t SERIAL_BAUD_RATE = 115200;
 const uint16_t LOOP_DELAY = 4000;
@@ -57,17 +57,17 @@ void setup() {
   stepper.converter.setup(converter_parameters);
 
   tmc51x0::DriverParameters driver_parameters_chip =
-    stepper.converter.driverParametersRealToChip(driver_parameters_real);
+      stepper.converter.driverParametersRealToChip(driver_parameters_real);
   stepper.driver.setup(driver_parameters_chip);
 
   tmc51x0::ControllerParameters controller_parameters_chip =
-    stepper.converter.controllerParametersRealToChip(
-      controller_parameters_real);
+      stepper.converter.controllerParametersRealToChip(
+          controller_parameters_real);
   stepper.controller.setup(controller_parameters_chip);
 
   while (!stepper.communicating()) {
     Serial.println(
-      "No communication detected, check motor power and connections.");
+        "No communication detected, check motor power and connections.");
     delay(LOOP_DELAY);
   }
 
@@ -97,7 +97,7 @@ void loop() {
   Serial.print("target_velocity (rotations per minute): ");
   Serial.println(controller_parameters_real.max_velocity);
   uint32_t chip_velocity = stepper.converter.velocityRealToChip(
-    controller_parameters_real.max_velocity);
+      controller_parameters_real.max_velocity);
   Serial.print("chip_velocity (chip units): ");
   Serial.println(chip_velocity);
   Serial.println("--------------------------");
@@ -106,7 +106,7 @@ void loop() {
   Serial.print("actual_velocity (chip units): ");
   Serial.println(actual_velocity_chip);
   uint32_t actual_velocity_real =
-    stepper.converter.velocityChipToReal(actual_velocity_chip);
+      stepper.converter.velocityChipToReal(actual_velocity_chip);
   Serial.print("actual_velocity (rotations per minute): ");
   Serial.println(actual_velocity_real);
   Serial.println("--------------------------");
@@ -115,7 +115,7 @@ void loop() {
   Serial.print("actual position (chip units): ");
   Serial.println(actual_position_chip);
   int32_t actual_position_real =
-    stepper.converter.positionChipToReal(actual_position_chip);
+      stepper.converter.positionChipToReal(actual_position_chip);
   Serial.print("actual position (rotations): ");
   Serial.println(actual_position_real);
   Serial.println("--------------------------");

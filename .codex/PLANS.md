@@ -103,3 +103,5 @@ Pixi equivalents are acceptable when Pixi is installed.
   - added release-status notes to `README.org`, bench-status recording to `docs/HARDWARE_VALIDATION.md`, and a top-level `CHANGELOG.md`
   - ran full-repo clang-format and completed the release-check validation successfully on 2026-03-24
   - synced `.clang-format` to match `TCA6408`, added a `pixi run check-format` alias alongside the existing formatting tasks, reformatted the repo, and bumped version metadata to `4.0.1` on 2026-03-26
+  - extended `tools/clang_format_all.py` so format-all / format-check now also scan tracked `.org` and `.md` files for supported embedded C-family code blocks and format those snippets with the repo `.clang-format`
+  - added `test/test_clang_format_all.py` regression coverage for Org and Markdown embedded block formatting, unsupported-language no-op behavior, indentation preservation, and idempotence

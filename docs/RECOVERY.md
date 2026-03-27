@@ -29,9 +29,7 @@ If you already know the target chip, pass it to `setupSpi(...)` or
 successful identity read:
 
 ```cpp
-stepper.setupSpi(
-    spi_parameters,
-    tmc51x0::Registers::DeviceModel::TMC5160A);
+stepper.setupSpi(spi_parameters, tmc51x0::Registers::DeviceModel::TMC5160A);
 ```
 
 If your hardware supervisor, power-good logic, or fault handling code suspects
@@ -43,14 +41,12 @@ stepper.notePossibleMirrorDrift();
 
 // Optionally power-cycle the chip externally here.
 
-if (stepper.mirrorResyncRequired())
-  {
-    bool ok = stepper.recoverFromDeviceReset();
-    if (!ok)
-      {
-        // Communication is still not healthy.
-      }
+if (stepper.mirrorResyncRequired()) {
+  bool ok = stepper.recoverFromDeviceReset();
+  if (!ok) {
+    // Communication is still not healthy.
   }
+}
 ```
 
 For polling-style maintenance code, `recoverIfNeeded()` offers a single call:
@@ -74,8 +70,8 @@ signals look bad, and then runs the normal recovery path if needed.
 Advanced code can inspect the lower-level mirror directly:
 
 ```cpp
-auto confidence = stepper.registers.storedConfidence(
-    tmc51x0::Registers::ChopconfAddress);
+auto confidence =
+    stepper.registers.storedConfidence(tmc51x0::Registers::ChopconfAddress);
 ```
 
 Readable configuration registers can also be refreshed explicitly:

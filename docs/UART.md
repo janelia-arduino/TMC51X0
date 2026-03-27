@@ -87,18 +87,15 @@ The typical loop shape is:
 auto &bus = stepper.uartBus();
 bus.poll();
 
-if (!in_flight)
-  {
-    auto start = bus.startRead(tmc51x0::Registers::GconfAddress);
-    if (start.ok())
-      {
-        in_flight = true;
-      }
+if (!in_flight) {
+  auto start = bus.startRead(tmc51x0::Registers::GconfAddress);
+  if (start.ok()) {
+    in_flight = true;
   }
+}
 
-if (in_flight && bus.done())
-  {
-    auto result = bus.takeReadResult();
-    in_flight = false;
-  }
+if (in_flight && bus.done()) {
+  auto result = bus.takeReadResult();
+  in_flight = false;
+}
 ```

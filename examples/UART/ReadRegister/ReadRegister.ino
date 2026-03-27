@@ -1,15 +1,15 @@
 #include <TMC51X0.hpp>
 
 #if !defined(ARDUINO_ARCH_RP2040)
-HardwareSerial& uart = Serial2;
+HardwareSerial &uart = Serial2;
 #else
-SerialUART& uart = Serial2;
+SerialUART &uart = Serial2;
 size_t TX_PIN = 4;
 size_t RX_PIN = 5;
 #endif
 
 const auto uart_parameters =
-  tmc51x0::UartParameters{}.withUart(&uart).withEnableTxRxPin(14);
+    tmc51x0::UartParameters{}.withUart(&uart).withEnableTxRxPin(14);
 
 const uint32_t UART_BAUD_RATE = 115200;
 
@@ -32,7 +32,7 @@ void setup() {
 
   while (!stepper.communicating()) {
     Serial.println(
-      "No communication detected, check motor power and connections.");
+        "No communication detected, check motor power and connections.");
     delay(LOOP_DELAY);
   }
 }
