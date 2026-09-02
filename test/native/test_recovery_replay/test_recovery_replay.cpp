@@ -220,13 +220,107 @@ test_encoder_reinitialize_replays_latest_configuration_writes(void) {
   TEST_ASSERT_EQUAL_UINT16(5000, enc_const.fractional());
 }
 
+// Controller::initialize() applies the default ControllerParameters before the
+// caller has said anything, so those defaults have to describe a STOPPED motor.
+// A default of VelocityPositiveMode with a non-zero max_velocity commanded the
+// chip to turn from the moment the transport came up -- about 9.5 microsteps/s
+// at 16 MHz, observed walking XACTUAL on bench hardware while the driver was
+// still disabled.
+static void test_controller_initialize_leaves_the_motor_stopped(void) {
+  FakeInterface interface;
+  Registers registers;
+  initRegisters(registers, interface);
+
+  Controller controller;
+  controller.initialize(registers);
+
+  TEST_ASSERT_EQUAL_UINT32(
+      HoldMode, interface.register_image[Registers::RampmodeAddress]);
+  TEST_ASSERT_EQUAL_UINT32(0UL,
+                           interface.register_image[Registers::VmaxAddress]);
+  TEST_ASSERT_EQUAL_UINT32(0UL,
+                           interface.register_image[Registers::XactualAddress]);
+  TEST_ASSERT_EQUAL_UINT32(0UL,
+                           interface.register_image[Registers::XtargetAddress]);
+
+  // And the defaults themselves, so a future edit cannot reintroduce a
+  // ramp mode that turns the motor.
+  const ControllerParameters defaults;
+  TEST_ASSERT_EQUAL_INT(HoldMode, defaults.ramp_mode);
+  TEST_ASSERT_EQUAL_UINT32(0UL, defaults.max_velocity);
+}
+
+// Recovery restores configuration; it does not resume motion. A position ramp
+// mode cannot start a move after reinitialize() has zeroed XACTUAL and XTARGET,
+// so it is replayed faithfully -- but a velocity ramp mode would command the
+// motor as soon as the transport came back.
+static void test_controller_reinitialize_does_not_resume_velocity_motion(void) {
+  FakeInterface interface;
+  Registers registers;
+  initRegisters(registers, interface);
+
+  Controller controller;
+  controller.initialize(registers);
+
+  controller.writeRampMode(VelocityPositiveMode);
+  controller.writeMaxVelocity(54321);
+
+  registers.assumeDeviceReset();
+  controller.reinitialize();
+
+  TEST_ASSERT_EQUAL_UINT32(
+      HoldMode, interface.register_image[Registers::RampmodeAddress]);
+  // The configured velocity is still there for the caller's next move.
+  TEST_ASSERT_EQUAL_UINT32(54321UL,
+                           interface.register_image[Registers::VmaxAddress]);
+}
+
+// VSTOP and D1 must never be zero in positioning mode -- the datasheet says so
+// for both, "even if V1=0". The chip does not fault on a zero; it crawls at
+// about VSTOP and never reaches the target. A real-unit value that rounds down
+// through the converter is the easy way to get there by accident.
+static void test_forbidden_zero_ramp_parameters_are_clamped(void) {
+  FakeInterface interface;
+  Registers registers;
+  initRegisters(registers, interface);
+
+  Controller controller;
+  controller.initialize(registers);
+
+  controller.writeStopVelocity(0);
+  controller.writeFirstDeceleration(0);
+
+  TEST_ASSERT_EQUAL_UINT32(1UL,
+                           interface.register_image[Registers::VstopAddress]);
+  TEST_ASSERT_EQUAL_UINT32(
+      1UL, interface.register_image[Registers::Deceleration1Address]);
+
+  // The clamp has to reach the mirror too, or a replay would write the zero
+  // back after a reset.
+  TEST_ASSERT_EQUAL_UINT32(
+      1UL, controller.setup_controller_parameters_.stop_velocity);
+  TEST_ASSERT_EQUAL_UINT32(
+      1UL, controller.setup_controller_parameters_.first_deceleration);
+
+  // A non-zero request passes through untouched.
+  controller.writeStopVelocity(10);
+  controller.writeFirstDeceleration(219);
+  TEST_ASSERT_EQUAL_UINT32(10UL,
+                           interface.register_image[Registers::VstopAddress]);
+  TEST_ASSERT_EQUAL_UINT32(
+      219UL, interface.register_image[Registers::Deceleration1Address]);
+}
+
 int main(int argc, char **argv) {
   UNITY_BEGIN();
 
   RUN_TEST(test_driver_reinitialize_replays_latest_high_level_writes);
   RUN_TEST(
       test_driver_reinitialize_preserves_custom_automatic_current_control_shape);
+  RUN_TEST(test_controller_initialize_leaves_the_motor_stopped);
   RUN_TEST(test_controller_reinitialize_replays_latest_configuration_writes);
+  RUN_TEST(test_controller_reinitialize_does_not_resume_velocity_motion);
+  RUN_TEST(test_forbidden_zero_ramp_parameters_are_clamped);
   RUN_TEST(test_restore_switch_settings_updates_recovery_state);
   RUN_TEST(test_encoder_reinitialize_replays_latest_configuration_writes);
 

@@ -125,10 +125,14 @@ void TMC51X0::beginHomeToSwitch(tmc51x0::HomeParameters home_parameters,
   controller.cacheControllerSettings();
   controller.cacheSwitchSettings();
 
-  DriverParameters driver_parameters;
-  driver.setup(driver_parameters);
-  ControllerParameters controller_parameters;
-  controller.setup(controller_parameters);
+  // Re-apply the caller's own configuration, not a fresh set of defaults.
+  // Default-constructing here silently reset every driver field the homing
+  // sequence does not go on to set explicitly -- including
+  // CHOPCONF.vsense, which scales coil current by 1.8x on a board with
+  // low-value sense resistors, and which endHome() would then restore. The
+  // no-argument overloads replay setup_*_parameters_.
+  driver.setup();
+  controller.setup();
 
   controller.setupSwitches(switch_parameters);
 
@@ -163,10 +167,10 @@ void TMC51X0::beginHomeToStall(tmc51x0::HomeParameters home_parameters,
   controller.cacheControllerSettings();
   controller.cacheSwitchSettings();
 
-  DriverParameters driver_parameters;
-  driver.setup(driver_parameters);
-  ControllerParameters controller_parameters;
-  controller.setup(controller_parameters);
+  // See beginHomeToSwitch: replay the caller's configuration rather than
+  // resetting the driver and controller to defaults.
+  driver.setup();
+  controller.setup();
 
   controller.writeStopMode(HardMode);
   controller.enableStallStop();

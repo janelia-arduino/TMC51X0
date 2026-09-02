@@ -40,9 +40,19 @@ struct ControllerParameters {
   bool stall_stop_enabled;
   uint32_t min_dc_step_velocity;
 
+  // The defaults must describe a STOPPED motor. They are what
+  // Controller::initialize() applies during setup, before the caller has said
+  // anything, and a default of VelocityPositiveMode with a non-zero
+  // max_velocity meant the chip was commanded to turn from the moment the
+  // transport came up -- about 9.5 microsteps/s at 16 MHz, observed walking
+  // XACTUAL on bench hardware while the driver was still disabled. Harmless
+  // only until the output stage is enabled.
+  //
+  // HoldMode holds the present velocity, so it is a standstill only because
+  // velocity is zero at initialize() and max_velocity is zero here too.
   constexpr ControllerParameters(
-      RampMode ramp_mode = VelocityPositiveMode, StopMode stop_mode = HardMode,
-      uint32_t max_velocity = 10, uint32_t max_acceleration = 10,
+      RampMode ramp_mode = HoldMode, StopMode stop_mode = HardMode,
+      uint32_t max_velocity = 0, uint32_t max_acceleration = 10,
       uint32_t start_velocity = 1, uint32_t stop_velocity = 10,
       uint32_t first_velocity = 0, uint32_t first_acceleration = 0,
       uint32_t max_deceleration = 0, uint32_t first_deceleration = 10,

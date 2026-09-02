@@ -132,6 +132,20 @@ void Driver::writeChopperMode(ChopperMode chopper_mode) {
   registers_ptr_->write(Registers::ChopconfAddress, chopconf.raw);
 }
 
+void Driver::writeSenseVoltageMode(SenseVoltageMode mode) {
+  setup_driver_parameters_.sense_voltage_mode = mode;
+  // CHOPCONF bit 17 is `vsense` on the TMC5130 and reserved-set-to-0 on the
+  // TMC5160, so only write it when the part is known to be a TMC5130A. An
+  // unknown model is treated as "do not touch a reserved bit".
+  if (registers_ptr_->deviceModel() != Registers::DeviceModel::TMC5130A) {
+    return;
+  }
+  Registers::Chopconf chopconf;
+  chopconf.raw = registers_ptr_->getStored(Registers::ChopconfAddress);
+  chopconf.vsense(mode == LowSenseVoltageMode);
+  registers_ptr_->write(Registers::ChopconfAddress, chopconf.raw);
+}
+
 void Driver::writeStealthChopThreshold(uint32_t tstep) {
   setup_driver_parameters_.stealth_chop_threshold = tstep;
   registers_ptr_->write(Registers::TpwmthrsAddress, tstep);
@@ -341,6 +355,7 @@ void Driver::writeDriverParameters(DriverParameters parameters) {
   writeMotorDirection(parameters.motor_direction);
   writeStandstillMode(parameters.standstill_mode);
   writeChopperMode(parameters.chopper_mode);
+  writeSenseVoltageMode(parameters.sense_voltage_mode);
   writeStealthChopThreshold(parameters.stealth_chop_threshold);
   if (parameters.stealth_chop_enabled) {
     enableStealthChop();

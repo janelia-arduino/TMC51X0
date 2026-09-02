@@ -1,14 +1,16 @@
-# TMC51X0 Codex guidance
+# TMC51X0 Agent Guidance
 
-This file is the canonical project guidance for Codex in this repository.
+This file is the canonical project guidance for agent sessions in this
+repository. It is tool-agnostic: Codex, Claude Code and anything else read the
+same file through a shim at the repo root.
 
 ## Session start
 
 Read this file first.
 
-If `.codex/handoff.local.md` exists, read it before planning or editing. Treat it as current local context, not permanent project policy.
+If `.agents/handoff.local.md` exists, read it before planning or editing. Treat it as current local context, not permanent project policy.
 
-If the task is multi-step, risky, likely to span more than one session, or changes documentation workflow / architecture, read `.codex/PLANS.md` before editing and keep it updated as work progresses.
+If the task is multi-step, risky, likely to span more than one session, or changes documentation workflow / architecture, read `.agents/PLANS.md` before editing and keep it updated as work progresses.
 
 For this repository, the most useful files to inspect early are usually:
 
@@ -68,7 +70,7 @@ Preserve these repo-level decisions unless the task explicitly requires changing
 - no union punning
 - no debug printing in the library core
 
-Treat `TMC51X0` as the cleaner family reference repository. If `TMC2209` is available through `.codex/workspace.dirs`, use it as a read-only style / naming / tooling reference, not as a reason to force a worse architecture onto `TMC51X0`.
+Treat `TMC51X0` as the cleaner family reference repository. If `TMC2209` is available as a sibling checkout, use it as a read-only style / naming / tooling reference, not as a reason to force a worse architecture onto `TMC51X0`.
 
 ## Mirror, UART, and recovery rules
 
@@ -146,6 +148,7 @@ Useful extra build coverage when the patch could affect portability:
 CI currently covers:
 
 - version metadata check
+- formatting check
 - native tests
 - `examples/SPI/TestCommunication` on `pico`, `teensy40`, `esp32`, `giga_r1_m7`, `nanoatmega328`
 - `examples/UART/TestCommunication` on `pico`, `teensy40`
@@ -170,11 +173,11 @@ Changes in these areas deserve extra care and usually need tests/docs updates in
 
 ## Plans
 
-Use `.codex/PLANS.md` for work that is multi-step, risky, or likely to span multiple sessions.
+Use `.agents/PLANS.md` for work that is multi-step, risky, or likely to span multiple sessions.
 
 Keep the current goal, milestones, assumptions, validation notes, and progress log current.
 
-Before ending a longer session, leave a concise note in `.codex/handoff.local.md` if the local state or next step changed.
+Before ending a longer session, leave a concise note in `.agents/handoff.local.md` if the local state or next step changed.
 
 ## Patch summary rule
 

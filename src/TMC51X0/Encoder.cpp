@@ -37,6 +37,16 @@ void Encoder::writeMicrostepsPerPulse(int16_t integer, uint16_t fractional) {
   return registers_ptr_->write(Registers::EncConstAddress, enc_const.raw);
 }
 
+void Encoder::writeMicrostepsPerPulseScaled(FractionalMode mode,
+                                            int32_t scaled) {
+  const EncoderParameters parameters =
+      setup_encoder_parameters_.withMicrostepsPerPulse(mode, scaled);
+  writeFractionalMode(parameters.fractional_mode);
+  writeMicrostepsPerPulse(
+      static_cast<int16_t>(parameters.microsteps_per_pulse_integer),
+      static_cast<uint16_t>(parameters.microsteps_per_pulse_fractional));
+}
+
 int32_t Encoder::readActualPosition() {
   return registers_ptr_->read(Registers::XencAddress);
 }

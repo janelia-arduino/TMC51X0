@@ -13,6 +13,91 @@ Most sketches do not need a full rewrite. The usual migration path is:
 4. Audit any code that assumed the software register mirror always matched chip
    state.
 
+## 4.0 -> 4.1
+
+4.1 is a bug-fix release for TMC5130A users. No API was removed, but three
+default behaviours changed. Read this if you upgrade in place.
+
+### New: sense resistor voltage on the TMC5130A
+
+`CHOPCONF.vsense` was unreachable through the API. It is now
+`DriverParameters::withSenseVoltageMode()` /
+`Driver::writeSenseVoltageMode()`, with `tmc51x0::SenseVoltageMode` and
+`Registers::Chopconf::vsense()`.
+
+**If your board has low-value sense resistors, you were running about 1.8x the
+current you asked for.** Set `LowSenseVoltageMode` and read `CHOPCONF` back to
+confirm. The default is `HighSenseVoltageMode`, which is the reset value, so
+nothing changes for existing callers until they opt in.
+
+### New: one-value encoder scaling, for reversed encoders
+
+`ENC_CONST`'s fractional part is added to a signed integer part, so reversing an
+encoder by negating the integer is easy to get wrong:
+
+```cpp
+// -11.2, not -12.8. A silent 12.5% scale error.
+tmc51x0::EncoderParameters{}
+    .withFractionalMode(tmc51x0::DecimalMode)
+    .withMicrostepsPerPulseInteger(-12)
+    .withMicrostepsPerPulseFractional(8000);
+```
+
+Prefer the scaled form, which takes the value in the mode's own units and does
+the split for you:
+
+```cpp
+// -12.8 microsteps per pulse, reversed encoder.
+tmc51x0::EncoderParameters{}.withMicrostepsPerPulse(tmc51x0::DecimalMode,
+                                                    -128000);
+```
+
+or at runtime, `encoder.writeMicrostepsPerPulseScaled(DecimalMode, -128000)`.
+
+Nothing is removed. If you already pass a correct integer/fractional pair, it
+keeps working -- but check the pair sums to what you meant if the value is
+negative.
+
+### Changed: `ControllerParameters` defaults
+
+| field | 4.0 | 4.1 |
+| --- | --- | --- |
+| `ramp_mode` | `VelocityPositiveMode` | `HoldMode` |
+| `max_velocity` | 10 | 0 |
+
+`Controller::initialize()` applies these before the caller has configured
+anything, so the old defaults commanded the motor to turn as soon as the
+transport came up. If you relied on those defaults for motion -- about
+9.5 microsteps/s at 16 MHz -- set `ramp_mode` and `max_velocity` explicitly.
+
+### Changed: `reinitialize()` does not replay a velocity ramp mode
+
+Recovery restores configuration; it does not resume motion. A *position* ramp
+mode is still replayed faithfully. A *velocity* ramp mode now becomes
+`HoldMode`, and your configured `max_velocity` is left intact for the next
+move. Re-issue the velocity ramp yourself after recovery if you want it.
+
+### Changed: `VSTOP` and `D1` are clamped to a minimum of 1
+
+The datasheet forbids zero for both in positioning mode, "even if V1=0", and
+the chip does not fault on a zero -- it crawls at about `VSTOP` and never
+reaches the target. `writeStopVelocity(0)` and `writeFirstDeceleration(0)` now
+write 1 instead.
+
+This is most likely to affect you through `controllerParametersRealToChip()`:
+one chip unit of acceleration is 116.4 microsteps/s^2 at 16 MHz, so a small
+real-unit deceleration rounds down to zero. Check the values you pass in real
+units against that quantum.
+
+### Changed: homing preserves your driver configuration
+
+`beginHomeToSwitch()` and `beginHomeToStall()` used to default-construct
+`DriverParameters` and `ControllerParameters`, silently resetting every field
+the homing sequence does not go on to set explicitly. They now replay your own
+configuration. If you depended on homing resetting the driver to defaults, set
+what you need explicitly before calling it.
+
+
 ## Executive summary
 
 What changes for most users:
@@ -344,7 +429,7 @@ Use this checklist when updating an existing project:
 
 ## Suggested LLM-assisted or scripted refactors
 
-If you are using Codex, another LLM, or a scripted rename pass, make the
+If you are using an LLM-assisted or scripted rename pass, make the
 migration in narrow stages instead of one broad rewrite.
 
 Recommended order:

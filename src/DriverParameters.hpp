@@ -30,6 +30,24 @@ enum ChopperMode {
   ClassicMode = 1,
 };
 
+// TMC5130 only. CHOPCONF.vsense selects the full-scale sense resistor voltage
+// VFS, which scales every coil current:
+//
+//   HighSenseVoltageMode  VFS = V_SRTL = 325 mV   (datasheet: low sensitivity)
+//   LowSenseVoltageMode   VFS = V_SRTH = 180 mV   (datasheet: high sensitivity)
+//
+// The names describe the sense resistor voltage, because that is what a board
+// designer picks from: a board with low-value shunts needs
+// LowSenseVoltageMode, and leaving it at the reset default drives about 1.8x
+// the requested current with nothing reporting it.
+//
+// Bit 17 is reserved on the TMC5160, which scales current with GLOBALSCALER
+// instead, so this parameter is ignored unless the device model is TMC5130A.
+enum SenseVoltageMode {
+  HighSenseVoltageMode = 0,
+  LowSenseVoltageMode = 1,
+};
+
 enum ComparatorBlankTime {
   ClockCycles16 = 0,
   ClockCycles24 = 1,
@@ -65,6 +83,8 @@ struct DriverParameters {
   ComparatorBlankTime comparator_blank_time;
   uint16_t dc_time;
   uint8_t dc_stall_guard_threshold;
+  // TMC5130 only; ignored on the TMC5160. See SenseVoltageMode.
+  SenseVoltageMode sense_voltage_mode;
 
   constexpr DriverParameters(
       uint8_t global_current_scaler = 100, uint8_t run_current = 50,
@@ -83,7 +103,8 @@ struct DriverParameters {
       int8_t stall_guard_threshold = 0, bool stall_guard_filter_enabled = false,
       bool short_to_ground_protection_enabled = true, uint8_t enabled_toff = 3,
       ComparatorBlankTime comparator_blank_time = ClockCycles36,
-      uint16_t dc_time = 0, uint8_t dc_stall_guard_threshold = 0)
+      uint16_t dc_time = 0, uint8_t dc_stall_guard_threshold = 0,
+      SenseVoltageMode sense_voltage_mode = HighSenseVoltageMode)
       : global_current_scaler(global_current_scaler), run_current(run_current),
         hold_current(hold_current), hold_delay(hold_delay),
         pwm_offset(pwm_offset), pwm_gradient(pwm_gradient),
@@ -103,7 +124,8 @@ struct DriverParameters {
         short_to_ground_protection_enabled(short_to_ground_protection_enabled),
         enabled_toff(enabled_toff),
         comparator_blank_time(comparator_blank_time), dc_time(dc_time),
-        dc_stall_guard_threshold(dc_stall_guard_threshold) {}
+        dc_stall_guard_threshold(dc_stall_guard_threshold),
+        sense_voltage_mode(sense_voltage_mode) {}
 
   // --- "Named parameter" style helpers: each returns a new instance ---
 
@@ -116,7 +138,8 @@ struct DriverParameters {
         high_velocity_threshold, high_velocity_fullstep_enabled,
         high_velocity_chopper_switch_enabled, stall_guard_threshold,
         stall_guard_filter_enabled, short_to_ground_protection_enabled,
-        enabled_toff, comparator_blank_time, dc_time, dc_stall_guard_threshold);
+        enabled_toff, comparator_blank_time, dc_time, dc_stall_guard_threshold,
+        sense_voltage_mode);
   }
 
   constexpr DriverParameters withRunCurrent(uint8_t value) const {
@@ -129,7 +152,7 @@ struct DriverParameters {
         high_velocity_fullstep_enabled, high_velocity_chopper_switch_enabled,
         stall_guard_threshold, stall_guard_filter_enabled,
         short_to_ground_protection_enabled, enabled_toff, comparator_blank_time,
-        dc_time, dc_stall_guard_threshold);
+        dc_time, dc_stall_guard_threshold, sense_voltage_mode);
   }
 
   constexpr DriverParameters withHoldCurrent(uint8_t value) const {
@@ -142,7 +165,7 @@ struct DriverParameters {
         high_velocity_fullstep_enabled, high_velocity_chopper_switch_enabled,
         stall_guard_threshold, stall_guard_filter_enabled,
         short_to_ground_protection_enabled, enabled_toff, comparator_blank_time,
-        dc_time, dc_stall_guard_threshold);
+        dc_time, dc_stall_guard_threshold, sense_voltage_mode);
   }
 
   constexpr DriverParameters withHoldDelay(uint8_t value) const {
@@ -155,7 +178,7 @@ struct DriverParameters {
         high_velocity_fullstep_enabled, high_velocity_chopper_switch_enabled,
         stall_guard_threshold, stall_guard_filter_enabled,
         short_to_ground_protection_enabled, enabled_toff, comparator_blank_time,
-        dc_time, dc_stall_guard_threshold);
+        dc_time, dc_stall_guard_threshold, sense_voltage_mode);
   }
 
   constexpr DriverParameters withPwmOffset(uint8_t value) const {
@@ -168,7 +191,7 @@ struct DriverParameters {
         high_velocity_fullstep_enabled, high_velocity_chopper_switch_enabled,
         stall_guard_threshold, stall_guard_filter_enabled,
         short_to_ground_protection_enabled, enabled_toff, comparator_blank_time,
-        dc_time, dc_stall_guard_threshold);
+        dc_time, dc_stall_guard_threshold, sense_voltage_mode);
   }
 
   constexpr DriverParameters withPwmGradient(uint8_t value) const {
@@ -181,7 +204,7 @@ struct DriverParameters {
         high_velocity_fullstep_enabled, high_velocity_chopper_switch_enabled,
         stall_guard_threshold, stall_guard_filter_enabled,
         short_to_ground_protection_enabled, enabled_toff, comparator_blank_time,
-        dc_time, dc_stall_guard_threshold);
+        dc_time, dc_stall_guard_threshold, sense_voltage_mode);
   }
 
   constexpr DriverParameters
@@ -194,7 +217,8 @@ struct DriverParameters {
         high_velocity_threshold, high_velocity_fullstep_enabled,
         high_velocity_chopper_switch_enabled, stall_guard_threshold,
         stall_guard_filter_enabled, short_to_ground_protection_enabled,
-        enabled_toff, comparator_blank_time, dc_time, dc_stall_guard_threshold);
+        enabled_toff, comparator_blank_time, dc_time, dc_stall_guard_threshold,
+        sense_voltage_mode);
   }
 
   constexpr DriverParameters withMotorDirection(MotorDirection value) const {
@@ -207,7 +231,7 @@ struct DriverParameters {
         high_velocity_fullstep_enabled, high_velocity_chopper_switch_enabled,
         stall_guard_threshold, stall_guard_filter_enabled,
         short_to_ground_protection_enabled, enabled_toff, comparator_blank_time,
-        dc_time, dc_stall_guard_threshold);
+        dc_time, dc_stall_guard_threshold, sense_voltage_mode);
   }
 
   constexpr DriverParameters withStandstillMode(StandstillMode value) const {
@@ -220,7 +244,7 @@ struct DriverParameters {
         high_velocity_fullstep_enabled, high_velocity_chopper_switch_enabled,
         stall_guard_threshold, stall_guard_filter_enabled,
         short_to_ground_protection_enabled, enabled_toff, comparator_blank_time,
-        dc_time, dc_stall_guard_threshold);
+        dc_time, dc_stall_guard_threshold, sense_voltage_mode);
   }
 
   constexpr DriverParameters withChopperMode(ChopperMode value) const {
@@ -233,7 +257,7 @@ struct DriverParameters {
         high_velocity_fullstep_enabled, high_velocity_chopper_switch_enabled,
         stall_guard_threshold, stall_guard_filter_enabled,
         short_to_ground_protection_enabled, enabled_toff, comparator_blank_time,
-        dc_time, dc_stall_guard_threshold);
+        dc_time, dc_stall_guard_threshold, sense_voltage_mode);
   }
 
   constexpr DriverParameters withStealthChopThreshold(uint32_t value) const {
@@ -246,7 +270,7 @@ struct DriverParameters {
         high_velocity_fullstep_enabled, high_velocity_chopper_switch_enabled,
         stall_guard_threshold, stall_guard_filter_enabled,
         short_to_ground_protection_enabled, enabled_toff, comparator_blank_time,
-        dc_time, dc_stall_guard_threshold);
+        dc_time, dc_stall_guard_threshold, sense_voltage_mode);
   }
 
   constexpr DriverParameters withStealthChopEnabled(bool value) const {
@@ -259,7 +283,7 @@ struct DriverParameters {
         high_velocity_fullstep_enabled, high_velocity_chopper_switch_enabled,
         stall_guard_threshold, stall_guard_filter_enabled,
         short_to_ground_protection_enabled, enabled_toff, comparator_blank_time,
-        dc_time, dc_stall_guard_threshold);
+        dc_time, dc_stall_guard_threshold, sense_voltage_mode);
   }
 
   constexpr DriverParameters withCoolStepThreshold(uint32_t value) const {
@@ -272,7 +296,7 @@ struct DriverParameters {
         high_velocity_fullstep_enabled, high_velocity_chopper_switch_enabled,
         stall_guard_threshold, stall_guard_filter_enabled,
         short_to_ground_protection_enabled, enabled_toff, comparator_blank_time,
-        dc_time, dc_stall_guard_threshold);
+        dc_time, dc_stall_guard_threshold, sense_voltage_mode);
   }
 
   constexpr DriverParameters withCoolStepMin(uint8_t value) const {
@@ -285,7 +309,7 @@ struct DriverParameters {
         high_velocity_fullstep_enabled, high_velocity_chopper_switch_enabled,
         stall_guard_threshold, stall_guard_filter_enabled,
         short_to_ground_protection_enabled, enabled_toff, comparator_blank_time,
-        dc_time, dc_stall_guard_threshold);
+        dc_time, dc_stall_guard_threshold, sense_voltage_mode);
   }
 
   constexpr DriverParameters withCoolStepMax(uint8_t value) const {
@@ -298,7 +322,7 @@ struct DriverParameters {
         high_velocity_fullstep_enabled, high_velocity_chopper_switch_enabled,
         stall_guard_threshold, stall_guard_filter_enabled,
         short_to_ground_protection_enabled, enabled_toff, comparator_blank_time,
-        dc_time, dc_stall_guard_threshold);
+        dc_time, dc_stall_guard_threshold, sense_voltage_mode);
   }
 
   constexpr DriverParameters withCoolStepEnabled(bool value) const {
@@ -310,7 +334,8 @@ struct DriverParameters {
         value, high_velocity_threshold, high_velocity_fullstep_enabled,
         high_velocity_chopper_switch_enabled, stall_guard_threshold,
         stall_guard_filter_enabled, short_to_ground_protection_enabled,
-        enabled_toff, comparator_blank_time, dc_time, dc_stall_guard_threshold);
+        enabled_toff, comparator_blank_time, dc_time, dc_stall_guard_threshold,
+        sense_voltage_mode);
   }
 
   constexpr DriverParameters withHighVelocityThreshold(uint32_t value) const {
@@ -322,7 +347,8 @@ struct DriverParameters {
         cool_step_enabled, value, high_velocity_fullstep_enabled,
         high_velocity_chopper_switch_enabled, stall_guard_threshold,
         stall_guard_filter_enabled, short_to_ground_protection_enabled,
-        enabled_toff, comparator_blank_time, dc_time, dc_stall_guard_threshold);
+        enabled_toff, comparator_blank_time, dc_time, dc_stall_guard_threshold,
+        sense_voltage_mode);
   }
 
   constexpr DriverParameters withHighVelocityFullstepEnabled(bool value) const {
@@ -334,7 +360,8 @@ struct DriverParameters {
         cool_step_enabled, high_velocity_threshold, value,
         high_velocity_chopper_switch_enabled, stall_guard_threshold,
         stall_guard_filter_enabled, short_to_ground_protection_enabled,
-        enabled_toff, comparator_blank_time, dc_time, dc_stall_guard_threshold);
+        enabled_toff, comparator_blank_time, dc_time, dc_stall_guard_threshold,
+        sense_voltage_mode);
   }
 
   constexpr DriverParameters
@@ -347,7 +374,8 @@ struct DriverParameters {
         cool_step_enabled, high_velocity_threshold,
         high_velocity_fullstep_enabled, value, stall_guard_threshold,
         stall_guard_filter_enabled, short_to_ground_protection_enabled,
-        enabled_toff, comparator_blank_time, dc_time, dc_stall_guard_threshold);
+        enabled_toff, comparator_blank_time, dc_time, dc_stall_guard_threshold,
+        sense_voltage_mode);
   }
 
   constexpr DriverParameters withStallGuardThreshold(int8_t value) const {
@@ -359,7 +387,8 @@ struct DriverParameters {
         cool_step_enabled, high_velocity_threshold,
         high_velocity_fullstep_enabled, high_velocity_chopper_switch_enabled,
         value, stall_guard_filter_enabled, short_to_ground_protection_enabled,
-        enabled_toff, comparator_blank_time, dc_time, dc_stall_guard_threshold);
+        enabled_toff, comparator_blank_time, dc_time, dc_stall_guard_threshold,
+        sense_voltage_mode);
   }
 
   constexpr DriverParameters withStallGuardFilterEnabled(bool value) const {
@@ -371,7 +400,8 @@ struct DriverParameters {
         cool_step_enabled, high_velocity_threshold,
         high_velocity_fullstep_enabled, high_velocity_chopper_switch_enabled,
         stall_guard_threshold, value, short_to_ground_protection_enabled,
-        enabled_toff, comparator_blank_time, dc_time, dc_stall_guard_threshold);
+        enabled_toff, comparator_blank_time, dc_time, dc_stall_guard_threshold,
+        sense_voltage_mode);
   }
 
   constexpr DriverParameters
@@ -384,7 +414,8 @@ struct DriverParameters {
         cool_step_enabled, high_velocity_threshold,
         high_velocity_fullstep_enabled, high_velocity_chopper_switch_enabled,
         stall_guard_threshold, stall_guard_filter_enabled, value, enabled_toff,
-        comparator_blank_time, dc_time, dc_stall_guard_threshold);
+        comparator_blank_time, dc_time, dc_stall_guard_threshold,
+        sense_voltage_mode);
   }
 
   constexpr DriverParameters withEnabledToff(uint8_t value) const {
@@ -397,7 +428,7 @@ struct DriverParameters {
         high_velocity_fullstep_enabled, high_velocity_chopper_switch_enabled,
         stall_guard_threshold, stall_guard_filter_enabled,
         short_to_ground_protection_enabled, value, comparator_blank_time,
-        dc_time, dc_stall_guard_threshold);
+        dc_time, dc_stall_guard_threshold, sense_voltage_mode);
   }
 
   constexpr DriverParameters
@@ -411,7 +442,7 @@ struct DriverParameters {
         high_velocity_fullstep_enabled, high_velocity_chopper_switch_enabled,
         stall_guard_threshold, stall_guard_filter_enabled,
         short_to_ground_protection_enabled, enabled_toff, value, dc_time,
-        dc_stall_guard_threshold);
+        dc_stall_guard_threshold, sense_voltage_mode);
   }
 
   constexpr DriverParameters withDcTime(uint16_t value) const {
@@ -424,7 +455,21 @@ struct DriverParameters {
         high_velocity_fullstep_enabled, high_velocity_chopper_switch_enabled,
         stall_guard_threshold, stall_guard_filter_enabled,
         short_to_ground_protection_enabled, enabled_toff, comparator_blank_time,
-        value, dc_stall_guard_threshold);
+        value, dc_stall_guard_threshold, sense_voltage_mode);
+  }
+
+  constexpr DriverParameters
+  withSenseVoltageMode(SenseVoltageMode value) const {
+    return DriverParameters(
+        global_current_scaler, run_current, hold_current, hold_delay,
+        pwm_offset, pwm_gradient, automatic_current_control_enabled,
+        motor_direction, standstill_mode, chopper_mode, stealth_chop_threshold,
+        stealth_chop_enabled, cool_step_threshold, cool_step_min, cool_step_max,
+        cool_step_enabled, high_velocity_threshold,
+        high_velocity_fullstep_enabled, high_velocity_chopper_switch_enabled,
+        stall_guard_threshold, stall_guard_filter_enabled,
+        short_to_ground_protection_enabled, enabled_toff, comparator_blank_time,
+        dc_time, dc_stall_guard_threshold, value);
   }
 
   constexpr DriverParameters withDcStallGuardThreshold(uint8_t value) const {
@@ -437,7 +482,7 @@ struct DriverParameters {
         high_velocity_fullstep_enabled, high_velocity_chopper_switch_enabled,
         stall_guard_threshold, stall_guard_filter_enabled,
         short_to_ground_protection_enabled, enabled_toff, comparator_blank_time,
-        dc_time, value);
+        dc_time, value, sense_voltage_mode);
   }
 };
 

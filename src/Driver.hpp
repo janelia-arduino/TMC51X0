@@ -63,6 +63,12 @@ public:
 
   void writeChopperMode(ChopperMode chopper_mode);
 
+  // TMC5130 only; a no-op on any other device model, because CHOPCONF bit 17 is
+  // reserved on the TMC5160. Scales every coil current -- see SenseVoltageMode.
+  // Read CHOPCONF back to confirm it took: this is the only readable half of
+  // the current setting, since IHOLD_IRUN is write-only.
+  void writeSenseVoltageMode(SenseVoltageMode mode);
+
   void writeStealthChopThreshold(uint32_t tstep);
   void enableStealthChop();
   void disableStealthChop();

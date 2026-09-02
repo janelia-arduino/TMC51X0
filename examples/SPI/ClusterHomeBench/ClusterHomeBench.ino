@@ -16,10 +16,9 @@ const uint8_t POWER_ENABLE_ACTIVE_STATE = HIGH;
 const auto spi_parameters =
     tmc51x0::SpiParameters{}.withSpi(&spi).withChipSelectPin(CHIP_SELECT_PIN);
 
-const auto converter_parameters =
-    tmc51x0::ConverterParameters{}
-        .withClockFrequencyMHz(16)
-        .withMicrostepsPerRealPositionUnit(4881);
+const auto converter_parameters = tmc51x0::ConverterParameters{}
+                                      .withClockFrequencyMHz(16)
+                                      .withMicrostepsPerRealPositionUnit(4881);
 
 const auto driver_parameters_real =
     tmc51x0::DriverParameters{}
@@ -32,31 +31,28 @@ const auto driver_parameters_real =
         .withStandstillMode(tmc51x0::PassiveBrakingLsMode)
         .withStealthChopThreshold(250);
 
-const auto controller_parameters_real =
-    tmc51x0::ControllerParameters{}
-        .withRampMode(tmc51x0::PositionMode)
-        .withMaxVelocity(20)
-        .withMaxAcceleration(20)
-        .withStartVelocity(1)
-        .withStopVelocity(5)
-        .withFirstVelocity(10)
-        .withFirstAcceleration(40)
-        .withMaxDeceleration(30)
-        .withFirstDeceleration(50);
+const auto controller_parameters_real = tmc51x0::ControllerParameters{}
+                                            .withRampMode(tmc51x0::PositionMode)
+                                            .withMaxVelocity(20)
+                                            .withMaxAcceleration(20)
+                                            .withStartVelocity(1)
+                                            .withStopVelocity(5)
+                                            .withFirstVelocity(10)
+                                            .withFirstAcceleration(40)
+                                            .withMaxDeceleration(30)
+                                            .withFirstDeceleration(50);
 
-const auto home_parameters_real =
-    tmc51x0::HomeParameters{}
-        .withRunCurrent(50)
-        .withHoldCurrent(20)
-        .withTargetPosition(-500)
-        .withVelocity(20)
-        .withAcceleration(2)
-        .withZeroWaitDuration(100);
+const auto home_parameters_real = tmc51x0::HomeParameters{}
+                                      .withRunCurrent(50)
+                                      .withHoldCurrent(20)
+                                      .withTargetPosition(-500)
+                                      .withVelocity(20)
+                                      .withAcceleration(2)
+                                      .withZeroWaitDuration(100);
 
-const auto stall_parameters_real =
-    tmc51x0::StallParameters{}
-        .withStallGuardThreshold(10)
-        .withCoolStepThreshold(10);
+const auto stall_parameters_real = tmc51x0::StallParameters{}
+                                       .withStallGuardThreshold(10)
+                                       .withCoolStepThreshold(10);
 
 const uint32_t SERIAL_BAUD_RATE = 115200;
 const uint16_t POWER_OFF_DELAY_MS = 2000;

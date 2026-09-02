@@ -855,6 +855,12 @@ struct Registers {
     using DISFDCC = tmc::bits::Bit<12>;
     using CHM = tmc::bits::Bit<14>;
     using TBL = tmc::bits::Field<15, 2>;
+    // TMC5130 only. Reserved on the TMC5160, which scales current with
+    // GLOBALSCALER instead. Selects the full-scale sense resistor voltage VFS
+    // and therefore scales every coil current: 0 -> V_SRTL = 325 mV, 1 ->
+    // V_SRTH = 180 mV. A board with low-value sense resistors needs 1, or every
+    // current is about 1.8x the requested value.
+    using VSENSE = tmc::bits::Bit<17>;
     using VHIGHFS = tmc::bits::Bit<18>;
     using VHIGHCHM = tmc::bits::Bit<19>;
     using TPFD = tmc::bits::Field<20, 4>;
@@ -881,6 +887,12 @@ struct Registers {
       return *this;
     }
     uint8_t hend() const { return static_cast<uint8_t>(HEND::get(raw)); }
+
+    Chopconf &vsense(bool v) {
+      VSENSE::set(raw, v);
+      return *this;
+    }
+    bool vsense() const { return VSENSE::get(raw); }
 
     Chopconf &fd3(bool v) {
       FD3::set(raw, v);

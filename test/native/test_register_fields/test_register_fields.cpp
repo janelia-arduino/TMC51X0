@@ -2,6 +2,8 @@
 
 #include <stdint.h>
 
+#include "DriverParameters.hpp"
+#include "EncoderParameters.hpp"
 #include "Registers.hpp"
 
 using namespace tmc51x0;
@@ -863,6 +865,179 @@ void setUp(void) {}
 
 void tearDown(void) {}
 
+// CHOPCONF bit 17 is `vsense` on the TMC5130 and reserved on the TMC5160.
+static void test_chopconf_vsense_bit(void) {
+  Registers::Chopconf r;
+
+  r.raw = 0;
+  r.vsense(true);
+  TEST_ASSERT_EQUAL_HEX32(bit32(17), r.raw);
+  TEST_ASSERT_TRUE(r.vsense());
+
+  r.vsense(false);
+  TEST_ASSERT_EQUAL_HEX32(0UL, r.raw);
+  TEST_ASSERT_FALSE(r.vsense());
+
+  // It must not collide with its neighbours, which are TBL (16:15) and
+  // VHIGHFS (18).
+  r.raw = 0;
+  r.tbl(3);
+  r.vhighfs(true);
+  TEST_ASSERT_FALSE(r.vsense());
+}
+
+// DriverParameters uses a positional constructor behind every withXxx() helper,
+// so a new field is only actually reachable if every one of them forwards it.
+// A dropped field here would silently reset the caller's choice on the next
+// unrelated withXxx() call.
+static void
+test_every_driver_parameter_builder_preserves_sense_voltage_mode(void) {
+  const DriverParameters base =
+      DriverParameters{}.withSenseVoltageMode(LowSenseVoltageMode);
+  TEST_ASSERT_EQUAL_INT(LowSenseVoltageMode, base.sense_voltage_mode);
+
+  TEST_ASSERT_EQUAL_INT(LowSenseVoltageMode,
+                        base.withGlobalCurrentScaler(50).sense_voltage_mode);
+  TEST_ASSERT_EQUAL_INT(LowSenseVoltageMode,
+                        base.withRunCurrent(8).sense_voltage_mode);
+  TEST_ASSERT_EQUAL_INT(LowSenseVoltageMode,
+                        base.withHoldCurrent(2).sense_voltage_mode);
+  TEST_ASSERT_EQUAL_INT(LowSenseVoltageMode,
+                        base.withHoldDelay(6).sense_voltage_mode);
+  TEST_ASSERT_EQUAL_INT(LowSenseVoltageMode,
+                        base.withPwmOffset(30).sense_voltage_mode);
+  TEST_ASSERT_EQUAL_INT(LowSenseVoltageMode,
+                        base.withPwmGradient(10).sense_voltage_mode);
+  TEST_ASSERT_EQUAL_INT(
+      LowSenseVoltageMode,
+      base.withMotorDirection(ReverseDirection).sense_voltage_mode);
+  TEST_ASSERT_EQUAL_INT(
+      LowSenseVoltageMode,
+      base.withStandstillMode(FreewheelingMode).sense_voltage_mode);
+  TEST_ASSERT_EQUAL_INT(LowSenseVoltageMode,
+                        base.withChopperMode(ClassicMode).sense_voltage_mode);
+  TEST_ASSERT_EQUAL_INT(LowSenseVoltageMode,
+                        base.withStealthChopThreshold(100).sense_voltage_mode);
+  TEST_ASSERT_EQUAL_INT(LowSenseVoltageMode,
+                        base.withStealthChopEnabled(false).sense_voltage_mode);
+  TEST_ASSERT_EQUAL_INT(LowSenseVoltageMode,
+                        base.withCoolStepThreshold(150).sense_voltage_mode);
+  TEST_ASSERT_EQUAL_INT(LowSenseVoltageMode,
+                        base.withCoolStepMin(1).sense_voltage_mode);
+  TEST_ASSERT_EQUAL_INT(LowSenseVoltageMode,
+                        base.withCoolStepMax(0).sense_voltage_mode);
+  TEST_ASSERT_EQUAL_INT(LowSenseVoltageMode,
+                        base.withCoolStepEnabled(false).sense_voltage_mode);
+  TEST_ASSERT_EQUAL_INT(LowSenseVoltageMode,
+                        base.withHighVelocityThreshold(200).sense_voltage_mode);
+  TEST_ASSERT_EQUAL_INT(
+      LowSenseVoltageMode,
+      base.withHighVelocityFullstepEnabled(true).sense_voltage_mode);
+  TEST_ASSERT_EQUAL_INT(LowSenseVoltageMode,
+                        base.withStallGuardThreshold(0).sense_voltage_mode);
+  TEST_ASSERT_EQUAL_INT(
+      LowSenseVoltageMode,
+      base.withStallGuardFilterEnabled(true).sense_voltage_mode);
+  TEST_ASSERT_EQUAL_INT(LowSenseVoltageMode,
+                        base.withEnabledToff(3).sense_voltage_mode);
+  TEST_ASSERT_EQUAL_INT(LowSenseVoltageMode,
+                        base.withDcTime(0).sense_voltage_mode);
+  TEST_ASSERT_EQUAL_INT(LowSenseVoltageMode,
+                        base.withDcStallGuardThreshold(0).sense_voltage_mode);
+
+  // And the default is the reset value, so existing callers are unaffected.
+  TEST_ASSERT_EQUAL_INT(HighSenseVoltageMode,
+                        DriverParameters{}.sense_voltage_mode);
+}
+
+// ENC_CONST is one signed fixed-point value whose fractional part is always
+// ADDED to the integer part, so a reversed encoder needs the pair that sums to
+// the negative value -- not the sign applied to a magnitude. Getting that wrong
+// is a silent scale error, so the split is done by the library and pinned here.
+static void test_microsteps_per_pulse_scaled_splits_correctly(void) {
+  // Forward, 12.8 microsteps per pulse: 51200 microsteps/rev over 4000
+  // quadrature counts/rev.
+  {
+    const EncoderParameters p =
+        EncoderParameters{}.withMicrostepsPerPulse(DecimalMode, 128000);
+    TEST_ASSERT_EQUAL_INT(DecimalMode, p.fractional_mode);
+    TEST_ASSERT_EQUAL_INT32(12, p.microsteps_per_pulse_integer);
+    TEST_ASSERT_EQUAL_INT32(8000, p.microsteps_per_pulse_fractional);
+  }
+
+  // Reversed, -12.8. This is the case the helper exists for: -13 + 0.2, and
+  // NOT -12 + 0.8, which would be -11.2.
+  {
+    const EncoderParameters p =
+        EncoderParameters{}.withMicrostepsPerPulse(DecimalMode, -128000);
+    TEST_ASSERT_EQUAL_INT32(-13, p.microsteps_per_pulse_integer);
+    TEST_ASSERT_EQUAL_INT32(2000, p.microsteps_per_pulse_fractional);
+
+    // State the trap as arithmetic, so a future edit cannot reintroduce it:
+    // the pair the library produces sums to the requested value, and the
+    // obvious wrong pairing does not.
+    const int32_t denominator = microstepsPerPulseDenominator(DecimalMode);
+    TEST_ASSERT_EQUAL_INT32(-128000,
+                            p.microsteps_per_pulse_integer * denominator +
+                                p.microsteps_per_pulse_fractional);
+    TEST_ASSERT_EQUAL_INT32(-112000, -12 * denominator + 8000);
+  }
+
+  // Exact integers keep a zero fraction in both directions.
+  {
+    const EncoderParameters forward =
+        EncoderParameters{}.withMicrostepsPerPulse(DecimalMode, 120000);
+    TEST_ASSERT_EQUAL_INT32(12, forward.microsteps_per_pulse_integer);
+    TEST_ASSERT_EQUAL_INT32(0, forward.microsteps_per_pulse_fractional);
+
+    const EncoderParameters reverse =
+        EncoderParameters{}.withMicrostepsPerPulse(DecimalMode, -120000);
+    TEST_ASSERT_EQUAL_INT32(-12, reverse.microsteps_per_pulse_integer);
+    TEST_ASSERT_EQUAL_INT32(0, reverse.microsteps_per_pulse_fractional);
+  }
+
+  // Binary mode uses the other denominator, and 0.5 is exact in both.
+  {
+    const EncoderParameters p =
+        EncoderParameters{}.withMicrostepsPerPulse(BinaryMode, 98304);
+    TEST_ASSERT_EQUAL_INT(BinaryMode, p.fractional_mode);
+    TEST_ASSERT_EQUAL_INT32(1, p.microsteps_per_pulse_integer);
+    TEST_ASSERT_EQUAL_INT32(32768, p.microsteps_per_pulse_fractional);
+
+    const EncoderParameters unity =
+        EncoderParameters{}.withMicrostepsPerPulse(BinaryMode, 65536);
+    TEST_ASSERT_EQUAL_INT32(1, unity.microsteps_per_pulse_integer);
+    TEST_ASSERT_EQUAL_INT32(0, unity.microsteps_per_pulse_fractional);
+  }
+
+  // The fractional part is always in [0, denominator), whatever the sign, and
+  // the pair always sums back to the requested value.
+  {
+    const int32_t denominator = microstepsPerPulseDenominator(DecimalMode);
+    const int32_t cases[] = {-999999, -128000, -10001, -1,    0,
+                             1,       9999,    128000, 999999};
+    for (int32_t scaled : cases) {
+      const EncoderParameters p =
+          EncoderParameters{}.withMicrostepsPerPulse(DecimalMode, scaled);
+      TEST_ASSERT_TRUE(p.microsteps_per_pulse_fractional >= 0);
+      TEST_ASSERT_TRUE(p.microsteps_per_pulse_fractional < denominator);
+      TEST_ASSERT_EQUAL_INT32(scaled,
+                              p.microsteps_per_pulse_integer * denominator +
+                                  p.microsteps_per_pulse_fractional);
+    }
+  }
+
+  // And the value is constexpr-computable, so a board can state its encoder
+  // scaling as a compile-time constant.
+  {
+    constexpr EncoderParameters p =
+        EncoderParameters{}.withMicrostepsPerPulse(DecimalMode, -128000);
+    static_assert(p.microsteps_per_pulse_integer == -13, "floor division");
+    static_assert(p.microsteps_per_pulse_fractional == 2000, "remainder");
+    TEST_ASSERT_EQUAL_INT32(-13, p.microsteps_per_pulse_integer);
+  }
+}
+
 int main(int argc, char **argv) {
   (void)argc;
   (void)argv;
@@ -873,5 +1048,8 @@ int main(int argc, char **argv) {
   RUN_TEST(test_swmode_rampstat);
   RUN_TEST(test_encoder_registers);
   RUN_TEST(test_microstep_and_driver_registers);
+  RUN_TEST(test_chopconf_vsense_bit);
+  RUN_TEST(test_microsteps_per_pulse_scaled_splits_correctly);
+  RUN_TEST(test_every_driver_parameter_builder_preserves_sense_voltage_mode);
   return UNITY_END();
 }

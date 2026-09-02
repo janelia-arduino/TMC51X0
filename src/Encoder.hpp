@@ -31,6 +31,17 @@ public:
   // e.g. 1.5: integer=1, fractional=5000 decimal fractional mode
   void writeMicrostepsPerPulse(int16_t integer = 1, uint16_t fractional = 0);
 
+  // Set the whole scaling from ONE signed value in the fractional mode's units:
+  // DecimalMode -> scaled/10000, BinaryMode -> scaled/65536. So -12.8
+  // microsteps per pulse is writeMicrostepsPerPulseScaled(DecimalMode,
+  // -128000).
+  //
+  // Prefer this for a reversed encoder. ENC_CONST's fractional part is always
+  // ADDED to a signed integer part, so -12.8 is -13 + 0.2, and the obvious
+  // pairing of -12 with 0.8 is -11.2 instead -- a silent 12.5% scale error.
+  // Writes ENCMODE as well as ENC_CONST, because the split depends on the mode.
+  void writeMicrostepsPerPulseScaled(FractionalMode mode, int32_t scaled);
+
   // -2^31..(2^31)-1 encoder counts
   int32_t readActualPosition();
   // -2^31..(2^31)-1 encoder counts

@@ -6,7 +6,7 @@
 
 * Library Information
 - Name :: TMC51X0
-- Version :: 4.0.3
+- Version :: 4.1.0
 - License :: BSD
 - URL :: https://github.com/janelia-arduino/TMC51X0
 - Author :: Peter Polidoro
@@ -206,6 +206,69 @@ For stall homing, =homed()= now confirms that a stall-home actually stopped via
 stall detection. If motion stops without a confirmed stall event, =homed()=
 stays false and =homeFailed()= becomes true so the application can bail out or
 recover explicitly instead of silently accepting an ambiguous stop.
+
+** Encoder scaling, including reversed encoders
+
+=ENC_CONST= scales =X_ENC= against the ramp generator's microsteps. It is a
+signed fixed-point value whose fractional part is always *added* to the integer
+part, so a reversed encoder at -12.8 microsteps per pulse is -13 + 0.2 and not
+-12 + 0.8. Let the library do the split:
+
+#+BEGIN_SRC cpp
+// 51200 microsteps/rev over 4000 quadrature counts/rev = 12.8, and this
+// encoder counts down as the ramp counts up.
+const auto encoder_parameters =
+    tmc51x0::EncoderParameters{}.withMicrostepsPerPulse(tmc51x0::DecimalMode,
+                                                        -128000);
+stepper.encoder.setup(encoder_parameters);
+#+END_SRC
+
+The scaled value is in the units of the fractional mode: =DecimalMode= divides
+by 10000, =BinaryMode= by 65536. Pick decimal when the ratio is exact there --
+12.8 is, and it recurs in binary.
+
+=ENC_CONST= resets to **zero**, so =X_ENC= does not count at all until this is
+written. An encoder reading a constant 0 is the symptom of skipping it, not of
+broken hardware. The register is write-only, so the only confirmation is that
+=X_ENC= tracks a commanded move: compare it against =XACTUAL= over a known
+distance and expect a ratio of about +1.0. About -1.0 means the sign is wrong.
+
+** Sense resistor voltage on the TMC5130A
+
+The TMC5130A scales every coil current by =CHOPCONF.vsense=, which selects the
+full-scale sense resistor voltage:
+
+| =SenseVoltageMode=     | VFS               | datasheet wording |
+|------------------------+-------------------+-------------------|
+| =HighSenseVoltageMode= | V_SRTL = 325 mV   | low sensitivity   |
+| =LowSenseVoltageMode=  | V_SRTH = 180 mV   | high sensitivity  |
+
+The names describe the sense resistor voltage, because that is what a board
+designer selects from. A board with low-value shunts needs
+=LowSenseVoltageMode=; leaving the reset default in place drives roughly 1.8x
+the requested current, and =IHOLD_IRUN= is write-only so nothing reports it.
+
+#+BEGIN_SRC cpp
+const auto driver_parameters =
+    tmc51x0::DriverParameters{}
+        .withRunCurrent(8) // chip units, 0..31
+        .withHoldCurrent(2)
+        .withSenseVoltageMode(tmc51x0::LowSenseVoltageMode);
+stepper.driver.setup(driver_parameters);
+
+// CHOPCONF is the only readable half of the current setting, so read it back
+// before enabling the output stage.
+tmc51x0::Registers::Chopconf chopconf;
+chopconf.raw = stepper.registers.read(tmc51x0::Registers::ChopconfAddress);
+if (chopconf.vsense()) {
+  stepper.driver.enable();
+}
+#+END_SRC
+
+Bit 17 is reserved on the TMC5160A, which scales current with =GLOBALSCALER=
+instead, so =writeSenseVoltageMode()= is a no-op unless the device model is
+=TMC5130A=. Supply the model to =setupSpi()= / =setupUart()=, or let the
+identity read find it, before relying on this.
 
 ** TMC5130A vs TMC5160A
 

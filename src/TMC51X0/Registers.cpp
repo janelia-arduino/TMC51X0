@@ -9,6 +9,36 @@
 using namespace tmc51x0;
 
 namespace {
+// CHOPCONF's reset default is not the same on both parts, and the difference is
+// not cosmetic: bits 23:20 are TPFD on the TMC5160 (mid-range resonance
+// dampening, reset default 4) and SYNC on the TMC5130 (chopSync, where a
+// non-zero value ENABLES synchronisation at fCLK/(SYNC*64)). Seeding the
+// TMC5160 value for a TMC5130 therefore turned chopSync on by accident,
+// because every high-level CHOPCONF write is a read-modify-write of this
+// mirror.
+//
+// Unknown maps to the TMC5160 value, matching pwmconfResetDefault, because
+// setupSpi() seeds before it identifies the part: setDeviceModel() re-seeds
+// both registers once the identity read lands, which is what actually closes
+// this for a caller that did not declare the model.
+//
+// The TMC5160 datasheet rev 1.18 gives 0x10410150. The TMC5130 datasheet gives
+// no reset default for CHOPCONF, and a TMC5130A read 0x00000000 from a cold
+// supply on bench hardware -- so the value below is not a claim about silicon.
+// It keeps the chopper defaults this library has always applied (TOFF 0,
+// HSTRT 5, HEND 2, TBL 2, CHM 0, MRES 0, intpol 1) and clears only the field
+// whose meaning differs between the parts.
+uint32_t chopconfResetDefault(Registers::DeviceModel device_model) {
+  switch (device_model) {
+  case Registers::DeviceModel::TMC5130A:
+    return 0x10010150UL;
+  case Registers::DeviceModel::TMC5160A:
+  case Registers::DeviceModel::Unknown:
+  default:
+    return 0x10410150UL;
+  }
+}
+
 uint32_t pwmconfResetDefault(Registers::DeviceModel device_model) {
   switch (device_model) {
   case Registers::DeviceModel::TMC5130A:
@@ -22,7 +52,23 @@ uint32_t pwmconfResetDefault(Registers::DeviceModel device_model) {
 } // namespace
 
 void Registers::setDeviceModel(DeviceModel device_model) {
+  if (device_model == device_model_) {
+    return;
+  }
   device_model_ = device_model;
+
+  // CHOPCONF and PWMCONF have model-dependent reset defaults, and the model is
+  // often only learned from the identity read *after* the mirror was seeded --
+  // setupSpi() may be called with DeviceModel::Unknown. Re-seed those two, but
+  // only while they still hold a seeded default: anything read from the chip or
+  // written by the caller is better information than a reset default and must
+  // not be overwritten here.
+  if (stored_confidence_[ChopconfAddress] == MirrorConfidence::ResetDefault) {
+    seedStoredResetValue_(ChopconfAddress, chopconfResetDefault(device_model_));
+  }
+  if (stored_confidence_[PwmconfAddress] == MirrorConfidence::ResetDefault) {
+    seedStoredResetValue_(PwmconfAddress, pwmconfResetDefault(device_model_));
+  }
 }
 
 Registers::DeviceModel Registers::deviceModel() const { return device_model_; }
@@ -190,7 +236,7 @@ void Registers::seedStoredResetValues_() {
   seedStoredResetValue_(GstatAddress, 0x5UL);
   seedStoredResetValue_(FactoryConfAddress, 0xEUL);
   seedStoredResetValue_(RampStatAddress, 0x780UL);
-  seedStoredResetValue_(ChopconfAddress, 0x10410150UL);
+  seedStoredResetValue_(ChopconfAddress, chopconfResetDefault(device_model_));
   seedStoredResetValue_(PwmconfAddress, pwmconfResetDefault(device_model_));
 }
 

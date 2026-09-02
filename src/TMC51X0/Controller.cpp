@@ -107,9 +107,25 @@ void Controller::writeStartVelocity(uint32_t velocity) {
   registers_ptr_->write(Registers::VstartAddress, velocity);
 }
 
+// VSTOP and D1 must never be zero in positioning mode -- the TMC5130A
+// datasheet says so for both, and adds "even if V1=0". The chip does not
+// fault on a zero: it crawls at about VSTOP and never reaches the target.
+//
+// They are easy to zero by accident rather than on purpose, because
+// Converter::controllerParametersRealToChip() converts real units and a small
+// real value rounds down to nothing: one chip unit of acceleration is
+// fCLK^2/(512*256*2^24), which is 116.4 microsteps/s^2 at 16 MHz, so asking
+// for this struct's own default of 10 in real units yielded D1 = 0. Clamping
+// here catches every path into the register, including that one. A clamp to 1
+// is harmless in velocity mode, where neither value is used.
+static uint32_t nonZeroInPositioningMode(uint32_t value) {
+  return (value == 0) ? 1u : value;
+}
+
 void Controller::writeStopVelocity(uint32_t velocity) {
-  setup_controller_parameters_.stop_velocity = velocity;
-  registers_ptr_->write(Registers::VstopAddress, velocity);
+  const uint32_t clamped = nonZeroInPositioningMode(velocity);
+  setup_controller_parameters_.stop_velocity = clamped;
+  registers_ptr_->write(Registers::VstopAddress, clamped);
 }
 
 void Controller::writeFirstAcceleration(uint32_t acceleration) {
@@ -128,8 +144,9 @@ void Controller::writeMaxDeceleration(uint32_t deceleration) {
 }
 
 void Controller::writeFirstDeceleration(uint32_t deceleration) {
-  setup_controller_parameters_.first_deceleration = deceleration;
-  registers_ptr_->write(Registers::Deceleration1Address, deceleration);
+  const uint32_t clamped = nonZeroInPositioningMode(deceleration);
+  setup_controller_parameters_.first_deceleration = clamped;
+  registers_ptr_->write(Registers::Deceleration1Address, clamped);
 }
 
 void Controller::writeZeroWaitDuration(uint32_t tzerowait) {
@@ -244,6 +261,18 @@ void Controller::reinitialize() {
 
   setup();
   setupSwitches();
+
+  // Recovery restores configuration; it does not resume motion. Replaying a
+  // POSITION ramp mode cannot start a move, because reinitialize() has just
+  // zeroed both XACTUAL and XTARGET -- so that mode is replayed faithfully.
+  // Replaying a VELOCITY ramp mode would command the motor to turn as soon as
+  // the transport came back, which is motion reconstruction rather than
+  // configuration. Hold instead, and leave max_velocity intact for the
+  // caller's next move.
+  const RampMode replayed = setup_controller_parameters_.ramp_mode;
+  if (replayed == VelocityPositiveMode || replayed == VelocityNegativeMode) {
+    writeRampMode(HoldMode);
+  }
 }
 
 void Controller::writeControllerParameters(ControllerParameters parameters) {
