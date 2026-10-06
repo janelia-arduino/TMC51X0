@@ -1,5 +1,28 @@
 # Changelog
 
+## 4.2.0
+
+**SPI datagrams go out as one buffer transfer.** `SpiInterface::transferDatagram`
+called `transfer(uint8_t)` five times, with the bus idle between the calls:
+on an RP2040 at 4 MHz a 40-bit datagram took 17 us on the wire plus 12 us
+to the next one, a two-datagram register read 60 us (measured with a logic
+analyser 2026-10-06 on a TMC5130A board whose 1 kHz control tick reads the
+encoder every millisecond). It now hands the whole datagram to the core:
+`transfer(tx, rx, 5)` on the RP2040 and Teensy cores, whose two-buffer form
+clocks the bytes back to back, and the in-place `transfer(buf, 5)` elsewhere
+(on the RP2040 core that form is itself a byte loop, so it is not used
+there). A register read is 38 us on the wire with the in-place form and less
+with the two-buffer one.
+
+**Pipelined multi-register reads.** `Registers::readMany(addresses, values,
+count)` reads several registers in `count + 1` datagrams instead of
+`2 * count`, using the TMC51X0's reply-to-the-previous-datagram pipeline
+(`Interface::readRegisters()`, overridden by `SpiInterface`; the UART
+transport falls back to one read per address). Each value lands in the
+mirror as `read()` would, and a reset flag in any reply is latched as before.
+The last address is sent twice, so a read-and-clear register such as
+`RAMP_STAT` must not be last. Native tests cover both.
+
 ## 4.1.0
 
 Four TMC5130A correctness fixes, all found on bench hardware while bringing up

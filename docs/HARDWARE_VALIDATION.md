@@ -24,6 +24,20 @@ Bench-validated so far for the v4 release line:
   - post-recovery mirror resynchronization check via
     `resyncReadableConfiguration()`
 
+- 2026-10-06
+- engineer: Peter Polidoro (bench run by an agent session)
+- setup: `mouse-joystick-pcb` v1.0 unit A, a custom RP2040 board with a
+  `TMC5130A` on `SPI0` at 4 MHz (16 MHz external clock), logic analyser on
+  the bus
+- validated behaviors (4.2.0):
+  - one buffer transfer per 40-bit datagram: 12.0 µs per datagram on the
+    wire with the clocks back to back (17.1 µs with four inter-byte gaps
+    before), a two-datagram register read 27 µs (60 µs before)
+  - pipelined `readMany()` of five registers: six datagrams, 101 µs (ten
+    datagrams, 269 µs before); the values matched the per-register reads
+    through a homing, positioning, brake and trial sequence driven over the
+    board's protocol at a 1 kHz control tick
+
 Current remaining release gaps:
 
 - UART hardware validation not yet recorded
@@ -340,6 +354,39 @@ Known caveats from this bench:
 - UART validation was not run because no UART bench hardware is currently
   available.
 - Switch / homing validation was not run in this session.
+
+### 2026-10-06 SPI bus timing: mouse-joystick-pcb v1.0 + TMC5130A
+
+- Engineer: Peter Polidoro, with an agent session on the bench
+- MCU / board: custom RP2040 board (`mouse-joystick-pcb` v1.0 unit A,
+  W25Q128JV flash, 12 MHz crystal), arduino-pico core
+- Chip model: `TMC5130A`, 16 MHz external clock
+- Transport: SPI on `SPI0`, 4 MHz requested (3.85 MHz on the wire through
+  the PL022 divider), SPI mode 3, chip select on a plain GPIO
+- Instrument: Kingst LA5032 on the board's instrument-port taps of SCK,
+  ~CS, SDI and SDO, 50 MSa/s, 1 s windows while the application polled the
+  encoder every millisecond and a five-register snapshot every tenth poll
+- Firmware: `mouse-joystick-firm` `examples/PyControlLinkQp`
+
+Observed results (medians over ~500 polls):
+
+| Library | per datagram (CS low) | CS high between datagrams | X_ENC read, two datagrams | five-register snapshot |
+| --- | --- | --- | --- | --- |
+| 4.1.0 (five `transfer(byte)` calls, two datagrams per register) | 17.1 µs (40 clocks in 14.8 µs: four 1.5 µs byte gaps) | 11.6 µs | 60 µs | 10 datagrams, 269 µs |
+| 4.2.0, in-place `transfer(buf, 5)` + `readMany()` | 17.3 µs (the RP2040 core's in-place form is a byte loop) | 3.5 µs | 38 µs | 6 datagrams, 167 µs |
+| 4.2.0, two-buffer `transfer(tx, rx, 5)` (RP2040/Teensy) + `readMany()` | 12.0 µs, no gaps | 3.2 µs | 27 µs | 6 datagrams, 134 µs (101 µs with the application's flash stage 2 fixed) |
+
+- The datagrams of 4.1.0 were also stretched on the bus itself by the CPU
+  between the byte transfers (CS-low p90 31.6 µs against a 17.1 µs median);
+  with one transfer per datagram the p90 equals the median.
+- Register values read through `readMany()` (RAMP_STAT first, X_ENC last)
+  drove the application's homing, positioning, brake release and trial
+  classification identically to the per-register reads; the SPI status
+  byte's reset flag kept latching.
+- Compiled, not run, on the other cores: `examples/SPI/TestCommunication`
+  builds for `nanoatmega328`, `esp32` and `giga_r1_m7` (the in-place
+  fallback) and `feather` and `teensy40` (the two-buffer form). Not
+  validated here: UART, `TMC5160A`.
 
 ## Release gate suggestion
 

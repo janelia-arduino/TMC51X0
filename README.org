@@ -6,7 +6,7 @@
 
 * Library Information
 - Name :: TMC51X0
-- Version :: 4.1.0
+- Version :: 4.2.0
 - License :: BSD
 - URL :: https://github.com/janelia-arduino/TMC51X0
 - Author :: Peter Polidoro
@@ -84,6 +84,28 @@ void setup() {
 If you already know the chip family, pass the expected
 =Registers::DeviceModel= so reset defaults are seeded correctly before the
 first successful identity read.
+
+** Pipelined SPI reads
+
+A register read over SPI is two datagrams, because the TMC51X0 answers each
+datagram with the data requested by the previous one. When several registers
+are wanted at once (a status snapshot inside a control loop), chain them:
+
+#+BEGIN_SRC C++
+const tmc51x0::Registers::RegisterAddress addresses[5] = {
+    tmc51x0::Registers::RampStatAddress, tmc51x0::Registers::DrvStatusAddress,
+    tmc51x0::Registers::XactualAddress, tmc51x0::Registers::VactualAddress,
+    tmc51x0::Registers::XencAddress};
+uint32_t values[5];
+stepper.registers.readMany(addresses, values, 5); // 6 datagrams, not 10
+#+END_SRC
+
+The last address is sent twice (the final datagram only collects the previous
+reply), so a read-and-clear register such as =RAMP_STAT= must not be last.
+Over UART =readMany= falls back to one read per address. Each datagram goes
+out as one buffer transfer (the two-buffer =transfer(tx, rx, 5)= on the RP2040
+and Teensy cores, the in-place =transfer(buf, 5)= elsewhere) rather than five
+byte transfers.
 
 ** UART setup
 

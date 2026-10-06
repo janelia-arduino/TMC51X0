@@ -109,6 +109,14 @@ struct Registers {
 
   void write(RegisterAddress register_address, uint32_t data);
   uint32_t read(RegisterAddress register_address);
+  // Several readable registers in one transport operation (SPI pipelines
+  // them: count + 1 datagrams instead of 2 * count). Each value also lands in
+  // the mirror as read() would. The last address is sent twice over SPI, so
+  // keep read-and-clear registers such as RAMP_STAT off the last slot. At
+  // most kReadManyMax per call; an unreadable address yields 0.
+  static constexpr size_t kReadManyMax = 8;
+  void readMany(const RegisterAddress *register_addresses, uint32_t *values,
+                size_t count);
   bool refresh(RegisterAddress register_address);
   bool resyncReadableConfiguration();
   uint32_t getStored(RegisterAddress register_address);

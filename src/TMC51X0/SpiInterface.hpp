@@ -22,6 +22,12 @@ public:
 
   void writeRegister(uint8_t register_address, uint32_t data) override;
   uint32_t readRegister(uint8_t register_address) override;
+  // Pipelined: `count + 1` datagrams. The last address is sent twice (the
+  // final datagram only collects the previous reply), so it must be one
+  // whose second read has no side effect -- put read-and-clear registers
+  // such as RAMP_STAT anywhere but last.
+  void readRegisters(const uint8_t *register_addresses, uint32_t *values,
+                     size_t count) override;
   bool consumeDeviceResetObserved() override;
 
 private:
@@ -52,6 +58,7 @@ private:
 
   void transferDatagram(const uint8_t tx[spi::DATAGRAM_SIZE],
                         uint8_t rx[spi::DATAGRAM_SIZE]);
+  void latchStatus();
 
   void enableChipSelect();
   void disableChipSelect();

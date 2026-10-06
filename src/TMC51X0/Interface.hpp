@@ -39,6 +39,17 @@ public:
     return r;
   }
 
+  // Several registers in one transport operation. A transport that can
+  // pipeline reads overrides this (SPI: the reply to a datagram carries the
+  // data of the previous one, so `count` registers cost `count + 1`
+  // datagrams instead of `2 * count`); the default is one read per address.
+  virtual void readRegisters(const uint8_t *register_addresses,
+                             uint32_t *values, size_t count) {
+    for (size_t i = 0; i < count; ++i) {
+      values[i] = readRegisterResult(register_addresses[i]).value;
+    }
+  }
+
   // SPI surfaces a reset flag alongside every access. Transports that can
   // detect a device-side reset should latch it and surface it here so the
   // register mirror can demand a re-seed/recovery pass.

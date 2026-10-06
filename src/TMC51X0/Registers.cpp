@@ -112,6 +112,40 @@ uint32_t Registers::read(RegisterAddress register_address) {
   return 0;
 }
 
+void Registers::readMany(const RegisterAddress *register_addresses,
+                         uint32_t *values, size_t count) {
+  if (count > kReadManyMax) {
+    readMany(register_addresses, values, kReadManyMax);
+    readMany(register_addresses + kReadManyMax, values + kReadManyMax,
+             count - kReadManyMax);
+    return;
+  }
+  bool batchable = (interface_ptr_ != nullptr) &&
+                   (interface_ptr_->interface_mode == Interface::SpiMode);
+  uint8_t raw_addresses[kReadManyMax];
+  for (size_t i = 0; i < count; ++i) {
+    const RegisterAddress a = register_addresses[i];
+    if ((a >= AddressCount) || !readable_[a]) {
+      batchable = false;
+    }
+    raw_addresses[i] = static_cast<uint8_t>(a);
+  }
+  if (!batchable) {
+    for (size_t i = 0; i < count; ++i) {
+      values[i] = read(register_addresses[i]);
+    }
+    return;
+  }
+  interface_ptr_->readRegisters(raw_addresses, values, count);
+  recordTransportReset_();
+  for (size_t i = 0; i < count; ++i) {
+    const RegisterAddress a = register_addresses[i];
+    stored_[a] = values[i];
+    stored_valid_[a] = true;
+    stored_confidence_[a] = MirrorConfidence::ReadVerified;
+  }
+}
+
 bool Registers::refresh(RegisterAddress register_address) {
   if ((register_address < AddressCount) && (readable_[register_address]) &&
       (interface_ptr_ != nullptr)) {

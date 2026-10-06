@@ -14,6 +14,29 @@ Finish `TMC51X0` as a release-ready library without reopening broad architecture
 - `.metadata/README.org` and a generated `README.md` workflow are intentionally not part of the plan.
 - Real hardware bring-up should drive any remaining firmware fixes after the docs / migration pass.
 
+## Completed 2026-10-06: SPI bus time, measured on a logic analyser, released as 4.2.0
+
+Found while bringing a TMC5130A + RP2040 board's 1 kHz control tick inside its
+budget (`mouse-joystick-firm`, pcb v1.0 unit A, Digital-50 taps on an LA5032):
+
+- `SpiInterface::transferDatagram` sent five one-byte `transfer()` calls per
+  40-bit datagram. On the wire: 17.1 µs per datagram (40 clocks at 3.85 MHz
+  in 14.8 µs because of four 1.5 µs inter-byte gaps) plus 11.6 µs to the next
+  datagram; a register read (two datagrams) 60 µs. **Fixed:** one buffer
+  transfer per datagram — the two-buffer `transfer(tx, rx, 5)` on the RP2040
+  and Teensy cores (12.0 µs per datagram, clocks back to back, 27 µs per
+  read), the in-place `transfer(buf, 5)` elsewhere (on the RP2040 core that
+  one is itself a byte loop, measured: no gain).
+- Reading several registers was `2 * count` datagrams. **Added**
+  `Registers::readMany()` / `Interface::readRegisters()`: pipelined,
+  `count + 1` datagrams (a five-register snapshot 134 µs instead of 269);
+  the last address goes out twice, so read-and-clear registers must not be
+  last; the UART transport falls back to one read per address. Native tests
+  cover both; `CHANGELOG.md` "Unreleased" has the text.
+- Version 4.2.0 (`pixi run set-version`), CHANGELOG and README updated,
+  `release-check` run before the tag; the consuming firmware pins
+  `TMC51X0.git#4.2.0`.
+
 ## Completed 2026-09-02: TMC5130A correctness fixes, released as 4.1.0
 
 Four defects, all found on bench hardware during a TMC5130A + RP2040 bring-up
